@@ -154,7 +154,7 @@ func (r RefreshItemsMetadataRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (r *RefreshItemsMetadataRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &r, "", false, []string{"ids"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &r, "", false, nil); err != nil {
 		return err
 	}
 	return nil

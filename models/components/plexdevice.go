@@ -135,7 +135,7 @@ func (p PlexDevice) MarshalJSON() ([]byte, error) {
 }
 
 func (p *PlexDevice) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &p, "", false, []string{"name", "product", "productVersion", "clientIdentifier", "createdAt", "lastSeenAt", "provides", "publicAddress", "accessToken", "owned", "home", "synced", "relay", "presence", "httpsRequired", "publicAddressMatches", "dnsRebindingProtection", "natLoopbackSupported", "connections"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &p, "", false, nil); err != nil {
 		return err
 	}
 	return nil

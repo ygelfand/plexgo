@@ -154,7 +154,7 @@ func (d DetectCreditsRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (d *DetectCreditsRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &d, "", false, []string{"ids"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &d, "", false, nil); err != nil {
 		return err
 	}
 	return nil

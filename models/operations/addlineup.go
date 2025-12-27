@@ -155,7 +155,7 @@ func (a AddLineupRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (a *AddLineupRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &a, "", false, []string{"dvrId", "lineup"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &a, "", false, nil); err != nil {
 		return err
 	}
 	return nil

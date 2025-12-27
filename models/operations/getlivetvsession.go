@@ -153,7 +153,7 @@ func (g GetLiveTVSessionRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetLiveTVSessionRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"sessionId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

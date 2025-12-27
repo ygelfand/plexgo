@@ -156,7 +156,7 @@ func (a AnalyzeMetadataRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (a *AnalyzeMetadataRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &a, "", false, []string{"ids"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &a, "", false, nil); err != nil {
 		return err
 	}
 	return nil

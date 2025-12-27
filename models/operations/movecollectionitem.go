@@ -157,7 +157,7 @@ func (m MoveCollectionItemRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (m *MoveCollectionItemRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &m, "", false, []string{"collectionId", "itemId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &m, "", false, nil); err != nil {
 		return err
 	}
 	return nil

@@ -184,7 +184,7 @@ func (g GetPartIndexRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetPartIndexRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"partId", "index"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

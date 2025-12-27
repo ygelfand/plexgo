@@ -155,7 +155,7 @@ func (g GetItemDecisionRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetItemDecisionRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"queueId", "itemId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

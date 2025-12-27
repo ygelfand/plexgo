@@ -155,7 +155,7 @@ func (a AddDeviceToDVRRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (a *AddDeviceToDVRRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &a, "", false, []string{"dvrId", "deviceId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &a, "", false, nil); err != nil {
 		return err
 	}
 	return nil

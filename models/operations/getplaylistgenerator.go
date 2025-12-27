@@ -157,7 +157,7 @@ func (g GetPlaylistGeneratorRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetPlaylistGeneratorRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"playlistId", "generatorId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

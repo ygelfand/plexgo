@@ -167,7 +167,7 @@ func (s SetChannelmapRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (s *SetChannelmapRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, []string{"deviceId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
 		return err
 	}
 	return nil

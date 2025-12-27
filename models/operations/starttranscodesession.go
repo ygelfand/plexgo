@@ -351,7 +351,7 @@ func (s StartTranscodeSessionRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (s *StartTranscodeSessionRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, []string{"transcodeType", "extension"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
 		return err
 	}
 	return nil

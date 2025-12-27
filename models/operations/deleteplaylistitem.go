@@ -155,7 +155,7 @@ func (d DeletePlaylistItemRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (d *DeletePlaylistItemRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &d, "", false, []string{"playlistId", "generatorId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &d, "", false, nil); err != nil {
 		return err
 	}
 	return nil

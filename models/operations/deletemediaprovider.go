@@ -153,7 +153,7 @@ func (d DeleteMediaProviderRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (d *DeleteMediaProviderRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &d, "", false, []string{"provider"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &d, "", false, nil); err != nil {
 		return err
 	}
 	return nil

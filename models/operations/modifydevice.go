@@ -155,7 +155,7 @@ func (m ModifyDeviceRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (m *ModifyDeviceRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &m, "", false, []string{"deviceId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &m, "", false, nil); err != nil {
 		return err
 	}
 	return nil

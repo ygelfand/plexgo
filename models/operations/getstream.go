@@ -161,7 +161,7 @@ func (g GetStreamRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetStreamRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"streamId", "ext"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

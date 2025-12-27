@@ -154,7 +154,7 @@ func (r ReorderSubscriptionRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (r *ReorderSubscriptionRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &r, "", false, []string{"subscriptionId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &r, "", false, nil); err != nil {
 		return err
 	}
 	return nil

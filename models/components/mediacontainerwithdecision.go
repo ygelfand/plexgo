@@ -218,7 +218,7 @@ func (m MediaContainerWithDecisionStream) MarshalJSON() ([]byte, error) {
 }
 
 func (m *MediaContainerWithDecisionStream) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &m, "", false, []string{"codec", "displayTitle", "id", "key", "streamType"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &m, "", false, nil); err != nil {
 		return err
 	}
 	return nil
@@ -668,7 +668,7 @@ func (m MediaContainerWithDecisionPart) MarshalJSON() ([]byte, error) {
 }
 
 func (m *MediaContainerWithDecisionPart) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &m, "", false, []string{"id", "key"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &m, "", false, nil); err != nil {
 		return err
 	}
 	return nil
@@ -824,7 +824,7 @@ func (m MediaContainerWithDecisionMedia) MarshalJSON() ([]byte, error) {
 }
 
 func (m *MediaContainerWithDecisionMedia) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &m, "", false, []string{"id"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &m, "", false, nil); err != nil {
 		return err
 	}
 	return nil
@@ -1129,7 +1129,7 @@ func (m MediaContainerWithDecisionMetadata) MarshalJSON() ([]byte, error) {
 }
 
 func (m *MediaContainerWithDecisionMetadata) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &m, "", false, []string{"title", "type", "addedAt", "key"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &m, "", false, nil); err != nil {
 		return err
 	}
 	return nil

@@ -153,7 +153,7 @@ func (s ShuffleRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (s *ShuffleRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, []string{"playQueueId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
 		return err
 	}
 	return nil

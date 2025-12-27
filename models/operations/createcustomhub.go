@@ -161,7 +161,7 @@ func (c CreateCustomHubRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (c *CreateCustomHubRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &c, "", false, []string{"sectionId", "metadataItemId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &c, "", false, nil); err != nil {
 		return err
 	}
 	return nil

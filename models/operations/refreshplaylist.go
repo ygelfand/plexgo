@@ -191,7 +191,7 @@ func (r RefreshPlaylistRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (r *RefreshPlaylistRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &r, "", false, []string{"playlistId", "generatorId", "metadataId", "action"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &r, "", false, nil); err != nil {
 		return err
 	}
 	return nil

@@ -153,7 +153,7 @@ func (g GetCollectionItemsRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetCollectionItemsRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"collectionId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

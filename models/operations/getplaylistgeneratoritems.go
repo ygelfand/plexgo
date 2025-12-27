@@ -158,7 +158,7 @@ func (g GetPlaylistGeneratorItemsRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetPlaylistGeneratorItemsRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"playlistId", "generatorId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil
@@ -513,7 +513,7 @@ func (g GetPlaylistGeneratorItemsMetadata) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetPlaylistGeneratorItemsMetadata) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"title", "type", "addedAt", "key"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

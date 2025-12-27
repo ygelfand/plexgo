@@ -11,11 +11,12 @@ import (
 type ImageType string
 
 const (
-	ImageTypeBackground  ImageType = "background"
-	ImageTypeBanner      ImageType = "banner"
-	ImageTypeClearLogo   ImageType = "clearLogo"
-	ImageTypeCoverPoster ImageType = "coverPoster"
-	ImageTypeSnapshot    ImageType = "snapshot"
+	ImageTypeBackground       ImageType = "background"
+	ImageTypeBackgroundSquare ImageType = "backgroundSquare"
+	ImageTypeBanner           ImageType = "banner"
+	ImageTypeClearLogo        ImageType = "clearLogo"
+	ImageTypeCoverPoster      ImageType = "coverPoster"
+	ImageTypeSnapshot         ImageType = "snapshot"
 )
 
 func (e ImageType) ToPointer() *ImageType {
@@ -28,6 +29,8 @@ func (e *ImageType) UnmarshalJSON(data []byte) error {
 	}
 	switch v {
 	case "background":
+		fallthrough
+	case "backgroundSquare":
 		fallthrough
 	case "banner":
 		fallthrough

@@ -159,7 +159,7 @@ func (s SetStreamSelectionRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (s *SetStreamSelectionRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, []string{"partId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
 		return err
 	}
 	return nil

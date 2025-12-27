@@ -166,7 +166,7 @@ func (m MetadataItem) MarshalJSON() ([]byte, error) {
 }
 
 func (m *MetadataItem) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &m, "", false, []string{"title", "type", "addedAt", "key"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &m, "", false, nil); err != nil {
 		return err
 	}
 	return nil

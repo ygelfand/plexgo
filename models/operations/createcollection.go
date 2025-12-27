@@ -174,7 +174,7 @@ func (c CreateCollectionRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (c *CreateCollectionRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &c, "", false, []string{"sectionId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &c, "", false, nil); err != nil {
 		return err
 	}
 	return nil

@@ -187,7 +187,7 @@ func (l ListContentRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (l *ListContentRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &l, "", false, []string{"sectionId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &l, "", false, nil); err != nil {
 		return err
 	}
 	return nil

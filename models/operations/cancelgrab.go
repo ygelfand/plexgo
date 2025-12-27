@@ -153,7 +153,7 @@ func (c CancelGrabRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (c *CancelGrabRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &c, "", false, []string{"operationId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &c, "", false, nil); err != nil {
 		return err
 	}
 	return nil

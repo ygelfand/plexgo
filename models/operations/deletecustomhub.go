@@ -155,7 +155,7 @@ func (d DeleteCustomHubRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (d *DeleteCustomHubRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &d, "", false, []string{"sectionId", "identifier"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &d, "", false, nil); err != nil {
 		return err
 	}
 	return nil

@@ -159,7 +159,7 @@ func (s SetRatingRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (s *SetRatingRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, []string{"identifier", "key", "rating"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
 		return err
 	}
 	return nil

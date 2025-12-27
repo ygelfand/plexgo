@@ -152,7 +152,7 @@ func (d DeleteSubscriptionRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (d *DeleteSubscriptionRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &d, "", false, []string{"subscriptionId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &d, "", false, nil); err != nil {
 		return err
 	}
 	return nil

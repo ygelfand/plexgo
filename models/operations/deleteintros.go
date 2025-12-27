@@ -153,7 +153,7 @@ func (d DeleteIntrosRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (d *DeleteIntrosRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &d, "", false, []string{"sectionId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &d, "", false, nil); err != nil {
 		return err
 	}
 	return nil

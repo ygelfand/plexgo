@@ -157,7 +157,7 @@ func (r RefreshSectionRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (r *RefreshSectionRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &r, "", false, []string{"sectionId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &r, "", false, nil); err != nil {
 		return err
 	}
 	return nil

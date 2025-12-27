@@ -163,7 +163,7 @@ func (g GetPlayQueueRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetPlayQueueRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"playQueueId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

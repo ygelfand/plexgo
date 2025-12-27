@@ -153,7 +153,7 @@ func (g GetDVRRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetDVRRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"dvrId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

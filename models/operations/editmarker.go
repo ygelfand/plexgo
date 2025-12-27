@@ -166,7 +166,7 @@ func (e EditMarkerRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (e *EditMarkerRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &e, "", false, []string{"ids", "marker", "type", "startTimeOffset"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &e, "", false, nil); err != nil {
 		return err
 	}
 	return nil

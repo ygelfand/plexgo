@@ -166,7 +166,7 @@ func (i Items) MarshalJSON() ([]byte, error) {
 }
 
 func (i *Items) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &i, "", false, []string{"title", "type", "addedAt", "key"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &i, "", false, nil); err != nil {
 		return err
 	}
 	return nil

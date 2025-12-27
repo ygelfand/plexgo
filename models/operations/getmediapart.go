@@ -159,7 +159,7 @@ func (g GetMediaPartRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetMediaPartRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"partId", "changestamp", "filename"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

@@ -157,7 +157,7 @@ func (l ListLineupsRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (l *ListLineupsRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &l, "", false, []string{"country", "epgId", "region"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &l, "", false, nil); err != nil {
 		return err
 	}
 	return nil

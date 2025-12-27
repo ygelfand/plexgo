@@ -155,7 +155,7 @@ func (g GetThumbRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetThumbRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"deviceId", "version"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

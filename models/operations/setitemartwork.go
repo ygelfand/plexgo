@@ -195,7 +195,7 @@ func (s SetItemArtworkRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (s *SetItemArtworkRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, []string{"ids", "element"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
 		return err
 	}
 	return nil

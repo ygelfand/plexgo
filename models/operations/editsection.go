@@ -171,7 +171,7 @@ func (e EditSectionRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (e *EditSectionRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &e, "", false, []string{"sectionId", "agent"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &e, "", false, nil); err != nil {
 		return err
 	}
 	return nil

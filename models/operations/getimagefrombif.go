@@ -184,7 +184,7 @@ func (g GetImageFromBifRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetImageFromBifRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"partId", "index", "offset"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

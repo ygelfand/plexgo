@@ -157,7 +157,7 @@ func (m MoveHubRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (m *MoveHubRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &m, "", false, []string{"sectionId", "identifier"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &m, "", false, nil); err != nil {
 		return err
 	}
 	return nil

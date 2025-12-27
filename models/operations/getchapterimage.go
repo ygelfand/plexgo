@@ -156,7 +156,7 @@ func (g GetChapterImageRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetChapterImageRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"mediaId", "chapter"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

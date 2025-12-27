@@ -153,7 +153,7 @@ func (s StopScanRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (s *StopScanRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, []string{"deviceId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
 		return err
 	}
 	return nil

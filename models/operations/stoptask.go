@@ -242,7 +242,7 @@ func (s StopTaskRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (s *StopTaskRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, []string{"butlerTask"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
 		return err
 	}
 	return nil

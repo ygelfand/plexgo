@@ -156,7 +156,7 @@ func (e EditSubscriptionPreferencesRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (e *EditSubscriptionPreferencesRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &e, "", false, []string{"subscriptionId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &e, "", false, nil); err != nil {
 		return err
 	}
 	return nil

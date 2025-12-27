@@ -155,7 +155,7 @@ func (d DeletePlayQueueItemRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (d *DeletePlayQueueItemRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &d, "", false, []string{"playQueueId", "playQueueItemId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &d, "", false, nil); err != nil {
 		return err
 	}
 	return nil

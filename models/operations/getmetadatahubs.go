@@ -157,7 +157,7 @@ func (g GetMetadataHubsRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetMetadataHubsRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"metadataId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

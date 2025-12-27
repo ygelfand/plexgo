@@ -170,7 +170,7 @@ func (v VoiceSearchHubsRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (v *VoiceSearchHubsRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"query"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &v, "", false, nil); err != nil {
 		return err
 	}
 	return nil

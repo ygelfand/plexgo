@@ -153,7 +153,7 @@ func (m MergeItemsRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (m *MergeItemsRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &m, "", false, []string{"ids"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &m, "", false, nil); err != nil {
 		return err
 	}
 	return nil

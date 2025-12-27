@@ -153,7 +153,7 @@ func (a AddProviderRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (a *AddProviderRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &a, "", false, []string{"url"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &a, "", false, nil); err != nil {
 		return err
 	}
 	return nil

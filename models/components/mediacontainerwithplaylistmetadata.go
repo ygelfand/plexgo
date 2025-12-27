@@ -205,7 +205,7 @@ func (m MediaContainerWithPlaylistMetadataMetadata) MarshalJSON() ([]byte, error
 }
 
 func (m *MediaContainerWithPlaylistMetadataMetadata) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &m, "", false, []string{"key", "title", "type", "addedAt"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &m, "", false, nil); err != nil {
 		return err
 	}
 	return nil

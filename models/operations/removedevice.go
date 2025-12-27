@@ -153,7 +153,7 @@ func (r RemoveDeviceRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (r *RemoveDeviceRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &r, "", false, []string{"deviceId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &r, "", false, nil); err != nil {
 		return err
 	}
 	return nil

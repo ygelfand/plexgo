@@ -152,7 +152,7 @@ func (g GetItemTreeRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetItemTreeRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"ids"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

@@ -161,7 +161,7 @@ func (g GetSonicPathRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetSonicPathRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"sectionId", "startID", "endID"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

@@ -155,7 +155,7 @@ func (s ScanRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (s *ScanRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, []string{"deviceId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
 		return err
 	}
 	return nil

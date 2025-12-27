@@ -155,7 +155,7 @@ func (g GetSectionsPrefsRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetSectionsPrefsRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"type"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

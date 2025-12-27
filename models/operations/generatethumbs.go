@@ -153,7 +153,7 @@ func (g GenerateThumbsRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GenerateThumbsRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"ids"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

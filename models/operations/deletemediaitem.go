@@ -155,7 +155,7 @@ func (d DeleteMediaItemRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (d *DeleteMediaItemRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &d, "", false, []string{"ids", "mediaItem"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &d, "", false, nil); err != nil {
 		return err
 	}
 	return nil

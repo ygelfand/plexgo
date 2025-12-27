@@ -152,7 +152,7 @@ func (g GetRelatedItemsRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetRelatedItemsRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"ids"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

@@ -1,5 +1,4 @@
 # Library
-(*Library*)
 
 ## Overview
 
@@ -631,8 +630,8 @@ func main() {
         Agent: "<value>",
         Language: "<value>",
         Locations: []string{
-            "O:\fatboy\\Media\\Ripped\\Music",
-            "O:\fatboy\\Media\\My Music",
+            "O:\\fatboy\\Media\\Ripped\\Music",
+            "O:\\fatboy\\Media\\My Music",
         },
         Prefs: &operations.QueryParamPrefs{},
         Relative: components.BoolIntTrue.ToPointer(),
@@ -3152,8 +3151,8 @@ func main() {
         SectionID: "<id>",
         Agent: "<value>",
         Locations: []string{
-            "O:\fatboy\\Media\\Ripped\\Music",
-            "O:\fatboy\\Media\\My Music",
+            "O:\\fatboy\\Media\\Ripped\\Music",
+            "O:\\fatboy\\Media\\My Music",
         },
         Prefs: &operations.EditSectionQueryParamPrefs{},
     })

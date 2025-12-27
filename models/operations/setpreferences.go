@@ -155,7 +155,7 @@ func (s SetPreferencesRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (s *SetPreferencesRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, []string{"prefs"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
 		return err
 	}
 	return nil

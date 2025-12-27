@@ -153,7 +153,7 @@ func (l ListPersonMediaRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (l *ListPersonMediaRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &l, "", false, []string{"personId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &l, "", false, nil); err != nil {
 		return err
 	}
 	return nil

@@ -153,7 +153,7 @@ func (g GetPersonRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetPersonRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"personId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

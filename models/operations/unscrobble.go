@@ -157,7 +157,7 @@ func (u UnscrobbleRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (u *UnscrobbleRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &u, "", false, []string{"identifier"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &u, "", false, nil); err != nil {
 		return err
 	}
 	return nil

@@ -153,7 +153,7 @@ func (s StartAnalysisRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (s *StartAnalysisRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, []string{"sectionId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
 		return err
 	}
 	return nil

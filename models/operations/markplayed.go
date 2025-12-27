@@ -157,7 +157,7 @@ func (m MarkPlayedRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (m *MarkPlayedRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &m, "", false, []string{"identifier"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &m, "", false, nil); err != nil {
 		return err
 	}
 	return nil

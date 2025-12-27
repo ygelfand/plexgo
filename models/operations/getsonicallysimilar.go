@@ -161,7 +161,7 @@ func (g GetSonicallySimilarRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetSonicallySimilarRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"sectionId", "values"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

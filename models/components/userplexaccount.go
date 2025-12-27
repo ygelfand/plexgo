@@ -350,7 +350,7 @@ func (u UserPlexAccount) MarshalJSON() ([]byte, error) {
 }
 
 func (u *UserPlexAccount) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &u, "", false, []string{"authToken", "email", "friendlyName", "id", "joinedAt", "title", "username", "uuid"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &u, "", false, nil); err != nil {
 		return err
 	}
 	return nil

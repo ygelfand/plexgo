@@ -320,7 +320,7 @@ func (m MakeDecisionRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (m *MakeDecisionRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &m, "", false, []string{"transcodeType"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &m, "", false, nil); err != nil {
 		return err
 	}
 	return nil

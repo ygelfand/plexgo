@@ -158,7 +158,7 @@ func (e EditMetadataItemRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (e *EditMetadataItemRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &e, "", false, []string{"ids"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &e, "", false, nil); err != nil {
 		return err
 	}
 	return nil

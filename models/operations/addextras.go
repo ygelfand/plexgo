@@ -158,7 +158,7 @@ func (a AddExtrasRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (a *AddExtrasRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &a, "", false, []string{"ids", "url"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &a, "", false, nil); err != nil {
 		return err
 	}
 	return nil

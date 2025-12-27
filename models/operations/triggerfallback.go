@@ -155,7 +155,7 @@ func (t TriggerFallbackRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (t *TriggerFallbackRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &t, "", false, []string{"transcodeType"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &t, "", false, nil); err != nil {
 		return err
 	}
 	return nil

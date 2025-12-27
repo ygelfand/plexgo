@@ -153,7 +153,7 @@ func (e EmptyTrashRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (e *EmptyTrashRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &e, "", false, []string{"sectionId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &e, "", false, nil); err != nil {
 		return err
 	}
 	return nil

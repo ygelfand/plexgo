@@ -155,7 +155,7 @@ func (l ListDownloadQueueItemsRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (l *ListDownloadQueueItemsRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &l, "", false, []string{"queueId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &l, "", false, nil); err != nil {
 		return err
 	}
 	return nil

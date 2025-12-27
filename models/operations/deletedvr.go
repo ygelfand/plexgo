@@ -153,7 +153,7 @@ func (d DeleteDVRRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (d *DeleteDVRRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &d, "", false, []string{"dvrId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &d, "", false, nil); err != nil {
 		return err
 	}
 	return nil

@@ -52,9 +52,9 @@ const (
 
 // Default - The default value of this setting
 type Default struct {
-	Str     *string  `queryParam:"inline,name=default"`
-	Number  *float64 `queryParam:"inline,name=default"`
-	Boolean *bool    `queryParam:"inline,name=default"`
+	Str     *string  `queryParam:"inline,name=default" union:"member"`
+	Number  *float64 `queryParam:"inline,name=default" union:"member"`
+	Boolean *bool    `queryParam:"inline,name=default" union:"member"`
 
 	Type DefaultType
 }
@@ -138,9 +138,9 @@ const (
 
 // Value - The current value of this setting
 type Value struct {
-	Str     *string  `queryParam:"inline,name=value"`
-	Number  *float64 `queryParam:"inline,name=value"`
-	Boolean *bool    `queryParam:"inline,name=value"`
+	Str     *string  `queryParam:"inline,name=value" union:"member"`
+	Number  *float64 `queryParam:"inline,name=value" union:"member"`
+	Boolean *bool    `queryParam:"inline,name=value" union:"member"`
 
 	Type ValueType
 }

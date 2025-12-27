@@ -155,7 +155,7 @@ func (t TerminateSessionRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (t *TerminateSessionRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &t, "", false, []string{"sessionId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &t, "", false, nil); err != nil {
 		return err
 	}
 	return nil

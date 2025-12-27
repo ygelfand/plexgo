@@ -155,7 +155,7 @@ func (g GetHubItemsRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetHubItemsRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"identifier"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

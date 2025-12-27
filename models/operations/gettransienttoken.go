@@ -205,7 +205,7 @@ func (g GetTransientTokenRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetTransientTokenRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"type", "scope"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

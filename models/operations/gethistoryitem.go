@@ -153,7 +153,7 @@ func (g GetHistoryItemRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetHistoryItemRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &g, "", false, []string{"historyId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &g, "", false, nil); err != nil {
 		return err
 	}
 	return nil

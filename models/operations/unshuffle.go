@@ -153,7 +153,7 @@ func (u UnshuffleRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (u *UnshuffleRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &u, "", false, []string{"playQueueId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &u, "", false, nil); err != nil {
 		return err
 	}
 	return nil

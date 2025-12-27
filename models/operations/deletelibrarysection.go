@@ -155,7 +155,7 @@ func (d DeleteLibrarySectionRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (d *DeleteLibrarySectionRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &d, "", false, []string{"sectionId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &d, "", false, nil); err != nil {
 		return err
 	}
 	return nil

@@ -153,7 +153,7 @@ func (s StopDVRReloadRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (s *StopDVRReloadRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, []string{"dvrId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
 		return err
 	}
 	return nil

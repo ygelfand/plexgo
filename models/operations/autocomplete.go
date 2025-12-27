@@ -175,7 +175,7 @@ func (a AutocompleteRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (a *AutocompleteRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &a, "", false, []string{"sectionId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &a, "", false, nil); err != nil {
 		return err
 	}
 	return nil

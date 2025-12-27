@@ -153,7 +153,7 @@ func (c CancelActivityRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (c *CancelActivityRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &c, "", false, []string{"activityId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &c, "", false, nil); err != nil {
 		return err
 	}
 	return nil

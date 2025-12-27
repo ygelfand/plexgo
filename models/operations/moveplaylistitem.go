@@ -157,7 +157,7 @@ func (m MovePlaylistItemRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (m *MovePlaylistItemRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &m, "", false, []string{"playlistId", "playlistItemId"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &m, "", false, nil); err != nil {
 		return err
 	}
 	return nil

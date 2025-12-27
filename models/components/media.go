@@ -34,7 +34,7 @@ func (m Media) MarshalJSON() ([]byte, error) {
 }
 
 func (m *Media) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &m, "", false, []string{"id"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &m, "", false, nil); err != nil {
 		return err
 	}
 	return nil

@@ -140,7 +140,7 @@ func (p PostUsersSignInDataRequestBody) MarshalJSON() ([]byte, error) {
 }
 
 func (p *PostUsersSignInDataRequestBody) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &p, "", false, []string{"login", "password"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &p, "", false, nil); err != nil {
 		return err
 	}
 	return nil
@@ -618,7 +618,7 @@ func (p PastSubscription) MarshalJSON() ([]byte, error) {
 }
 
 func (p *PastSubscription) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &p, "", false, []string{"type", "state", "billing"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &p, "", false, nil); err != nil {
 		return err
 	}
 	return nil
@@ -821,7 +821,7 @@ func (p PostUsersSignInDataUserPlexAccount) MarshalJSON() ([]byte, error) {
 }
 
 func (p *PostUsersSignInDataUserPlexAccount) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &p, "", false, []string{"authToken", "email", "friendlyName", "id", "joinedAt", "title", "username", "uuid", "pastSubscriptions", "trials"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &p, "", false, nil); err != nil {
 		return err
 	}
 	return nil
