@@ -3,8 +3,43 @@
 package components
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/LukeHagar/plexgo/internal/utils"
 )
+
+// StreamType - Stream type:
+//   - VIDEO = 1 (Video stream)
+//   - AUDIO = 2 (Audio stream)
+//   - SUBTITLE = 3 (Subtitle stream)
+type StreamType int
+
+const (
+	StreamTypeVideo    StreamType = 1
+	StreamTypeAudio    StreamType = 2
+	StreamTypeSubtitle StreamType = 3
+)
+
+func (e StreamType) ToPointer() *StreamType {
+	return &e
+}
+func (e *StreamType) UnmarshalJSON(data []byte) error {
+	var v int
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case 1:
+		fallthrough
+	case 2:
+		fallthrough
+	case 3:
+		*e = StreamType(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for StreamType: %v", v)
+	}
+}
 
 // Stream - `Stream` represents a particular stream from a media item, such as the video stream, audio stream, or subtitle stream. The stream may either be part of the file represented by the parent `Part` or, especially for subtitles, an external file. The stream contains more detailed information about the specific stream. For example, a video may include the `aspectRatio` at the `Media` level, but detailed information about the video stream like the color space will be included on the `Stream` for the video stream.  Note that photos do not have streams (mostly as an optimization).
 type Stream struct {
@@ -100,14 +135,9 @@ type Stream struct {
 	// Indicates if the stream is a dub.
 	Dub *bool `json:"dub,omitempty"`
 	// Optional title for the stream (e.g., language variant).
-	Title            *string `json:"title,omitempty"`
-	StreamIdentifier *int    `json:"streamIdentifier,omitempty"`
-	// Stream type:
-	//   - VIDEO = 1
-	//   - AUDIO = 2
-	//   - SUBTITLE = 3
-	//
-	streamType int64 `const:"1" json:"streamType"`
+	Title            *string    `json:"title,omitempty"`
+	StreamIdentifier *int       `json:"streamIdentifier,omitempty"`
+	StreamType       StreamType `json:"streamType"`
 	// Width of the video stream.
 	Width                *int           `json:"width,omitempty"`
 	AdditionalProperties map[string]any `additionalProperties:"true" json:"-"`
@@ -474,8 +504,11 @@ func (s *Stream) GetStreamIdentifier() *int {
 	return s.StreamIdentifier
 }
 
-func (s *Stream) GetStreamType() int64 {
-	return 1
+func (s *Stream) GetStreamType() StreamType {
+	if s == nil {
+		return StreamType(0)
+	}
+	return s.StreamType
 }
 
 func (s *Stream) GetWidth() *int {

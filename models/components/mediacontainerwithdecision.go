@@ -22,6 +22,39 @@ func (m *MediaContainerWithDecisionGuids) GetID() string {
 	return m.ID
 }
 
+// MediaContainerWithDecisionStreamType - Stream type:
+//   - VIDEO = 1 (Video stream)
+//   - AUDIO = 2 (Audio stream)
+//   - SUBTITLE = 3 (Subtitle stream)
+type MediaContainerWithDecisionStreamType int
+
+const (
+	MediaContainerWithDecisionStreamTypeVideo    MediaContainerWithDecisionStreamType = 1
+	MediaContainerWithDecisionStreamTypeAudio    MediaContainerWithDecisionStreamType = 2
+	MediaContainerWithDecisionStreamTypeSubtitle MediaContainerWithDecisionStreamType = 3
+)
+
+func (e MediaContainerWithDecisionStreamType) ToPointer() *MediaContainerWithDecisionStreamType {
+	return &e
+}
+func (e *MediaContainerWithDecisionStreamType) UnmarshalJSON(data []byte) error {
+	var v int
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case 1:
+		fallthrough
+	case 2:
+		fallthrough
+	case 3:
+		*e = MediaContainerWithDecisionStreamType(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for MediaContainerWithDecisionStreamType: %v", v)
+	}
+}
+
 type MediaContainerWithDecisionDecision string
 
 const (
@@ -198,14 +231,9 @@ type MediaContainerWithDecisionStream struct {
 	// Indicates if the stream is a dub.
 	Dub *bool `json:"dub,omitempty"`
 	// Optional title for the stream (e.g., language variant).
-	Title            *string `json:"title,omitempty"`
-	StreamIdentifier *int    `json:"streamIdentifier,omitempty"`
-	// Stream type:
-	//   - VIDEO = 1
-	//   - AUDIO = 2
-	//   - SUBTITLE = 3
-	//
-	streamType int64 `const:"1" json:"streamType"`
+	Title            *string                              `json:"title,omitempty"`
+	StreamIdentifier *int                                 `json:"streamIdentifier,omitempty"`
+	StreamType       MediaContainerWithDecisionStreamType `json:"streamType"`
 	// Width of the video stream.
 	Width                *int                                `json:"width,omitempty"`
 	Decision             *MediaContainerWithDecisionDecision `json:"decision,omitempty"`
@@ -574,8 +602,11 @@ func (m *MediaContainerWithDecisionStream) GetStreamIdentifier() *int {
 	return m.StreamIdentifier
 }
 
-func (m *MediaContainerWithDecisionStream) GetStreamType() int64 {
-	return 1
+func (m *MediaContainerWithDecisionStream) GetStreamType() MediaContainerWithDecisionStreamType {
+	if m == nil {
+		return MediaContainerWithDecisionStreamType(0)
+	}
+	return m.StreamType
 }
 
 func (m *MediaContainerWithDecisionStream) GetWidth() *int {

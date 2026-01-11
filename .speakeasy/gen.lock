@@ -1,27 +1,27 @@
 lockVersion: 2.0.0
 id: dfa99515-01c0-42eb-9be5-ee212fd03eb3
 management:
-  docChecksum: ee54f123359638b8fc677ddd294a68d7
+  docChecksum: 786f293c6241fa02967102a24f52842c
   docVersion: 1.1.1
-  speakeasyVersion: 1.680.5
-  generationVersion: 2.788.7
-  releaseVersion: 0.28.1
-  configChecksum: e5b308fb4c2752a48f46966a74fad362
+  speakeasyVersion: 1.684.0
+  generationVersion: 2.793.0
+  releaseVersion: 0.28.2
+  configChecksum: 20ac05018ad538af303d46f36ec46f1b
   repoURL: https://github.com/LukeHagar/plexgo.git
   repoSubDirectory: .
   installationURL: https://github.com/LukeHagar/plexgo
   published: true
 persistentEdits:
-  generation_id: 81103652-ca6b-4784-9662-3b31c7a8b948
-  pristine_commit_hash: be8a36eb7c4a2ca0664c768bff8e3a93909f62fa
-  pristine_tree_hash: fdcfab689093b2ae55379e5ee6ad4d1402d6cf52
+  generation_id: 1c35795b-aba9-44ec-bb5b-f435843ad7bc
+  pristine_commit_hash: ce27e57a8a6f0f3b559cf88d9711f85c515039ea
+  pristine_tree_hash: 95b4f3b1dd9c63cb828824edd9951ea5c24eaa3b
 features:
   go:
     acceptHeaders: 2.81.2
     additionalDependencies: 0.1.0
     additionalProperties: 0.1.2
     constsAndDefaults: 0.1.12
-    core: 3.13.7
+    core: 3.13.9
     deepObjectParams: 0.1.1
     defaultEnabledRetries: 0.2.0
     deprecations: 2.81.3
@@ -328,8 +328,12 @@ trackedFiles:
     pristine_git_object: 24ee134029893e237fe4f9b0309d8efe648c402e
   docs/models/components/mediacontainerwithdecisionstream.md:
     id: 6a8f4eba3819
-    last_write_checksum: sha1:edefce9f29ea9ef074dcf82fa359644ce942f4e0
-    pristine_git_object: fa45dfc773b56647a39c73b88b61f49d2eac8118
+    last_write_checksum: sha1:2b72817e3bfda34097a5609d968da30ef7b0a3aa
+    pristine_git_object: 87002ce36da3f49f912f82895ca0fc3d43dd4fd0
+  docs/models/components/mediacontainerwithdecisionstreamtype.md:
+    id: 637a01ed5ea4
+    last_write_checksum: sha1:3c04a1b5a94226613df98bfad3341a3e1b39124a
+    pristine_git_object: 5a96e4f1010bf9c8c214d60c92c0ff8eb778b6f0
   docs/models/components/mediacontainerwithdevice.md:
     id: 68b43a67b430
     last_write_checksum: sha1:f3b5600a1a45f67471b3f9a9573163a6759b890c
@@ -540,8 +544,12 @@ trackedFiles:
     pristine_git_object: 0bcfc025703ac6c17200fd078c2df436cd94730d
   docs/models/components/stream.md:
     id: bd1416e162f5
-    last_write_checksum: sha1:ea52a15a1cdd26307878b1787fd2e503d0cac1ce
-    pristine_git_object: 18960a9fd1e69d96c8a6c89f028028c22e54940a
+    last_write_checksum: sha1:e6b24745479d1a3c6a09f7919c364c18d812e547
+    pristine_git_object: 254065305fd0f7cc6d3767753130d4ecdbe5c047
+  docs/models/components/streamtype.md:
+    id: 499c33559283
+    last_write_checksum: sha1:496f438db9d03986fda5cd7fdf06cf199e140052
+    pristine_git_object: 6ab3cf6ca3eee9c22e04a0fc2fb1fc95009ffd8e
   docs/models/components/subscription.md:
     id: 66a8decfafdd
     last_write_checksum: sha1:1525be74df9e476583aa7e8e69553483e164c0ee
@@ -4652,12 +4660,12 @@ trackedFiles:
     pristine_git_object: 3f35a4fca95cb7dff49a67098149336fe870eb09
   internal/utils/queryparams.go:
     id: e7f604e65a58
-    last_write_checksum: sha1:dc0fa077f256bfceba382edbb80eb75a5e5801c0
-    pristine_git_object: 1026218af30dd5037ebdaea313b15de28312d430
+    last_write_checksum: sha1:da439725318f7e1059d109b154d6df261126c1b7
+    pristine_git_object: 9d0f6489ff54f17c19cdd804d45c350e4d1bd8da
   internal/utils/requestbody.go:
     id: 22445ec1c044
-    last_write_checksum: sha1:ad2ba5a32d6da1e4e7f4a739febc4d8b493e03b8
-    pristine_git_object: 3b553e4d68ae1e399a500517a4fd69b9eb30918b
+    last_write_checksum: sha1:1f4baaa48ef2d5e279e9d77e68baf10e05b03480
+    pristine_git_object: 103f76352b9c38234596f361aae17ae07eacc88d
   internal/utils/retries.go:
     id: b5e011d15c2d
     last_write_checksum: sha1:e013e85c0f7d0116e4c6d40dc4e730f280b1ebf9
@@ -4788,8 +4796,8 @@ trackedFiles:
     pristine_git_object: 0f898727ae797a65aefc4f111cea3efa2e0a1248
   models/components/mediacontainerwithdecision.go:
     id: 5866c8fe727f
-    last_write_checksum: sha1:c86131c488352c8200997baa9bd0e88a4a0d4883
-    pristine_git_object: 483e5e8af9c5f1d9f8f6e368d285dc7156a29a9e
+    last_write_checksum: sha1:9d9fddeb4177752702b2fbb024ed407110b5008f
+    pristine_git_object: 0e6f88eb2d4d6e476c8e4881a2a02832ca7ea666
   models/components/mediacontainerwithdevice.go:
     id: 707d3a38f518
     last_write_checksum: sha1:807381c95c76e0e20285fa13368f9e2de6617017
@@ -4880,8 +4888,8 @@ trackedFiles:
     pristine_git_object: 49702e1b9b8aeb3972aef6131feaa71253e13069
   models/components/setting.go:
     id: 8c6e7f477408
-    last_write_checksum: sha1:f65e940a0b3b3b9d8120c4db36d1554e1982a5d3
-    pristine_git_object: 13e737b5ee21860e389535231f4453c3175f0b22
+    last_write_checksum: sha1:a806439f8600dc81ed4cc3d3fcefe7dac2161d01
+    pristine_git_object: f443166f3acc2ecaa698be190c1198d9c74c02fc
   models/components/slashgetresponses200.go:
     id: 5310da2089a3
     last_write_checksum: sha1:92068a4675fabf2ea106e2a93142af3b66c72001
@@ -4892,8 +4900,8 @@ trackedFiles:
     pristine_git_object: ec4323f8afc7fb5d4a369f8665b560c59af96678
   models/components/stream.go:
     id: 6beac0a7639d
-    last_write_checksum: sha1:39cc83d7ef74dc92bc08003d691ec3096a94c3e3
-    pristine_git_object: 34931f04c2cb6291e1d3fb8bc1580bf921492461
+    last_write_checksum: sha1:72cc98121e4412a1b8d763f569adc2044d2e4e95
+    pristine_git_object: 1c7f4ad323f62f2903db7a407fef87dd6cddf1b0
   models/components/subtitles.go:
     id: 0c326c274e8f
     last_write_checksum: sha1:a0ef75c54912e0e0895da9d4ef9dfd9c4b4deae1
@@ -5932,8 +5940,8 @@ trackedFiles:
     pristine_git_object: b02dc70994f3c8368e62e60c707d82dda2c36e5a
   plexapi.go:
     id: 08c9dfa9b434
-    last_write_checksum: sha1:eca8b45884680a5d4ec50efff780dc474c09b7f8
-    pristine_git_object: d7c44c2f35211d2efd881a564c68885df5a7901a
+    last_write_checksum: sha1:d630dc0c3aa21cff46d7ff5b5af9b0ccba20f386
+    pristine_git_object: cd4877b9fde77cbd75ae34ed761ed0f2df72a328
   preferences.go:
     id: fcfda30d344e
     last_write_checksum: sha1:2355246a26f3eb705796a904862afc64a75587ee
@@ -11751,6 +11759,75 @@ examples:
           application/json: {"MediaContainer": {"Metadata": [{"title": "<value>", "type": "<value>", "addedAt": 239532, "Autotag": [{"filter": "actor=49", "role": "Secretary", "tag": "Shaun Lawton", "tagKey": "5d3ee12c4cde6a001c3e0b27", "thumb": "http://image.tmdb.org/t/p/original/lcJ8qM51ClAR2UzXU1mkZGfnn3o.jpg"}], "Country": [{"filter": "actor=49", "role": "Secretary", "tag": "Shaun Lawton", "tagKey": "5d3ee12c4cde6a001c3e0b27", "thumb": "http://image.tmdb.org/t/p/original/lcJ8qM51ClAR2UzXU1mkZGfnn3o.jpg"}], "Director": [{"filter": "actor=49", "role": "Secretary", "tag": "Shaun Lawton", "tagKey": "5d3ee12c4cde6a001c3e0b27", "thumb": "http://image.tmdb.org/t/p/original/lcJ8qM51ClAR2UzXU1mkZGfnn3o.jpg"}], "Genre": [{"filter": "actor=49", "role": "Secretary", "tag": "Shaun Lawton", "tagKey": "5d3ee12c4cde6a001c3e0b27", "thumb": "http://image.tmdb.org/t/p/original/lcJ8qM51ClAR2UzXU1mkZGfnn3o.jpg"}], "Guid": [{"id": "{\"imdbExample\":{\"summary\":\"IMDB example\",\"value\":\"imdb://tt13015952\"},\"tmdbExample\":{\"summary\":\"TMDB example\",\"value\":\"tmdb://2434012\"},\"tvdbExample\":{\"summary\":\"TVDB example\",\"value\":\"tvdb://7945991\"}}"}], "key": "<key>", "Media": [{"aspectRatio": 2.35, "audioChannels": 2, "audioCodec": "aac", "audioProfile": "lc", "bitrate": 5612, "container": "mov", "duration": 150192, "has64bitOffsets": false, "hasVoiceActivity": true, "height": 544, "id": 1, "optimizedForStreaming": false, "Part": [{"audioProfile": "lc", "container": "mov", "duration": 150192, "file": "/home/schuyler/Videos/Trailers/Cloud Atlas (2012).mov", "has64bitOffsets": false, "id": 1, "key": "/library/parts/1/1531779263/file.mov", "optimizedForStreaming": false, "size": 105355654, "Stream": [{"default": true, "audioChannelLayout": "stereo", "bitDepth": 8, "bitrate": 5466, "canAutoSync": true, "chromaLocation": "topleft", "chromaSubsampling": "4:2:0", "codec": "h264", "colorPrimaries": "bt709", "colorRange": "tv", "colorSpace": "bt709", "colorTrc": "bt709", "displayTitle": "English (H.264 Main)", "frameRate": 23.976, "hasScalingMatrix": false, "height": 544, "id": 1, "index": 0, "key": "/library/streams/1", "language": "English", "languageCode": "eng", "level": 31, "profile": "main", "refFrames": 2, "samplingRate": 48000, "streamIdentifier": 1, "streamType": 1, "width": 1280}], "videoProfile": "main"}], "videoCodec": "h264", "videoFrameRate": "24p", "videoProfile": "main", "videoResolution": "720", "width": 1280}], "Rating": [{"filter": "actor=49", "role": "Secretary", "tag": "Shaun Lawton", "tagKey": "5d3ee12c4cde6a001c3e0b27", "thumb": "http://image.tmdb.org/t/p/original/lcJ8qM51ClAR2UzXU1mkZGfnn3o.jpg"}], "Role": [{"filter": "actor=49", "role": "Secretary", "tag": "Shaun Lawton", "tagKey": "5d3ee12c4cde6a001c3e0b27", "thumb": "http://image.tmdb.org/t/p/original/lcJ8qM51ClAR2UzXU1mkZGfnn3o.jpg"}], "Writer": [{"filter": "actor=49", "role": "Secretary", "tag": "Shaun Lawton", "tagKey": "5d3ee12c4cde6a001c3e0b27", "thumb": "http://image.tmdb.org/t/p/original/lcJ8qM51ClAR2UzXU1mkZGfnn3o.jpg"}]}]}}
 examplesVersion: 1.0.2
 generatedTests: {}
+releaseNotes: |
+  ## Go SDK Changes:
+  * `PlexApi.DownloadQueue.GetItemDecision()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Hubs.GetAllHubs()`:  `response.MediaContainer.Hub.[].Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Hubs.GetContinueWatching()`:  `response.MediaContainer.Hub.[].Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Hubs.GetPromotedHubs()`:  `response.MediaContainer.Hub.[].Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Hubs.GetMetadataHubs()`:  `response.MediaContainer.Hub.[].Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Hubs.GetPostplayHubs()`:  `response.MediaContainer.Hub.[].Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Hubs.GetRelatedHubs()`:  `response.MediaContainer.Hub.[].Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Hubs.GetSectionHubs()`:  `response.MediaContainer.Hub.[].Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Search.SearchHubs()`:  `response.MediaContainer.Hub.[].Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Search.VoiceSearchHubs()`:  `response.MediaContainer.Hub.[].Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Library.GetLibraryItems()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Library.IngestTransientItem()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Library.GetLibraryMatches()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Library.AddSection()`:  `response.MediaContainer.Directory.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Library.GetAllItemLeaves()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Library.GetExtras()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Library.ListMatches()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Library.ListSonicallySimilar()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Library.GetRelatedItems()`:  `response.MediaContainer.Hub.[].Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Library.ListSimilar()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Library.GetItemTree()`:  `response.MediaContainer.MetadataItem.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Library.ListPersonMedia()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Library.GetLibraryDetails()`:  `response.MediaContainer.Directory.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Library.Autocomplete()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Library.GetCollections()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Library.GetCommon()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Collections.CreateCollection()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.DvRs.TuneChannel()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.LiveTv.GetSessions()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.LiveTv.GetLiveTvSession()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Subscriptions.GetAllSubscriptions()`:  `response.MediaContainer.MediaSubscription.[].MediaGrabOperation.[].Metadata.Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Subscriptions.CreateSubscription()`:  `response.MediaContainer.MediaSubscription.[].MediaGrabOperation.[].Metadata.Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Subscriptions.GetScheduledRecordings()`:  `response.MediaContainer.MediaGrabOperation.[].Metadata.Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Subscriptions.GetTemplate()`:  `response.MediaContainer.SubscriptionTemplate.[].MediaSubscription.[].MediaGrabOperation.[].Metadata.Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Subscriptions.GetSubscription()`:  `response.MediaContainer.MediaSubscription.[].MediaGrabOperation.[].Metadata.Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Subscriptions.EditSubscriptionPreferences()`:  `response.MediaContainer.MediaSubscription.[].MediaGrabOperation.[].Metadata.Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Subscriptions.ReorderSubscription()`:  `response.MediaContainer.MediaSubscription.[].MediaGrabOperation.[].Metadata.Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Transcoder.MakeDecision()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Playlist.ListPlaylists()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Playlist.GetPlaylist()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Playlist.GetPlaylistItems()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.LibraryPlaylists.CreatePlaylist()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.LibraryPlaylists.ClearPlaylistItems()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.LibraryPlaylists.AddPlaylistItems()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.LibraryPlaylists.DeletePlaylistItem()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.LibraryPlaylists.ModifyPlaylistGenerator()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.LibraryPlaylists.GetPlaylistGeneratorItems()`:  `response.MediaContainer.Metadata.Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.LibraryPlaylists.MovePlaylistItem()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.PlayQueue.GetPlayQueue()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.PlayQueue.AddToPlayQueue()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.PlayQueue.ClearPlayQueue()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.PlayQueue.ResetPlayQueue()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.PlayQueue.Shuffle()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.PlayQueue.Unshuffle()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.PlayQueue.DeletePlayQueueItem()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.PlayQueue.MovePlayQueueItem()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Status.ListSessions()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Content.GetCollectionItems()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Content.GetMetadataItem()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Content.GetAlbums()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Content.ListContent()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Content.GetAllLeaves()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Content.GetSonicPath()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.Content.GetSonicallySimilar()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.LibraryCollections.AddCollectionItems()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.LibraryCollections.DeleteCollectionItem()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
+  * `PlexApi.LibraryCollections.MoveCollectionItem()`:  `response.MediaContainer.Metadata.[].Media.[].Part.[].Stream.[].StreamType` **Changed** **Breaking** :warning:
 generatedFiles:
   - .gitattributes
   - /models/components/accepts.go
