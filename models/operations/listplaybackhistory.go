@@ -281,9 +281,9 @@ func (l *ListPlaybackHistoryRequest) GetSort() []string {
 
 type ListPlaybackHistoryMetadata struct {
 	// The account id of this playback
-	AccountID *string `json:"accountID,omitempty"`
+	AccountID *int64 `json:"accountID,omitempty"`
 	// The device id which played the item
-	DeviceID *string `json:"deviceID,omitempty"`
+	DeviceID *int64 `json:"deviceID,omitempty"`
 	// The key for this individual history item
 	HistoryKey *string `json:"historyKey,omitempty"`
 	// The metadata key for the item played
@@ -304,14 +304,14 @@ type ListPlaybackHistoryMetadata struct {
 	ViewedAt *int64 `json:"viewedAt,omitempty"`
 }
 
-func (l *ListPlaybackHistoryMetadata) GetAccountID() *string {
+func (l *ListPlaybackHistoryMetadata) GetAccountID() *int64 {
 	if l == nil {
 		return nil
 	}
 	return l.AccountID
 }
 
-func (l *ListPlaybackHistoryMetadata) GetDeviceID() *string {
+func (l *ListPlaybackHistoryMetadata) GetDeviceID() *int64 {
 	if l == nil {
 		return nil
 	}

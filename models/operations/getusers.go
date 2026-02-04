@@ -5,9 +5,10 @@ package operations
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+
 	"github.com/LukeHagar/plexgo/internal/utils"
 	"github.com/LukeHagar/plexgo/models/components"
-	"net/http"
 )
 
 var GetUsersServerList = []string{
@@ -251,6 +252,7 @@ const (
 func (e Protected) ToPointer() *Protected {
 	return &e
 }
+
 func (e *Protected) UnmarshalJSON(data []byte) error {
 	var v int
 	if err := json.Unmarshal(data, &v); err != nil {
@@ -278,6 +280,7 @@ const (
 func (e Home) ToPointer() *Home {
 	return &e
 }
+
 func (e *Home) UnmarshalJSON(data []byte) error {
 	var v int
 	if err := json.Unmarshal(data, &v); err != nil {
@@ -305,6 +308,7 @@ const (
 func (e AllowTuners) ToPointer() *AllowTuners {
 	return &e
 }
+
 func (e *AllowTuners) UnmarshalJSON(data []byte) error {
 	var v int
 	if err := json.Unmarshal(data, &v); err != nil {
@@ -332,6 +336,7 @@ const (
 func (e AllowSync) ToPointer() *AllowSync {
 	return &e
 }
+
 func (e *AllowSync) UnmarshalJSON(data []byte) error {
 	var v int
 	if err := json.Unmarshal(data, &v); err != nil {
@@ -359,6 +364,7 @@ const (
 func (e AllowCameraUpload) ToPointer() *AllowCameraUpload {
 	return &e
 }
+
 func (e *AllowCameraUpload) UnmarshalJSON(data []byte) error {
 	var v int
 	if err := json.Unmarshal(data, &v); err != nil {
@@ -386,6 +392,7 @@ const (
 func (e AllowChannels) ToPointer() *AllowChannels {
 	return &e
 }
+
 func (e *AllowChannels) UnmarshalJSON(data []byte) error {
 	var v int
 	if err := json.Unmarshal(data, &v); err != nil {
@@ -413,6 +420,7 @@ const (
 func (e AllowSubtitleAdmin) ToPointer() *AllowSubtitleAdmin {
 	return &e
 }
+
 func (e *AllowSubtitleAdmin) UnmarshalJSON(data []byte) error {
 	var v int
 	if err := json.Unmarshal(data, &v); err != nil {
@@ -440,6 +448,7 @@ const (
 func (e Restricted) ToPointer() *Restricted {
 	return &e
 }
+
 func (e *Restricted) UnmarshalJSON(data []byte) error {
 	var v int
 	if err := json.Unmarshal(data, &v); err != nil {
@@ -467,6 +476,7 @@ const (
 func (e AllLibraries) ToPointer() *AllLibraries {
 	return &e
 }
+
 func (e *AllLibraries) UnmarshalJSON(data []byte) error {
 	var v int
 	if err := json.Unmarshal(data, &v); err != nil {
@@ -494,6 +504,7 @@ const (
 func (e Owned) ToPointer() *Owned {
 	return &e
 }
+
 func (e *Owned) UnmarshalJSON(data []byte) error {
 	var v int
 	if err := json.Unmarshal(data, &v); err != nil {
@@ -521,6 +532,7 @@ const (
 func (e Pending) ToPointer() *Pending {
 	return &e
 }
+
 func (e *Pending) UnmarshalJSON(data []byte) error {
 	var v int
 	if err := json.Unmarshal(data, &v); err != nil {
@@ -631,7 +643,7 @@ func (s *Server) GetPending() *Pending {
 
 type User struct {
 	// User's unique ID.
-	ID string `json:"id"`
+	ID int64 `json:"id"`
 	// User's display name.
 	Title string `json:"title"`
 	// User's username.
@@ -675,9 +687,9 @@ func (u *User) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (u *User) GetID() string {
+func (u *User) GetID() int64 {
 	if u == nil {
-		return ""
+		return 0
 	}
 	return u.ID
 }
