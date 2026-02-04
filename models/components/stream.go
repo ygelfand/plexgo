@@ -5,6 +5,7 @@ package components
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/LukeHagar/plexgo/internal/utils"
 )
 
@@ -100,7 +101,7 @@ type Stream struct {
 	// Height of the video stream.
 	Height *int `json:"height,omitempty"`
 	// Unique stream identifier.
-	ID string `json:"id"`
+	ID int64 `json:"id"`
 	// Index of the stream.
 	Index *int `json:"index,omitempty"`
 	// Key to access this stream part.
@@ -357,9 +358,9 @@ func (s *Stream) GetHeight() *int {
 	return s.Height
 }
 
-func (s *Stream) GetID() string {
+func (s *Stream) GetID() int64 {
 	if s == nil {
-		return ""
+		return 0
 	}
 	return s.ID
 }
