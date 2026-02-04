@@ -30,23 +30,23 @@ type LibrarySection struct {
 	//
 	Type             MediaTypeString `json:"type"`
 	Agent            *string         `json:"agent,omitempty"`
-	AllowSync        *bool           `json:"allowSync,omitempty"`
+	AllowSync        *Bool           `json:"allowSync,omitempty"`
 	Art              *string         `json:"art,omitempty"`
 	Composite        *string         `json:"composite,omitempty"`
-	Content          *bool           `json:"content,omitempty"`
+	Content          *Bool           `json:"content,omitempty"`
 	ContentChangedAt *int64          `json:"contentChangedAt,omitempty"`
 	CreatedAt        *int64          `json:"createdAt,omitempty"`
-	Directory        *bool           `json:"directory,omitempty"`
+	Directory        *Bool           `json:"directory,omitempty"`
 	// Indicates whether this section has filtering capabilities
-	Filters  *bool   `json:"filters,omitempty"`
-	Hidden   *bool   `json:"hidden,omitempty"`
+	Filters  *Bool   `json:"filters,omitempty"`
+	Hidden   *Bool   `json:"hidden,omitempty"`
 	Key      *string `json:"key,omitempty"`
 	Language string  `json:"language"`
 	// The universally unique identifier for the library.
 	UUID     string                   `json:"uuid"`
 	Location []LibrarySectionLocation `json:"Location,omitempty"`
 	// Indicates whether this library section is currently scanning
-	Refreshing *bool   `json:"refreshing,omitempty"`
+	Refreshing *Bool   `json:"refreshing,omitempty"`
 	ScannedAt  *int64  `json:"scannedAt,omitempty"`
 	Scanner    *string `json:"scanner,omitempty"`
 	Thumb      *string `json:"thumb,omitempty"`
@@ -74,7 +74,7 @@ func (l *LibrarySection) GetAgent() *string {
 	return l.Agent
 }
 
-func (l *LibrarySection) GetAllowSync() *bool {
+func (l *LibrarySection) GetAllowSync() *Bool {
 	if l == nil {
 		return nil
 	}
@@ -95,7 +95,7 @@ func (l *LibrarySection) GetComposite() *string {
 	return l.Composite
 }
 
-func (l *LibrarySection) GetContent() *bool {
+func (l *LibrarySection) GetContent() *Bool {
 	if l == nil {
 		return nil
 	}
@@ -116,21 +116,21 @@ func (l *LibrarySection) GetCreatedAt() *int64 {
 	return l.CreatedAt
 }
 
-func (l *LibrarySection) GetDirectory() *bool {
+func (l *LibrarySection) GetDirectory() *Bool {
 	if l == nil {
 		return nil
 	}
 	return l.Directory
 }
 
-func (l *LibrarySection) GetFilters() *bool {
+func (l *LibrarySection) GetFilters() *Bool {
 	if l == nil {
 		return nil
 	}
 	return l.Filters
 }
 
-func (l *LibrarySection) GetHidden() *bool {
+func (l *LibrarySection) GetHidden() *Bool {
 	if l == nil {
 		return nil
 	}
@@ -165,7 +165,7 @@ func (l *LibrarySection) GetLocation() []LibrarySectionLocation {
 	return l.Location
 }
 
-func (l *LibrarySection) GetRefreshing() *bool {
+func (l *LibrarySection) GetRefreshing() *Bool {
 	if l == nil {
 		return nil
 	}

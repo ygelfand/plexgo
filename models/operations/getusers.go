@@ -631,7 +631,7 @@ func (s *Server) GetPending() *Pending {
 
 type User struct {
 	// User's unique ID.
-	ID int64 `json:"id"`
+	ID string `json:"id"`
 	// User's display name.
 	Title string `json:"title"`
 	// User's username.
@@ -675,9 +675,9 @@ func (u *User) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (u *User) GetID() int64 {
+func (u *User) GetID() string {
 	if u == nil {
-		return 0
+		return ""
 	}
 	return u.ID
 }

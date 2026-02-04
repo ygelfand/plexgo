@@ -100,7 +100,7 @@ type Stream struct {
 	// Height of the video stream.
 	Height *int `json:"height,omitempty"`
 	// Unique stream identifier.
-	ID int `json:"id"`
+	ID string `json:"id"`
 	// Index of the stream.
 	Index *int `json:"index,omitempty"`
 	// Key to access this stream part.
@@ -357,9 +357,9 @@ func (s *Stream) GetHeight() *int {
 	return s.Height
 }
 
-func (s *Stream) GetID() int {
+func (s *Stream) GetID() string {
 	if s == nil {
-		return 0
+		return ""
 	}
 	return s.ID
 }

@@ -3,9 +3,10 @@
 package operations
 
 import (
+	"net/http"
+
 	"github.com/LukeHagar/plexgo/internal/utils"
 	"github.com/LukeHagar/plexgo/models/components"
-	"net/http"
 )
 
 type GetPromotedHubsGlobals struct {

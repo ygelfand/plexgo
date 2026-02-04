@@ -145,6 +145,8 @@ type GetMetadataItemRequest struct {
 	// The marketplace on which the client application is distributed
 	Marketplace *string  `header:"style=simple,explode=false,name=X-Plex-Marketplace"`
 	Ids         []string `pathParam:"style=simple,explode=false,name=ids"`
+	// Include extras in the metadata response.  Default is false.
+	IncludeExtras *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeExtras"`
 	// Determines if file check should be performed asynchronously.  An activity is created to indicate progress.  Default is false.
 	AsyncCheckFiles *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=asyncCheckFiles"`
 	// Determines if local media agent refresh should be performed asynchronously.  An activity is created to indicate progress.  Default is false.
@@ -256,6 +258,13 @@ func (g *GetMetadataItemRequest) GetIds() []string {
 		return []string{}
 	}
 	return g.Ids
+}
+
+func (g *GetMetadataItemRequest) GetIncludeExtras() *components.BoolInt {
+	if g == nil {
+		return nil
+	}
+	return g.IncludeExtras
 }
 
 func (g *GetMetadataItemRequest) GetAsyncCheckFiles() *components.BoolInt {

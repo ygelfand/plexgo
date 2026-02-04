@@ -15,11 +15,11 @@ type Media struct {
 	Bitrate               *int           `json:"bitrate,omitempty"`
 	Container             *string        `json:"container,omitempty"`
 	Duration              *int           `json:"duration,omitempty"`
-	Has64bitOffsets       *bool          `json:"has64bitOffsets,omitempty"`
-	HasVoiceActivity      *bool          `json:"hasVoiceActivity,omitempty"`
+	Has64bitOffsets       *Bool          `json:"has64bitOffsets,omitempty"`
+	HasVoiceActivity      *Bool          `json:"hasVoiceActivity,omitempty"`
 	Height                *int           `json:"height,omitempty"`
 	ID                    int64          `json:"id"`
-	OptimizedForStreaming *bool          `json:"optimizedForStreaming,omitempty"`
+	OptimizedForStreaming *Bool          `json:"optimizedForStreaming,omitempty"`
 	Part                  []Part         `json:"Part,omitempty"`
 	VideoCodec            *string        `json:"videoCodec,omitempty"`
 	VideoFrameRate        *string        `json:"videoFrameRate,omitempty"`
@@ -89,14 +89,14 @@ func (m *Media) GetDuration() *int {
 	return m.Duration
 }
 
-func (m *Media) GetHas64bitOffsets() *bool {
+func (m *Media) GetHas64bitOffsets() *Bool {
 	if m == nil {
 		return nil
 	}
 	return m.Has64bitOffsets
 }
 
-func (m *Media) GetHasVoiceActivity() *bool {
+func (m *Media) GetHasVoiceActivity() *Bool {
 	if m == nil {
 		return nil
 	}
@@ -117,7 +117,7 @@ func (m *Media) GetID() int64 {
 	return m.ID
 }
 
-func (m *Media) GetOptimizedForStreaming() *bool {
+func (m *Media) GetOptimizedForStreaming() *Bool {
 	if m == nil {
 		return nil
 	}

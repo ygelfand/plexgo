@@ -9,22 +9,22 @@ import (
 // Part - `Part` represents a particular file or "part" of a media item. The part is the playable unit of the media hierarchy. Suppose that a movie library contains a movie that is broken up into files, reminiscent of a movie split across two BDs. The metadata item represents information about the movie, the media item represents this instance of the movie at this resolution and quality, and the part items represent the two playable files.  If another media were added which contained the joining of these two parts transcoded down to a lower resolution, then this metadata would contain 2 medias, one with 2 parts and one with 1 part.
 type Part struct {
 	// Indicates if the part is accessible.
-	Accessible   *bool   `json:"accessible,omitempty"`
+	Accessible   *Bool   `json:"accessible,omitempty"`
 	AudioProfile *string `json:"audioProfile,omitempty"`
 	// The container of the media file, such as `mp4` or `mkv`
 	Container *string `json:"container,omitempty"`
 	// The duration of the media item, in milliseconds
 	Duration *int `json:"duration,omitempty"`
 	// Indicates if the part exists.
-	Exists *bool `json:"exists,omitempty"`
+	Exists *Bool `json:"exists,omitempty"`
 	// The local file path at which the part is stored on the server
 	File            *string `json:"file,omitempty"`
-	Has64bitOffsets *bool   `json:"has64bitOffsets,omitempty"`
+	Has64bitOffsets *Bool   `json:"has64bitOffsets,omitempty"`
 	ID              int64   `json:"id"`
 	Indexes         *string `json:"indexes,omitempty"`
 	// The key from which the media can be streamed
 	Key                   string `json:"key"`
-	OptimizedForStreaming *bool  `json:"optimizedForStreaming,omitempty"`
+	OptimizedForStreaming *Bool  `json:"optimizedForStreaming,omitempty"`
 	// The size of the media, in bytes
 	Size                 *int64         `json:"size,omitempty"`
 	Stream               []Stream       `json:"Stream,omitempty"`
@@ -43,7 +43,7 @@ func (p *Part) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (p *Part) GetAccessible() *bool {
+func (p *Part) GetAccessible() *Bool {
 	if p == nil {
 		return nil
 	}
@@ -71,7 +71,7 @@ func (p *Part) GetDuration() *int {
 	return p.Duration
 }
 
-func (p *Part) GetExists() *bool {
+func (p *Part) GetExists() *Bool {
 	if p == nil {
 		return nil
 	}
@@ -85,7 +85,7 @@ func (p *Part) GetFile() *string {
 	return p.File
 }
 
-func (p *Part) GetHas64bitOffsets() *bool {
+func (p *Part) GetHas64bitOffsets() *Bool {
 	if p == nil {
 		return nil
 	}
@@ -113,7 +113,7 @@ func (p *Part) GetKey() string {
 	return p.Key
 }
 
-func (p *Part) GetOptimizedForStreaming() *bool {
+func (p *Part) GetOptimizedForStreaming() *Bool {
 	if p == nil {
 		return nil
 	}

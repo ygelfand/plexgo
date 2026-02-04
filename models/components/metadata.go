@@ -92,6 +92,7 @@ type Metadata struct {
 	OriginallyAvailableAt *types.Date `json:"originallyAvailableAt,omitempty"`
 	// When present, used to indicate an item's original title, e.g. a movie's foreign title.
 	OriginalTitle *string `json:"originalTitle,omitempty"`
+	Extras        *Extras `json:"Extras,omitempty"`
 	// The GUID of the parent media item.
 	ParentGUID *string `json:"parentGuid,omitempty"`
 	// The `hero` of the parent
@@ -121,13 +122,13 @@ type Metadata struct {
 	RatingKey *string `json:"ratingKey,omitempty"`
 	Role      []Tag   `json:"Role,omitempty"`
 	// Indicates this is a search directory
-	Search *bool `json:"search,omitempty"`
+	Search *Bool `json:"search,omitempty"`
 	// Used by old clients to provide nested menus allowing for primative (but structured) navigation.
-	Secondary *bool `json:"secondary,omitempty"`
+	Secondary *Bool `json:"secondary,omitempty"`
 	// When found on a show item, indicates that the children (seasons) should be skipped in favor of the grandchildren (episodes). Useful for mini-series, etc.
-	SkipChildren *bool `json:"skipChildren,omitempty"`
+	SkipChildren *Bool `json:"skipChildren,omitempty"`
 	// When present on an episode or track item, indicates parent should be skipped in favor of grandparent (show).
-	SkipParent *bool `json:"skipParent,omitempty"`
+	SkipParent *Bool `json:"skipParent,omitempty"`
 	// Typically only seen in metadata at a library's top level
 	Sort []Sort `json:"Sort,omitempty"`
 	// When present, the studio or label which produced an item (e.g. movie studio for movies, record label for albums).
@@ -430,6 +431,13 @@ func (m *Metadata) GetOriginalTitle() *string {
 	return m.OriginalTitle
 }
 
+func (m *Metadata) GetExtras() *Extras {
+	if m == nil {
+		return nil
+	}
+	return m.Extras
+}
+
 func (m *Metadata) GetParentGUID() *string {
 	if m == nil {
 		return nil
@@ -535,28 +543,28 @@ func (m *Metadata) GetRole() []Tag {
 	return m.Role
 }
 
-func (m *Metadata) GetSearch() *bool {
+func (m *Metadata) GetSearch() *Bool {
 	if m == nil {
 		return nil
 	}
 	return m.Search
 }
 
-func (m *Metadata) GetSecondary() *bool {
+func (m *Metadata) GetSecondary() *Bool {
 	if m == nil {
 		return nil
 	}
 	return m.Secondary
 }
 
-func (m *Metadata) GetSkipChildren() *bool {
+func (m *Metadata) GetSkipChildren() *Bool {
 	if m == nil {
 		return nil
 	}
 	return m.SkipChildren
 }
 
-func (m *Metadata) GetSkipParent() *bool {
+func (m *Metadata) GetSkipParent() *Bool {
 	if m == nil {
 		return nil
 	}
@@ -673,4 +681,23 @@ func (m *Metadata) GetAdditionalProperties() map[string]any {
 		return nil
 	}
 	return m.AdditionalProperties
+}
+
+type Extras struct {
+	Size     *int64     `json:"size,omitempty"`
+	Metadata []Metadata `json:"Metadata,omitempty"`
+}
+
+func (e *Extras) GetSize() *int64 {
+	if e == nil {
+		return nil
+	}
+	return e.Size
+}
+
+func (e *Extras) GetMetadata() []Metadata {
+	if e == nil {
+		return nil
+	}
+	return e.Metadata
 }

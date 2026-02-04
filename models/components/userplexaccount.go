@@ -300,7 +300,7 @@ type UserPlexAccount struct {
 	// The number of accounts in the Plex Home
 	HomeSize *int `json:"homeSize,omitempty"`
 	// The Plex account ID
-	ID int `json:"id"`
+	ID string `json:"id"`
 	// Unix epoch datetime in seconds
 	JoinedAt int64 `json:"joinedAt"`
 	// The account locale
@@ -482,9 +482,9 @@ func (u *UserPlexAccount) GetHomeSize() *int {
 	return u.HomeSize
 }
 
-func (u *UserPlexAccount) GetID() int {
+func (u *UserPlexAccount) GetID() string {
 	if u == nil {
-		return 0
+		return ""
 	}
 	return u.ID
 }
