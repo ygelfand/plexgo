@@ -4,6 +4,7 @@ package operations
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"net/http"
 
@@ -551,20 +552,20 @@ func (e *Pending) UnmarshalJSON(data []byte) error {
 
 type Server struct {
 	// Unique ID of the server of the connected user
-	ID int64 `json:"id"`
+	ID int64 `json:"id" xml:"id,attr"`
 	// ID of the actual Plex server.
-	ServerID int64 `json:"serverId"`
+	ServerID int64 `json:"serverId" xml:"serverId,attr"`
 	// Machine identifier of the Plex server.
-	MachineIdentifier string `json:"machineIdentifier"`
+	MachineIdentifier string `json:"machineIdentifier" xml:"machineIdentifier,attr"`
 	// Name of the Plex server of the connected user.
-	Name string `json:"name"`
+	Name string `json:"name" xml:"name,attr"`
 	// Unix epoch datetime in seconds
-	LastSeenAt int64 `json:"lastSeenAt"`
+	LastSeenAt int64 `json:"lastSeenAt" xml:"lastSeenAt,attr"`
 	// Number of libraries in the server this user has access to.
-	NumLibraries int64         `json:"numLibraries"`
-	AllLibraries *AllLibraries `default:"0" json:"allLibraries"`
-	Owned        *Owned        `default:"0" json:"owned"`
-	Pending      *Pending      `default:"0" json:"pending"`
+	NumLibraries int64         `json:"numLibraries" xml:"numLibraries,attr"`
+	AllLibraries *AllLibraries `default:"0" json:"allLibraries" xml:"allLibraries,attr"`
+	Owned        *Owned        `default:"0" json:"owned" xml:"owned,attr"`
+	Pending      *Pending      `default:"0" json:"pending" xml:"pending,attr"`
 }
 
 func (s Server) MarshalJSON() ([]byte, error) {
@@ -643,37 +644,37 @@ func (s *Server) GetPending() *Pending {
 
 type User struct {
 	// User's unique ID.
-	ID int64 `json:"id"`
+	ID int64 `json:"id" xml:"id,attr"`
 	// User's display name.
-	Title string `json:"title"`
+	Title string `json:"title" xml:"title,attr"`
 	// User's username.
-	Username string `json:"username"`
+	Username string `json:"username" xml:"username,attr"`
 	// User's email address.
-	Email string `json:"email"`
+	Email string `json:"email" xml:"email,attr"`
 	// ID of the user's recommendation playlist.
-	RecommendationsPlaylistID *string `json:"recommendationsPlaylistId,omitempty"`
+	RecommendationsPlaylistID *string `json:"recommendationsPlaylistId,omitempty" xml:"recommendationsPlaylistId,attr"`
 	// URL to the user's avatar image.
-	Thumb              string              `json:"thumb"`
-	Protected          *Protected          `default:"0" json:"protected"`
-	Home               *Home               `default:"0" json:"home"`
-	AllowTuners        *AllowTuners        `default:"0" json:"allowTuners"`
-	AllowSync          *AllowSync          `default:"0" json:"allowSync"`
-	AllowCameraUpload  *AllowCameraUpload  `default:"0" json:"allowCameraUpload"`
-	AllowChannels      *AllowChannels      `default:"0" json:"allowChannels"`
-	AllowSubtitleAdmin *AllowSubtitleAdmin `default:"0" json:"allowSubtitleAdmin"`
+	Thumb              string              `json:"thumb" xml:"thumb,attr"`
+	Protected          *Protected          `default:"0" json:"protected" xml:"protected,attr"`
+	Home               *Home               `default:"0" json:"home" xml:"home,attr"`
+	AllowTuners        *AllowTuners        `default:"0" json:"allowTuners" xml:"allowTuners,attr"`
+	AllowSync          *AllowSync          `default:"0" json:"allowSync" xml:"allowSync,attr"`
+	AllowCameraUpload  *AllowCameraUpload  `default:"0" json:"allowCameraUpload" xml:"allowCameraUpload,attr"`
+	AllowChannels      *AllowChannels      `default:"0" json:"allowChannels" xml:"allowChannels,attr"`
+	AllowSubtitleAdmin *AllowSubtitleAdmin `default:"0" json:"allowSubtitleAdmin" xml:"allowSubtitleAdmin,attr"`
 	// Filters applied for all content.
-	FilterAll *string `json:"filterAll,omitempty"`
+	FilterAll *string `json:"filterAll,omitempty" xml:"filterAll,attr"`
 	// Filters applied for movies.
-	FilterMovies *string `json:"filterMovies,omitempty"`
+	FilterMovies *string `json:"filterMovies,omitempty" xml:"filterMovies,attr"`
 	// Filters applied for music.
-	FilterMusic *string `json:"filterMusic,omitempty"`
+	FilterMusic *string `json:"filterMusic,omitempty" xml:"filterMusic,attr"`
 	// Filters applied for photos.
-	FilterPhotos *string `json:"filterPhotos,omitempty"`
+	FilterPhotos *string `json:"filterPhotos,omitempty" xml:"filterPhotos,attr"`
 	// Filters applied for television.
-	FilterTelevision *string     `json:"filterTelevision,omitempty"`
-	Restricted       *Restricted `default:"0" json:"restricted"`
+	FilterTelevision *string     `json:"filterTelevision,omitempty" xml:"filterTelevision,attr"`
+	Restricted       *Restricted `default:"0" json:"restricted" xml:"restricted,attr"`
 	// List of servers owned by the user.
-	Server []Server `json:"Server"`
+	Server []Server `json:"Server" xml:"Server"`
 }
 
 func (u User) MarshalJSON() ([]byte, error) {
@@ -830,16 +831,16 @@ func (u *User) GetServer() []Server {
 // GetUsersMediaContainer - Container holding user and server details.
 type GetUsersMediaContainer struct {
 	// The friendly name of the Plex instance.
-	FriendlyName string `json:"friendlyName"`
-	Identifier   string `json:"identifier"`
+	FriendlyName string `json:"friendlyName" xml:"friendlyName,attr"`
+	Identifier   string `json:"identifier" xml:"identifier,attr"`
 	// Unique Machine identifier of the Plex server.
-	MachineIdentifier string `json:"machineIdentifier"`
+	MachineIdentifier string `json:"machineIdentifier" xml:"machineIdentifier,attr"`
 	// Total number of users.
-	TotalSize int64 `json:"totalSize"`
+	TotalSize int64 `json:"totalSize" xml:"totalSize,attr"`
 	// Number of users in the current response.
-	Size int64 `json:"size"`
+	Size int64 `json:"size" xml:"size,attr"`
 	// List of users with access to the Plex server.
-	User []User `json:"User"`
+	User []User `json:"User" xml:"User"`
 }
 
 func (g *GetUsersMediaContainer) GetFriendlyName() string {
@@ -887,7 +888,7 @@ func (g *GetUsersMediaContainer) GetUser() []User {
 // GetUsersResponseBody - Successful response with media container data in JSON
 type GetUsersResponseBody struct {
 	// Container holding user and server details.
-	MediaContainer *GetUsersMediaContainer `json:"MediaContainer,omitempty"`
+	MediaContainer *GetUsersMediaContainer `json:"MediaContainer,omitempty" xml:"MediaContainer"`
 }
 
 func (g *GetUsersResponseBody) GetMediaContainer() *GetUsersMediaContainer {
@@ -895,6 +896,15 @@ func (g *GetUsersResponseBody) GetMediaContainer() *GetUsersMediaContainer {
 		return nil
 	}
 	return g.MediaContainer
+}
+
+func (g *GetUsersResponseBody) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	var mc GetUsersMediaContainer
+	if err := d.DecodeElement(&mc, &start); err != nil {
+		return err
+	}
+	g.MediaContainer = &mc
+	return nil
 }
 
 type GetUsersResponse struct {

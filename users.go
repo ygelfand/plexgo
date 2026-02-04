@@ -6,14 +6,15 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"net/http"
+	"net/url"
+
 	"github.com/LukeHagar/plexgo/internal/config"
 	"github.com/LukeHagar/plexgo/internal/hooks"
 	"github.com/LukeHagar/plexgo/internal/utils"
 	"github.com/LukeHagar/plexgo/models/operations"
 	"github.com/LukeHagar/plexgo/models/sdkerrors"
 	"github.com/LukeHagar/plexgo/retry"
-	"net/http"
-	"net/url"
 )
 
 type Users struct {
@@ -129,7 +130,6 @@ func (s *Users) GetUsers(ctx context.Context, request operations.GetUsersRequest
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
 				copyBody, err := req.GetBody()
-
 				if err != nil {
 					return nil, err
 				}
@@ -219,6 +219,18 @@ func (s *Users) GetUsers(ctx context.Context, request operations.GetUsersRequest
 			}
 
 			res.Object = &out
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/xml`):
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+
+			var out operations.GetUsersResponseBody
+			if err := utils.UnmarshalXmlFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, err
+			}
+
+			res.Object = &out
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
 			if err != nil {
@@ -236,6 +248,19 @@ func (s *Users) GetUsers(ctx context.Context, request operations.GetUsersRequest
 
 			var out sdkerrors.GetUsersBadRequest
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, err
+			}
+
+			out.RawResponse = httpRes
+			return nil, &out
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/xml`):
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+
+			var out sdkerrors.GetUsersBadRequest
+			if err := utils.UnmarshalXmlFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
 
@@ -291,5 +316,4 @@ func (s *Users) GetUsers(ctx context.Context, request operations.GetUsersRequest
 	}
 
 	return res, nil
-
 }

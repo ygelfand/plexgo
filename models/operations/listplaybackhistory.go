@@ -148,6 +148,10 @@ type ListPlaybackHistoryRequest struct {
 	AccountID *int64 `queryParam:"style=form,explode=true,name=accountID"`
 	// The time period to restrict history (typically of the form `viewedAt>=12456789`)
 	ViewedAt *int64 `queryParam:"style=form,explode=true,name=viewedAt"`
+	// Filter history to items viewed after or at this time
+	ViewedAtGte *int64 `queryParam:"style=form,explode=true,name=viewedAt>"`
+	// Filter history to items viewed before or at this time
+	ViewedAtLte *int64 `queryParam:"style=form,explode=true,name=viewedAt<"`
 	// The library section id to restrict view history
 	LibrarySectionID *int64 `queryParam:"style=form,explode=true,name=librarySectionID"`
 	// The metadata item to restrict view history (can provide the id for a show to see all of that show's view history).  Note this is translated to `metadata_items.id`, `parents.id`, or `grandparents.id` internally depending on the metadata type.
@@ -256,6 +260,20 @@ func (l *ListPlaybackHistoryRequest) GetViewedAt() *int64 {
 		return nil
 	}
 	return l.ViewedAt
+}
+
+func (l *ListPlaybackHistoryRequest) GetViewedAtGte() *int64 {
+	if l == nil {
+		return nil
+	}
+	return l.ViewedAtGte
+}
+
+func (l *ListPlaybackHistoryRequest) GetViewedAtLte() *int64 {
+	if l == nil {
+		return nil
+	}
+	return l.ViewedAtLte
 }
 
 func (l *ListPlaybackHistoryRequest) GetLibrarySectionID() *int64 {
