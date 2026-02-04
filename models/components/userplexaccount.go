@@ -5,6 +5,7 @@ package components
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/LukeHagar/plexgo/internal/utils"
 )
 
@@ -20,6 +21,7 @@ const (
 func (e MailingListStatus) ToPointer() *MailingListStatus {
 	return &e
 }
+
 func (e *MailingListStatus) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
@@ -300,7 +302,7 @@ type UserPlexAccount struct {
 	// The number of accounts in the Plex Home
 	HomeSize *int `json:"homeSize,omitempty"`
 	// The Plex account ID
-	ID string `json:"id"`
+	ID int `json:"id"`
 	// Unix epoch datetime in seconds
 	JoinedAt int64 `json:"joinedAt"`
 	// The account locale
@@ -482,9 +484,9 @@ func (u *UserPlexAccount) GetHomeSize() *int {
 	return u.HomeSize
 }
 
-func (u *UserPlexAccount) GetID() string {
+func (u *UserPlexAccount) GetID() int {
 	if u == nil {
-		return ""
+		return 0
 	}
 	return u.ID
 }
