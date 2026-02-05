@@ -18,10 +18,10 @@ type Part struct {
 	// Indicates if the part exists.
 	Exists *Bool `json:"exists,omitempty"`
 	// The local file path at which the part is stored on the server
-	File            *string `json:"file,omitempty"`
-	Has64bitOffsets *Bool   `json:"has64bitOffsets,omitempty"`
-	ID              int64   `json:"id"`
-	Indexes         *string `json:"indexes,omitempty"`
+	File            *string     `json:"file,omitempty"`
+	Has64bitOffsets *Bool       `json:"has64bitOffsets,omitempty"`
+	ID              StringInt64 `json:"id"`
+	Indexes         *string     `json:"indexes,omitempty"`
 	// The key from which the media can be streamed
 	Key                   string `json:"key"`
 	OptimizedForStreaming *Bool  `json:"optimizedForStreaming,omitempty"`
@@ -92,7 +92,7 @@ func (p *Part) GetHas64bitOffsets() *Bool {
 	return p.Has64bitOffsets
 }
 
-func (p *Part) GetID() int64 {
+func (p *Part) GetID() StringInt64 {
 	if p == nil {
 		return 0
 	}

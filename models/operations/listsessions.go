@@ -3,10 +3,11 @@
 package operations
 
 import (
+	"net/http"
+
 	"github.com/LukeHagar/plexgo/internal/utils"
 	"github.com/LukeHagar/plexgo/models/components"
 	"github.com/LukeHagar/plexgo/types"
-	"net/http"
 )
 
 type Guids struct {
@@ -135,7 +136,7 @@ type Metadata struct {
 	// When found on a show item, indicates that the children (seasons) should be skipped in favor of the grandchildren (episodes). Useful for mini-series, etc.
 	SkipChildren *bool `json:"skipChildren,omitempty"`
 	// When present on an episode or track item, indicates parent should be skipped in favor of grandparent (show).
-	SkipParent *bool `json:"skipParent,omitempty"`
+	SkipParent *components.Bool `json:"skipParent,omitempty"`
 	// Typically only seen in metadata at a library's top level
 	Sort []components.Sort `json:"Sort,omitempty"`
 	// When present, the studio or label which produced an item (e.g. movie studio for movies, record label for albums).
@@ -585,7 +586,7 @@ func (m *Metadata) GetSkipChildren() *bool {
 	return m.SkipChildren
 }
 
-func (m *Metadata) GetSkipParent() *bool {
+func (m *Metadata) GetSkipParent() *components.Bool {
 	if m == nil {
 		return nil
 	}

@@ -5,6 +5,7 @@ package components
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/LukeHagar/plexgo/internal/utils"
 	"github.com/LukeHagar/plexgo/types"
 )
@@ -37,6 +38,7 @@ const (
 func (e MediaContainerWithDecisionStreamType) ToPointer() *MediaContainerWithDecisionStreamType {
 	return &e
 }
+
 func (e *MediaContainerWithDecisionStreamType) UnmarshalJSON(data []byte) error {
 	var v int
 	if err := json.Unmarshal(data, &v); err != nil {
@@ -69,6 +71,7 @@ const (
 func (e MediaContainerWithDecisionDecision) ToPointer() *MediaContainerWithDecisionDecision {
 	return &e
 }
+
 func (e *MediaContainerWithDecisionDecision) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
@@ -109,6 +112,7 @@ const (
 func (e MediaContainerWithDecisionLocation) ToPointer() *MediaContainerWithDecisionLocation {
 	return &e
 }
+
 func (e *MediaContainerWithDecisionLocation) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
@@ -648,6 +652,7 @@ const (
 func (e Decision) ToPointer() *Decision {
 	return &e
 }
+
 func (e *Decision) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {

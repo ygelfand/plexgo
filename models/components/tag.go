@@ -8,8 +8,8 @@ type Tag struct {
 	Confidence *float64 `json:"confidence,omitempty"`
 	Context    *string  `json:"context,omitempty"`
 	// A filter parameter that can be used to query for more content that matches this tag value.
-	Filter *string `json:"filter,omitempty"`
-	ID     *int    `json:"id,omitempty"`
+	Filter *string    `json:"filter,omitempty"`
+	ID     *StringInt `json:"id,omitempty"`
 	// The rating key (Media ID) of this media item. Note: Although this is always an integer, it is represented as a string in the API.
 	RatingKey *string `json:"ratingKey,omitempty"`
 	// The role this actor played
@@ -43,7 +43,7 @@ func (t *Tag) GetFilter() *string {
 	return t.Filter
 }
 
-func (t *Tag) GetID() *int {
+func (t *Tag) GetID() *StringInt {
 	if t == nil {
 		return nil
 	}

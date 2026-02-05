@@ -24,6 +24,7 @@ const (
 func (e StreamType) ToPointer() *StreamType {
 	return &e
 }
+
 func (e *StreamType) UnmarshalJSON(data []byte) error {
 	var v int
 	if err := json.Unmarshal(data, &v); err != nil {
@@ -71,7 +72,7 @@ type Stream struct {
 	// Bitrate of the stream.
 	Bitrate *int `json:"bitrate,omitempty"`
 	// Indicates if the stream can auto-sync.
-	CanAutoSync *bool `json:"canAutoSync,omitempty"`
+	CanAutoSync *Bool `json:"canAutoSync,omitempty"`
 	// Chroma sample location.
 	ChromaLocation *string `json:"chromaLocation,omitempty"`
 	// Chroma subsampling format.
@@ -101,7 +102,7 @@ type Stream struct {
 	// Height of the video stream.
 	Height *int `json:"height,omitempty"`
 	// Unique stream identifier.
-	ID int64 `json:"id"`
+	ID StringInt64 `json:"id"`
 	// Index of the stream.
 	Index *int `json:"index,omitempty"`
 	// Key to access this stream part.
@@ -246,7 +247,7 @@ func (s *Stream) GetBitrate() *int {
 	return s.Bitrate
 }
 
-func (s *Stream) GetCanAutoSync() *bool {
+func (s *Stream) GetCanAutoSync() *Bool {
 	if s == nil {
 		return nil
 	}
@@ -358,7 +359,7 @@ func (s *Stream) GetHeight() *int {
 	return s.Height
 }
 
-func (s *Stream) GetID() int64 {
+func (s *Stream) GetID() StringInt64 {
 	if s == nil {
 		return 0
 	}

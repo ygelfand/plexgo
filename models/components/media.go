@@ -8,7 +8,7 @@ import (
 
 // Media - `Media` represents an one or more media files (parts) and is a child of a metadata item. There aren't necessarily any guaranteed attributes on media elements since the attributes will vary based on the type. The possible attributes are not documented here, but they typically have self-evident names. High-level media information that can be used for badging and flagging, such as `videoResolution` and codecs, is included on the media element.
 type Media struct {
-	AspectRatio           *float32       `json:"aspectRatio,omitempty"`
+	AspectRatio           *StringFloat32 `json:"aspectRatio,omitempty"`
 	AudioChannels         *int           `json:"audioChannels,omitempty"`
 	AudioCodec            *string        `json:"audioCodec,omitempty"`
 	AudioProfile          *string        `json:"audioProfile,omitempty"`
@@ -18,7 +18,7 @@ type Media struct {
 	Has64bitOffsets       *Bool          `json:"has64bitOffsets,omitempty"`
 	HasVoiceActivity      *Bool          `json:"hasVoiceActivity,omitempty"`
 	Height                *int           `json:"height,omitempty"`
-	ID                    int64          `json:"id"`
+	ID                    StringInt64    `json:"id"`
 	OptimizedForStreaming *Bool          `json:"optimizedForStreaming,omitempty"`
 	Part                  []Part         `json:"Part,omitempty"`
 	VideoCodec            *string        `json:"videoCodec,omitempty"`
@@ -40,7 +40,7 @@ func (m *Media) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (m *Media) GetAspectRatio() *float32 {
+func (m *Media) GetAspectRatio() *StringFloat32 {
 	if m == nil {
 		return nil
 	}
@@ -110,7 +110,7 @@ func (m *Media) GetHeight() *int {
 	return m.Height
 }
 
-func (m *Media) GetID() int64 {
+func (m *Media) GetID() StringInt64 {
 	if m == nil {
 		return 0
 	}

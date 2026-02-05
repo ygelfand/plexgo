@@ -29,6 +29,16 @@ func (b *Bool) UnmarshalJSON(data []byte) error {
 		return nil
 	}
 
+	var stringVal string
+	if err := json.Unmarshal(data, &stringVal); err == nil {
+		if stringVal == "true" || stringVal == "1" {
+			*b = true
+		} else {
+			*b = false
+		}
+		return nil
+	}
+
 	return fmt.Errorf("cannot unmarshal %s into Bool", string(data))
 }
 
