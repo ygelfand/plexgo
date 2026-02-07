@@ -159,6 +159,7 @@ type PlexAPI struct {
 	Updater        *Updater
 	Authentication *Authentication
 	Users          *Users
+	HomeUsers      *HomeUsers
 	Plex           *Plex
 	// The actual content of the media provider
 	Content *Content
@@ -462,6 +463,7 @@ func New(opts ...SDKOption) *PlexAPI {
 	sdk.Updater = newUpdater(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Authentication = newAuthentication(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Users = newUsers(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.HomeUsers = newHomeUsers(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Plex = newPlex(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Content = newContent(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.LibraryCollections = newLibraryCollections(sdk, sdk.sdkConfiguration, sdk.hooks)
