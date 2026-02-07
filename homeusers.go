@@ -273,7 +273,7 @@ func (s *HomeUsers) SwitchUser(ctx context.Context, request operations.SwitchUse
 		RawResponse: httpRes,
 	}
 
-	if httpRes.StatusCode == 200 {
+	if httpRes.StatusCode == 200 || httpRes.StatusCode == 201 {
 		rawBody, err := utils.ConsumeRawBody(httpRes)
 		if err != nil {
 			return nil, err

@@ -138,7 +138,7 @@ type Stream struct {
 	Dub *bool `json:"dub,omitempty"`
 	// Optional title for the stream (e.g., language variant).
 	Title            *string    `json:"title,omitempty"`
-	StreamIdentifier *int       `json:"streamIdentifier,omitempty"`
+	StreamIdentifier *StringInt `json:"streamIdentifier,omitempty"`
 	StreamType       StreamType `json:"streamType"`
 	// Width of the video stream.
 	Width                *int           `json:"width,omitempty"`
@@ -499,7 +499,7 @@ func (s *Stream) GetTitle() *string {
 	return s.Title
 }
 
-func (s *Stream) GetStreamIdentifier() *int {
+func (s *Stream) GetStreamIdentifier() *StringInt {
 	if s == nil {
 		return nil
 	}
