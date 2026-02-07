@@ -320,6 +320,17 @@ type ListPlaybackHistoryMetadata struct {
 	Type *string `json:"type,omitempty"`
 	// The time when the item was played
 	ViewedAt *int64 `json:"viewedAt,omitempty"`
+
+	// Hierarchical fields
+	GrandparentKey   *string `json:"grandparentKey,omitempty"`
+	GrandparentTitle *string `json:"grandparentTitle,omitempty"`
+	GrandparentThumb *string `json:"grandparentThumb,omitempty"`
+	GrandparentArt   *string `json:"grandparentArt,omitempty"`
+	ParentKey        *string `json:"parentKey,omitempty"`
+	ParentTitle      *string `json:"parentTitle,omitempty"`
+	ParentThumb      *string `json:"parentThumb,omitempty"`
+	ParentIndex      *int    `json:"parentIndex,omitempty"`
+	Index            *int    `json:"index,omitempty"`
 }
 
 func (l *ListPlaybackHistoryMetadata) GetAccountID() *int64 {
@@ -397,6 +408,69 @@ func (l *ListPlaybackHistoryMetadata) GetViewedAt() *int64 {
 		return nil
 	}
 	return l.ViewedAt
+}
+
+func (l *ListPlaybackHistoryMetadata) GetGrandparentKey() *string {
+	if l == nil {
+		return nil
+	}
+	return l.GrandparentKey
+}
+
+func (l *ListPlaybackHistoryMetadata) GetGrandparentTitle() *string {
+	if l == nil {
+		return nil
+	}
+	return l.GrandparentTitle
+}
+
+func (l *ListPlaybackHistoryMetadata) GetGrandparentThumb() *string {
+	if l == nil {
+		return nil
+	}
+	return l.GrandparentThumb
+}
+
+func (l *ListPlaybackHistoryMetadata) GetGrandparentArt() *string {
+	if l == nil {
+		return nil
+	}
+	return l.GrandparentArt
+}
+
+func (l *ListPlaybackHistoryMetadata) GetParentKey() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ParentKey
+}
+
+func (l *ListPlaybackHistoryMetadata) GetParentTitle() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ParentTitle
+}
+
+func (l *ListPlaybackHistoryMetadata) GetParentThumb() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ParentThumb
+}
+
+func (l *ListPlaybackHistoryMetadata) GetParentIndex() *int {
+	if l == nil {
+		return nil
+	}
+	return l.ParentIndex
+}
+
+func (l *ListPlaybackHistoryMetadata) GetIndex() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Index
 }
 
 // ListPlaybackHistoryMediaContainer - `MediaContainer` is the root element of most Plex API responses. It serves as a generic container for various types of content (Metadata, Hubs, Directories, etc.) and includes pagination information (offset, size, totalSize) when applicable.
