@@ -904,7 +904,7 @@ type MediaContainerWithDecisionStream struct {
 	// Height of the video stream.
 	Height *int64 `json:"height,omitempty"`
 	// Unique stream identifier.
-	ID int64 `json:"id"`
+	ID StringInt64 `json:"id"`
 	// Index of the stream.
 	Index *int64 `json:"index,omitempty"`
 	// Key to access this stream part.
@@ -938,7 +938,7 @@ type MediaContainerWithDecisionStream struct {
 	// Number of reference frames.
 	RefFrames *int64 `json:"refFrames,omitempty"`
 	// Sampling rate for the audio stream.
-	SamplingRate *int64    `json:"samplingRate,omitempty"`
+	SamplingRate *int64  `json:"samplingRate,omitempty"`
 	ScanType     *string `json:"scanType,omitempty"`
 	// Subtitle match confidence score (0-100).
 	Score *float64 `json:"score,omitempty"`
@@ -948,7 +948,7 @@ type MediaContainerWithDecisionStream struct {
 	SourceKey *string `json:"sourceKey,omitempty"`
 	// Loudness ramp start type.
 	StartRamp        *string                              `json:"startRamp,omitempty"`
-	StreamIdentifier *int64                                 `json:"streamIdentifier,omitempty"`
+	StreamIdentifier *int64                               `json:"streamIdentifier,omitempty"`
 	StreamType       MediaContainerWithDecisionStreamType `json:"streamType"`
 	// Whether lyrics are timestamped.
 	Timed *MediaContainerWithDecisionTimed `json:"timed,omitempty"`
@@ -959,7 +959,7 @@ type MediaContainerWithDecisionStream struct {
 	// Whether this audio track is an audio description track.
 	VisualImpaired *bool `json:"visualImpaired,omitempty"`
 	// Width of the video stream.
-	Width                *int64                                `json:"width,omitempty"`
+	Width                *int64                              `json:"width,omitempty"`
 	Decision             *MediaContainerWithDecisionDecision `json:"decision,omitempty"`
 	Location             *MediaContainerWithDecisionLocation `json:"location,omitempty"`
 	AdditionalProperties map[string]any                      `additionalProperties:"true" json:"-"`
@@ -1270,7 +1270,7 @@ func (m *MediaContainerWithDecisionStream) GetHeight() *int64 {
 	return m.Height
 }
 
-func (m *MediaContainerWithDecisionStream) GetID() int64 {
+func (m *MediaContainerWithDecisionStream) GetID() StringInt64 {
 	if m == nil {
 		return 0
 	}
@@ -1539,16 +1539,16 @@ type MediaContainerWithDecisionPart struct {
 	// The container of the media file, such as `mp4` or `mkv`
 	Container *string `json:"container,omitempty"`
 	// Deep analysis version for this part.
-	DeepAnalysisVersion *int64 `json:"deepAnalysisVersion,omitempty"`
+	DeepAnalysisVersion *StringInt64 `json:"deepAnalysisVersion,omitempty"`
 	// The duration of the media item, in milliseconds
 	Duration *int64 `json:"duration,omitempty"`
 	// Indicates if the part exists.
 	Exists *bool `json:"exists,omitempty"`
 	// The local file path at which the part is stored on the server
-	File            *string `json:"file,omitempty"`
-	Has64bitOffsets *bool   `json:"has64bitOffsets,omitempty"`
-	ID              int64   `json:"id"`
-	Indexes         *string `json:"indexes,omitempty"`
+	File            *string     `json:"file,omitempty"`
+	Has64bitOffsets *bool       `json:"has64bitOffsets,omitempty"`
+	ID              StringInt64 `json:"id"`
+	Indexes         *string     `json:"indexes,omitempty"`
 	// The key from which the media can be streamed
 	Key                   string `json:"key"`
 	OptimizedForStreaming *bool  `json:"optimizedForStreaming,omitempty"`
@@ -1603,7 +1603,7 @@ func (m *MediaContainerWithDecisionPart) GetContainer() *string {
 	return m.Container
 }
 
-func (m *MediaContainerWithDecisionPart) GetDeepAnalysisVersion() *int64 {
+func (m *MediaContainerWithDecisionPart) GetDeepAnalysisVersion() *StringInt64 {
 	if m == nil {
 		return nil
 	}
@@ -1638,7 +1638,7 @@ func (m *MediaContainerWithDecisionPart) GetHas64bitOffsets() *bool {
 	return m.Has64bitOffsets
 }
 
-func (m *MediaContainerWithDecisionPart) GetID() int64 {
+func (m *MediaContainerWithDecisionPart) GetID() StringInt64 {
 	if m == nil {
 		return 0
 	}
@@ -1746,18 +1746,18 @@ func (m *MediaContainerWithDecisionPart) GetAdditionalProperties() map[string]an
 // MediaContainerWithDecisionMedia - `Media` represents an one or more media files (parts) and is a child of a metadata item. There aren't necessarily any guaranteed attributes on media elements since the attributes will vary based on the type. The possible attributes are not documented here, but they typically have self-evident names. High-level media information that can be used for badging and flagging, such as `videoResolution` and codecs, is included on the media element.
 type MediaContainerWithDecisionMedia struct {
 	AspectRatio     *float32 `json:"aspectRatio,omitempty"`
-	AudioChannels   *int64     `json:"audioChannels,omitempty"`
+	AudioChannels   *int64   `json:"audioChannels,omitempty"`
 	AudioCodec      *string  `json:"audioCodec,omitempty"`
 	AudioProfile    *string  `json:"audioProfile,omitempty"`
-	Bitrate         *int64     `json:"bitrate,omitempty"`
+	Bitrate         *int64   `json:"bitrate,omitempty"`
 	Container       *string  `json:"container,omitempty"`
-	Duration        *int64     `json:"duration,omitempty"`
+	Duration        *int64   `json:"duration,omitempty"`
 	Has64bitOffsets *bool    `json:"has64bitOffsets,omitempty"`
 	// Voice activity detection availability flag returned by PMS.
 	// PMS may return this as a boolean or as string values (`"0"` or `"1"`).
 	HasVoiceActivity      *MediaContainerWithDecisionHasVoiceActivity      `json:"hasVoiceActivity,omitempty"`
-	Height                *int64                                             `json:"height,omitempty"`
-	ID                    int64                                            `json:"id"`
+	Height                *int64                                           `json:"height,omitempty"`
+	ID                    StringInt64                                      `json:"id"`
 	OptimizedForStreaming *MediaContainerWithDecisionOptimizedForStreaming `json:"optimizedForStreaming,omitempty"`
 	Part                  []MediaContainerWithDecisionPart                 `json:"Part,omitempty"`
 	Selected              *bool                                            `json:"selected,omitempty"`
@@ -1767,7 +1767,7 @@ type MediaContainerWithDecisionMedia struct {
 	VideoFrameRate       *string        `json:"videoFrameRate,omitempty"`
 	VideoProfile         *string        `json:"videoProfile,omitempty"`
 	VideoResolution      *string        `json:"videoResolution,omitempty"`
-	Width                *int64           `json:"width,omitempty"`
+	Width                *int64         `json:"width,omitempty"`
 	Abr                  *bool          `json:"abr,omitempty"`
 	ResourceSession      *string        `json:"resourceSession,omitempty"`
 	AdditionalProperties map[string]any `additionalProperties:"true" json:"-"`
@@ -1854,7 +1854,7 @@ func (m *MediaContainerWithDecisionMedia) GetHeight() *int64 {
 	return m.Height
 }
 
-func (m *MediaContainerWithDecisionMedia) GetID() int64 {
+func (m *MediaContainerWithDecisionMedia) GetID() StringInt64 {
 	if m == nil {
 		return 0
 	}
@@ -2219,7 +2219,7 @@ type MediaContainerWithDecisionMetadata struct {
 	// For shows and seasons, contains the number of total episodes.
 	LeafCount *int64 `json:"leafCount,omitempty"`
 	// The library section containing this metadata item, when reported by the server.
-	LibrarySectionID *int64                            `json:"librarySectionID,omitempty"`
+	LibrarySectionID *StringInt64                      `json:"librarySectionID,omitempty"`
 	Media            []MediaContainerWithDecisionMedia `json:"Media,omitempty"`
 	// Analysis version for music items.
 	MusicAnalysisVersion *int64 `json:"musicAnalysisVersion,omitempty"`
@@ -2302,10 +2302,10 @@ type MediaContainerWithDecisionMetadata struct {
 	// For shows and seasons, contains the number of viewed episodes.
 	ViewedLeafCount *int64 `json:"viewedLeafCount,omitempty"`
 	// When a user is in the process of viewing or listening to this item, this attribute contains the current offset, in units of milliseconds.
-	ViewOffset *int64  `json:"viewOffset,omitempty"`
-	Writer     []Tag `json:"Writer,omitempty"`
+	ViewOffset *int64 `json:"viewOffset,omitempty"`
+	Writer     []Tag  `json:"Writer,omitempty"`
 	// When present, the year associated with the item's release (e.g. release year for a movie).
-	Year                 *int64           `json:"year,omitempty"`
+	Year                 *int64         `json:"year,omitempty"`
 	AdditionalProperties map[string]any `additionalProperties:"true" json:"-"`
 }
 
@@ -2600,7 +2600,7 @@ func (m *MediaContainerWithDecisionMetadata) GetLeafCount() *int64 {
 	return m.LeafCount
 }
 
-func (m *MediaContainerWithDecisionMetadata) GetLibrarySectionID() *int64 {
+func (m *MediaContainerWithDecisionMetadata) GetLibrarySectionID() *StringInt64 {
 	if m == nil {
 		return nil
 	}
