@@ -302,6 +302,7 @@ type StartTranscodeSessionRequest struct {
 	DirectStreamAudio *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=directStreamAudio"`
 	// Indicates if resolution should be adjusted for orientation.
 	DisableResolutionRotation *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=disableResolutionRotation"`
+	FastSeek                  *components.BoolInt `queryParam:"style=form,explode=true,name=fastSeek"`
 	// Ignore client profiles when determining if direct play is possible. Only has an effect when directPlay=1 and both mediaIndex and partIndex are specified and neither are -1
 	HasMDE *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=hasMDE"`
 	// Network type of the client, can be used to help determine target bitrate.
@@ -511,6 +512,13 @@ func (s *StartTranscodeSessionRequest) GetDirectStream() *components.BoolInt {
 		return nil
 	}
 	return s.DirectStream
+}
+
+func (s *StartTranscodeSessionRequest) GetFastSeek() *components.BoolInt {
+	if s == nil {
+		return nil
+	}
+	return s.FastSeek
 }
 
 func (s *StartTranscodeSessionRequest) GetDirectStreamAudio() *components.BoolInt {

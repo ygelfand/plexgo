@@ -272,6 +272,7 @@ type MakeDecisionRequest struct {
 	DirectStreamAudio *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=directStreamAudio"`
 	// Indicates if resolution should be adjusted for orientation.
 	DisableResolutionRotation *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=disableResolutionRotation"`
+	FastSeek                  *components.BoolInt `queryParam:"style=form,explode=true,name=fastSeek"`
 	// Ignore client profiles when determining if direct play is possible. Only has an effect when directPlay=1 and both mediaIndex and partIndex are specified and neither are -1
 	HasMDE *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=hasMDE"`
 	// Network type of the client, can be used to help determine target bitrate.
@@ -474,6 +475,13 @@ func (m *MakeDecisionRequest) GetDirectStream() *components.BoolInt {
 		return nil
 	}
 	return m.DirectStream
+}
+
+func (m *MakeDecisionRequest) GetFastSeek() *components.BoolInt {
+	if m == nil {
+		return nil
+	}
+	return m.FastSeek
 }
 
 func (m *MakeDecisionRequest) GetDirectStreamAudio() *components.BoolInt {
