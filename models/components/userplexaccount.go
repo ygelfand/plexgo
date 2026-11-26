@@ -303,9 +303,9 @@ type UserPlexAccount struct {
 	// If the account is the Plex Home admin
 	HomeAdmin *bool `default:"false" json:"homeAdmin"`
 	// The number of accounts in the Plex Home
-	HomeSize *int `json:"homeSize,omitempty"`
+	HomeSize *int64 `json:"homeSize,omitempty"`
 	// The Plex account ID
-	ID int `json:"id"`
+	ID int64 `json:"id"`
 	// Unix epoch datetime in seconds
 	JoinedAt int64 `json:"joinedAt"`
 	// The account locale
@@ -315,7 +315,7 @@ type UserPlexAccount struct {
 	// Your current mailing list status
 	MailingListStatus *MailingListStatus `json:"mailingListStatus,omitempty"`
 	// The maximum number of accounts allowed in the Plex Home
-	MaxHomeSize *int `json:"maxHomeSize,omitempty"`
+	MaxHomeSize *int64 `json:"maxHomeSize,omitempty"`
 	// [Might be removed] The hashed Plex Home PIN
 	//
 	// Deprecated: This will be removed in a future release, please migrate away from it as soon as possible.
@@ -492,14 +492,14 @@ func (u *UserPlexAccount) GetHomeAdmin() *bool {
 	return u.HomeAdmin
 }
 
-func (u *UserPlexAccount) GetHomeSize() *int {
+func (u *UserPlexAccount) GetHomeSize() *int64 {
 	if u == nil {
 		return nil
 	}
 	return u.HomeSize
 }
 
-func (u *UserPlexAccount) GetID() int {
+func (u *UserPlexAccount) GetID() int64 {
 	if u == nil {
 		return 0
 	}
@@ -534,7 +534,7 @@ func (u *UserPlexAccount) GetMailingListStatus() *MailingListStatus {
 	return u.MailingListStatus
 }
 
-func (u *UserPlexAccount) GetMaxHomeSize() *int {
+func (u *UserPlexAccount) GetMaxHomeSize() *int64 {
 	if u == nil {
 		return nil
 	}

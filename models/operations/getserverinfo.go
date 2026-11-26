@@ -271,7 +271,7 @@ type GetServerInfoResponseBody struct {
 	MyPlexSubscription *bool    `json:"myPlexSubscription,omitempty"`
 	MyPlexUsername     *string  `json:"myPlexUsername,omitempty"`
 	// Whether offline transcoding is enabled.
-	OfflineTranscode *int `json:"offlineTranscode,omitempty"`
+	OfflineTranscode *int64 `json:"offlineTranscode,omitempty"`
 	// List of enabled owner features.
 	OwnerFeatures                 []string `json:"ownerFeatures,omitempty"`
 	Platform                      *string  `json:"platform,omitempty"`
@@ -504,7 +504,7 @@ func (g *GetServerInfoResponseBody) GetMyPlexUsername() *string {
 	return g.MyPlexUsername
 }
 
-func (g *GetServerInfoResponseBody) GetOfflineTranscode() *int {
+func (g *GetServerInfoResponseBody) GetOfflineTranscode() *int64 {
 	if g == nil {
 		return nil
 	}

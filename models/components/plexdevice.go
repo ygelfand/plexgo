@@ -44,7 +44,7 @@ type Connections struct {
 	// If the connection is local address
 	Local bool `json:"local"`
 	// The port used for the connection
-	Port int `json:"port"`
+	Port int64 `json:"port"`
 	// The protocol used for the connection (http, https, etc)
 	Protocol PlexDeviceProtocol `json:"protocol"`
 	// If the connection is relayed through plex.direct
@@ -74,7 +74,7 @@ func (c *Connections) GetLocal() bool {
 	return c.Local
 }
 
-func (c *Connections) GetPort() int {
+func (c *Connections) GetPort() int64 {
 	if c == nil {
 		return 0
 	}

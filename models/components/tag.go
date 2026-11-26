@@ -18,7 +18,7 @@ type Tag struct {
 	Tag string `json:"tag"`
 	// Plex identifier for this tag which can be used to fetch additional information from plex.tv
 	TagKey  *string `json:"tagKey,omitempty"`
-	TagType *int    `json:"tagType,omitempty"`
+	TagType *int64    `json:"tagType,omitempty"`
 	Thumb   *string `json:"thumb,omitempty"`
 }
 
@@ -78,7 +78,7 @@ func (t *Tag) GetTagKey() *string {
 	return t.TagKey
 }
 
-func (t *Tag) GetTagType() *int {
+func (t *Tag) GetTagType() *int64 {
 	if t == nil {
 		return nil
 	}

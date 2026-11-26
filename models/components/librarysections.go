@@ -67,7 +67,7 @@ type LibrarySectionsMediaContainer struct {
 	MyPlexSubscription *bool    `json:"myPlexSubscription,omitempty"`
 	MyPlexUsername     *string  `json:"myPlexUsername,omitempty"`
 	// Whether offline transcoding is enabled.
-	OfflineTranscode *int `json:"offlineTranscode,omitempty"`
+	OfflineTranscode *int64 `json:"offlineTranscode,omitempty"`
 	// List of enabled owner features.
 	OwnerFeatures                 []string `json:"ownerFeatures,omitempty"`
 	Platform                      *string  `json:"platform,omitempty"`
@@ -300,7 +300,7 @@ func (l *LibrarySectionsMediaContainer) GetMyPlexUsername() *string {
 	return l.MyPlexUsername
 }
 
-func (l *LibrarySectionsMediaContainer) GetOfflineTranscode() *int {
+func (l *LibrarySectionsMediaContainer) GetOfflineTranscode() *int64 {
 	if l == nil {
 		return nil
 	}

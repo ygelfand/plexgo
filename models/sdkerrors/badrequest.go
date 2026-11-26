@@ -7,12 +7,12 @@ import (
 )
 
 type BadRequestErrors struct {
-	Code    *int    `json:"code,omitempty"`
+	Code    *int64    `json:"code,omitempty"`
 	Message *string `json:"message,omitempty"`
-	Status  *int    `json:"status,omitempty"`
+	Status  *int64    `json:"status,omitempty"`
 }
 
-func (b *BadRequestErrors) GetCode() *int {
+func (b *BadRequestErrors) GetCode() *int64 {
 	if b == nil {
 		return nil
 	}
@@ -26,7 +26,7 @@ func (b *BadRequestErrors) GetMessage() *string {
 	return b.Message
 }
 
-func (b *BadRequestErrors) GetStatus() *int {
+func (b *BadRequestErrors) GetStatus() *int64 {
 	if b == nil {
 		return nil
 	}

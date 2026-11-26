@@ -618,15 +618,15 @@ type Stream struct {
 	// Audio channel layout.
 	AudioChannelLayout *string `json:"audioChannelLayout,omitempty"`
 	// Bit depth of the video stream.
-	BitDepth *int `json:"bitDepth,omitempty"`
+	BitDepth *int64 `json:"bitDepth,omitempty"`
 	// Bitrate of the stream.
-	Bitrate *int `json:"bitrate,omitempty"`
+	Bitrate *int64 `json:"bitrate,omitempty"`
 	// Audio bitrate mode (cbr or vbr).
 	BitrateMode *BitrateMode `json:"bitrateMode,omitempty"`
 	// Indicates if the stream can auto-sync.
 	CanAutoSync *CanAutoSync `json:"canAutoSync,omitempty"`
 	// Number of audio channels (for audio streams).
-	Channels *int `json:"channels,omitempty"`
+	Channels *int64 `json:"channels,omitempty"`
 	// Chroma sample location.
 	ChromaLocation *string `json:"chromaLocation,omitempty"`
 	// Chroma subsampling format.
@@ -635,9 +635,9 @@ type Stream struct {
 	// Codec used by the stream.
 	Codec string `json:"codec"`
 	// Coded video height.
-	CodedHeight *int `json:"codedHeight,omitempty"`
+	CodedHeight *int64 `json:"codedHeight,omitempty"`
 	// Coded video width.
-	CodedWidth *int `json:"codedWidth,omitempty"`
+	CodedWidth *int64 `json:"codedWidth,omitempty"`
 	// Color primaries used.
 	ColorPrimaries *string `json:"colorPrimaries,omitempty"`
 	// Color range (e.g., tv).
@@ -649,17 +649,17 @@ type Stream struct {
 	// Display title for the stream.
 	DisplayTitle string `json:"displayTitle"`
 	// Dolby Vision BL compatibility ID.
-	DOVIBLCompatID *int `json:"DOVIBLCompatID,omitempty"`
+	DOVIBLCompatID *int64 `json:"DOVIBLCompatID,omitempty"`
 	// Indicates if Dolby Vision BL is present.
 	DOVIBLPresent *bool `json:"DOVIBLPresent,omitempty"`
 	// Indicates if Dolby Vision EL is present.
 	DOVIELPresent *bool `json:"DOVIELPresent,omitempty"`
 	// Dolby Vision level.
-	DOVILevel *int `json:"DOVILevel,omitempty"`
+	DOVILevel *int64 `json:"DOVILevel,omitempty"`
 	// Indicates if Dolby Vision is present.
 	DOVIPresent *bool `json:"DOVIPresent,omitempty"`
 	// Dolby Vision profile.
-	DOVIProfile *int `json:"DOVIProfile,omitempty"`
+	DOVIProfile *int64 `json:"DOVIProfile,omitempty"`
 	// Indicates if Dolby Vision RPU is present.
 	DOVIRPUPresent *bool `json:"DOVIRPUPresent,omitempty"`
 	// Dolby Vision version.
@@ -682,11 +682,11 @@ type Stream struct {
 	// Indicates if the stream is for the hearing impaired.
 	HearingImpaired *bool `json:"hearingImpaired,omitempty"`
 	// Height of the video stream.
-	Height *int `json:"height,omitempty"`
+	Height *int64 `json:"height,omitempty"`
 	// Unique stream identifier.
 	ID StringInt64 `json:"id"`
 	// Index of the stream.
-	Index *int `json:"index,omitempty"`
+	Index *int64 `json:"index,omitempty"`
 	// Key to access this stream part.
 	Key string `json:"key"`
 	// Language of the stream.
@@ -696,7 +696,7 @@ type Stream struct {
 	// Language tag (e.g., en).
 	LanguageTag *string `json:"languageTag,omitempty"`
 	// Video level.
-	Level *int `json:"level,omitempty"`
+	Level *int64 `json:"level,omitempty"`
 	// Integrated loudness in LUFS. Plex may return a numeric value as a number or numeric string, or the sentinel string "-inf".
 	Loudness *Loudness `json:"loudness,omitempty"`
 	// Loudness range in LU.
@@ -716,9 +716,9 @@ type Stream struct {
 	// Subtitle provider display name.
 	ProviderTitle *string `json:"providerTitle,omitempty"`
 	// Number of reference frames.
-	RefFrames *int `json:"refFrames,omitempty"`
+	RefFrames *int64 `json:"refFrames,omitempty"`
 	// Sampling rate for the audio stream.
-	SamplingRate *int    `json:"samplingRate,omitempty"`
+	SamplingRate *int64    `json:"samplingRate,omitempty"`
 	ScanType     *string `json:"scanType,omitempty"`
 	// Subtitle match confidence score (0-100).
 	Score *float64 `json:"score,omitempty"`
@@ -739,7 +739,7 @@ type Stream struct {
 	// Whether this audio track is an audio description track.
 	VisualImpaired *bool `json:"visualImpaired,omitempty"`
 	// Width of the video stream.
-	Width                *int           `json:"width,omitempty"`
+	Width                *int64           `json:"width,omitempty"`
 	AdditionalProperties map[string]any `additionalProperties:"true" json:"-"`
 }
 
@@ -803,14 +803,14 @@ func (s *Stream) GetAudioChannelLayout() *string {
 	return s.AudioChannelLayout
 }
 
-func (s *Stream) GetBitDepth() *int {
+func (s *Stream) GetBitDepth() *int64 {
 	if s == nil {
 		return nil
 	}
 	return s.BitDepth
 }
 
-func (s *Stream) GetBitrate() *int {
+func (s *Stream) GetBitrate() *int64 {
 	if s == nil {
 		return nil
 	}
@@ -831,7 +831,7 @@ func (s *Stream) GetCanAutoSync() *CanAutoSync {
 	return s.CanAutoSync
 }
 
-func (s *Stream) GetChannels() *int {
+func (s *Stream) GetChannels() *int64 {
 	if s == nil {
 		return nil
 	}
@@ -866,14 +866,14 @@ func (s *Stream) GetCodec() string {
 	return s.Codec
 }
 
-func (s *Stream) GetCodedHeight() *int {
+func (s *Stream) GetCodedHeight() *int64 {
 	if s == nil {
 		return nil
 	}
 	return s.CodedHeight
 }
 
-func (s *Stream) GetCodedWidth() *int {
+func (s *Stream) GetCodedWidth() *int64 {
 	if s == nil {
 		return nil
 	}
@@ -915,7 +915,7 @@ func (s *Stream) GetDisplayTitle() string {
 	return s.DisplayTitle
 }
 
-func (s *Stream) GetDOVIBLCompatID() *int {
+func (s *Stream) GetDOVIBLCompatID() *int64 {
 	if s == nil {
 		return nil
 	}
@@ -936,7 +936,7 @@ func (s *Stream) GetDOVIELPresent() *bool {
 	return s.DOVIELPresent
 }
 
-func (s *Stream) GetDOVILevel() *int {
+func (s *Stream) GetDOVILevel() *int64 {
 	if s == nil {
 		return nil
 	}
@@ -950,7 +950,7 @@ func (s *Stream) GetDOVIPresent() *bool {
 	return s.DOVIPresent
 }
 
-func (s *Stream) GetDOVIProfile() *int {
+func (s *Stream) GetDOVIProfile() *int64 {
 	if s == nil {
 		return nil
 	}
@@ -1041,7 +1041,7 @@ func (s *Stream) GetHearingImpaired() *bool {
 	return s.HearingImpaired
 }
 
-func (s *Stream) GetHeight() *int {
+func (s *Stream) GetHeight() *int64 {
 	if s == nil {
 		return nil
 	}
@@ -1055,7 +1055,7 @@ func (s *Stream) GetID() StringInt64 {
 	return s.ID
 }
 
-func (s *Stream) GetIndex() *int {
+func (s *Stream) GetIndex() *int64 {
 	if s == nil {
 		return nil
 	}
@@ -1090,7 +1090,7 @@ func (s *Stream) GetLanguageTag() *string {
 	return s.LanguageTag
 }
 
-func (s *Stream) GetLevel() *int {
+func (s *Stream) GetLevel() *int64 {
 	if s == nil {
 		return nil
 	}
@@ -1160,14 +1160,14 @@ func (s *Stream) GetProviderTitle() *string {
 	return s.ProviderTitle
 }
 
-func (s *Stream) GetRefFrames() *int {
+func (s *Stream) GetRefFrames() *int64 {
 	if s == nil {
 		return nil
 	}
 	return s.RefFrames
 }
 
-func (s *Stream) GetSamplingRate() *int {
+func (s *Stream) GetSamplingRate() *int64 {
 	if s == nil {
 		return nil
 	}
@@ -1251,7 +1251,7 @@ func (s *Stream) GetVisualImpaired() *bool {
 	return s.VisualImpaired
 }
 
-func (s *Stream) GetWidth() *int {
+func (s *Stream) GetWidth() *int64 {
 	if s == nil {
 		return nil
 	}

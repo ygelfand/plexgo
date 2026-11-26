@@ -150,11 +150,11 @@ type ListContentRequest struct {
 	// The index of the first item to return. If not specified, the first item will be returned.
 	// If the number of items exceeds the limit, the response will be paginated.
 	// By default this is 0
-	XPlexContainerStart *int `default:"0" queryParam:"style=form,explode=true,name=X-Plex-Container-Start"`
+	XPlexContainerStart *int64 `default:"0" queryParam:"style=form,explode=true,name=X-Plex-Container-Start"`
 	// The number of items to return. If not specified, all items will be returned.
 	// If the number of items exceeds the limit, the response will be paginated.
 	// By default this is 50
-	XPlexContainerSize *int `default:"50" queryParam:"style=form,explode=true,name=X-Plex-Container-Size"`
+	XPlexContainerSize *int64 `default:"50" queryParam:"style=form,explode=true,name=X-Plex-Container-Size"`
 	// A querystring-based filtering language used to select subsets of media. Can be provided as an object with typed properties for type safety, or as a string for complex queries with operators and boolean logic.
 	//
 	// The query supports:
@@ -379,14 +379,14 @@ func (l *ListContentRequest) GetPmsAPIVersion() *string {
 	return l.PmsAPIVersion
 }
 
-func (l *ListContentRequest) GetXPlexContainerStart() *int {
+func (l *ListContentRequest) GetXPlexContainerStart() *int64 {
 	if l == nil {
 		return nil
 	}
 	return l.XPlexContainerStart
 }
 
-func (l *ListContentRequest) GetXPlexContainerSize() *int {
+func (l *ListContentRequest) GetXPlexContainerSize() *int64 {
 	if l == nil {
 		return nil
 	}

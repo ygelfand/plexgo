@@ -16,7 +16,7 @@ type Part struct {
 	// Deep analysis version for this part.
 	DeepAnalysisVersion *int64 `json:"deepAnalysisVersion,omitempty"`
 	// The duration of the media item, in milliseconds
-	Duration *int `json:"duration,omitempty"`
+	Duration *int64 `json:"duration,omitempty"`
 	// Indicates if the part exists.
 	Exists *Bool `json:"exists,omitempty"`
 	// The local file path at which the part is stored on the server
@@ -83,7 +83,7 @@ func (p *Part) GetDeepAnalysisVersion() *int64 {
 	return p.DeepAnalysisVersion
 }
 
-func (p *Part) GetDuration() *int {
+func (p *Part) GetDuration() *int64 {
 	if p == nil {
 		return nil
 	}

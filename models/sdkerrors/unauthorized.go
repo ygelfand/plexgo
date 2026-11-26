@@ -7,12 +7,12 @@ import (
 )
 
 type UnauthorizedErrors struct {
-	Code    *int    `json:"code,omitempty"`
+	Code    *int64    `json:"code,omitempty"`
 	Message *string `json:"message,omitempty"`
-	Status  *int    `json:"status,omitempty"`
+	Status  *int64    `json:"status,omitempty"`
 }
 
-func (u *UnauthorizedErrors) GetCode() *int {
+func (u *UnauthorizedErrors) GetCode() *int64 {
 	if u == nil {
 		return nil
 	}
@@ -26,7 +26,7 @@ func (u *UnauthorizedErrors) GetMessage() *string {
 	return u.Message
 }
 
-func (u *UnauthorizedErrors) GetStatus() *int {
+func (u *UnauthorizedErrors) GetStatus() *int64 {
 	if u == nil {
 		return nil
 	}

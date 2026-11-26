@@ -7,12 +7,12 @@ import (
 )
 
 type Errors struct {
-	Code    *int    `json:"code,omitempty"`
+	Code    *int64    `json:"code,omitempty"`
 	Message *string `json:"message,omitempty"`
-	Status  *int    `json:"status,omitempty"`
+	Status  *int64    `json:"status,omitempty"`
 }
 
-func (e *Errors) GetCode() *int {
+func (e *Errors) GetCode() *int64 {
 	if e == nil {
 		return nil
 	}
@@ -26,7 +26,7 @@ func (e *Errors) GetMessage() *string {
 	return e.Message
 }
 
-func (e *Errors) GetStatus() *int {
+func (e *Errors) GetStatus() *int64 {
 	if e == nil {
 		return nil
 	}

@@ -39,7 +39,7 @@ type ServerConfiguration struct {
 	MyPlexSubscription *bool    `json:"myPlexSubscription,omitempty"`
 	MyPlexUsername     *string  `json:"myPlexUsername,omitempty"`
 	// Whether offline transcoding is enabled.
-	OfflineTranscode *int `json:"offlineTranscode,omitempty"`
+	OfflineTranscode *int64 `json:"offlineTranscode,omitempty"`
 	// List of enabled owner features.
 	OwnerFeatures                 []string `json:"ownerFeatures,omitempty"`
 	Platform                      *string  `json:"platform,omitempty"`
@@ -271,7 +271,7 @@ func (s *ServerConfiguration) GetMyPlexUsername() *string {
 	return s.MyPlexUsername
 }
 
-func (s *ServerConfiguration) GetOfflineTranscode() *int {
+func (s *ServerConfiguration) GetOfflineTranscode() *int64 {
 	if s == nil {
 		return nil
 	}

@@ -37,11 +37,11 @@ type GetSectionFolderRequest struct {
 	// The index of the first item to return. If not specified, the first item will be returned.
 	// If the number of items exceeds the limit, the response will be paginated.
 	// By default this is 0
-	XPlexContainerStart *int `default:"0" queryParam:"style=form,explode=true,name=X-Plex-Container-Start"`
+	XPlexContainerStart *int64 `default:"0" queryParam:"style=form,explode=true,name=X-Plex-Container-Start"`
 	// The number of items to return. If not specified, all items will be returned.
 	// If the number of items exceeds the limit, the response will be paginated.
 	// By default this is 50
-	XPlexContainerSize *int `default:"50" queryParam:"style=form,explode=true,name=X-Plex-Container-Size"`
+	XPlexContainerSize *int64 `default:"50" queryParam:"style=form,explode=true,name=X-Plex-Container-Size"`
 	// The unique identifier of the library section.
 	SectionID int64 `pathParam:"style=simple,explode=false,name=sectionId"`
 	// Folder token from the parent query parameter of a returned folder key, not a metadata rating key.
@@ -68,14 +68,14 @@ func (g *GetSectionFolderRequest) GetAccepts() *components.Accepts {
 	return g.Accepts
 }
 
-func (g *GetSectionFolderRequest) GetXPlexContainerStart() *int {
+func (g *GetSectionFolderRequest) GetXPlexContainerStart() *int64 {
 	if g == nil {
 		return nil
 	}
 	return g.XPlexContainerStart
 }
 
-func (g *GetSectionFolderRequest) GetXPlexContainerSize() *int {
+func (g *GetSectionFolderRequest) GetXPlexContainerSize() *int64 {
 	if g == nil {
 		return nil
 	}
