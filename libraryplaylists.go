@@ -6,13 +6,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/LukeHagar/plexgo/internal/config"
-	"github.com/LukeHagar/plexgo/internal/hooks"
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/models/components"
-	"github.com/LukeHagar/plexgo/models/operations"
-	"github.com/LukeHagar/plexgo/models/sdkerrors"
-	"github.com/LukeHagar/plexgo/retry"
+	"github.com/ygelfand/plexgo/internal/config"
+	"github.com/ygelfand/plexgo/internal/hooks"
+	"github.com/ygelfand/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/models/components"
+	"github.com/ygelfand/plexgo/models/operations"
+	"github.com/ygelfand/plexgo/models/sdkerrors"
+	"github.com/ygelfand/plexgo/retry"
 	"net/http"
 	"net/url"
 )
@@ -119,6 +119,16 @@ func (s *LibraryPlaylists) CreatePlaylist(ctx context.Context, request operation
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -128,10 +138,6 @@ func (s *LibraryPlaylists) CreatePlaylist(ctx context.Context, request operation
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -190,7 +196,7 @@ func (s *LibraryPlaylists) CreatePlaylist(ctx context.Context, request operation
 
 			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 			return nil, err
-		} else if utils.MatchStatusCodes([]string{"400", "4XX", "5XX"}, httpRes.StatusCode) {
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
 			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 			if err != nil {
 				return nil, err
@@ -259,8 +265,10 @@ func (s *LibraryPlaylists) CreatePlaylist(ctx context.Context, request operation
 
 }
 
-// UploadPlaylist - Upload
+// UploadPlaylist - Upload media art
 // Imports m3u playlists by passing a path on the server to scan for m3u-formatted playlist files, or a path to a single playlist file.
+//
+// If set, this operation will use [Security.Token] from the global security.
 func (s *LibraryPlaylists) UploadPlaylist(ctx context.Context, request operations.UploadPlaylistRequest, opts ...operations.Option) (*operations.UploadPlaylistResponse, error) {
 	globals := operations.UploadPlaylistGlobals{
 		Accepts:          s.sdkConfiguration.Globals.Accepts,
@@ -333,7 +341,7 @@ func (s *LibraryPlaylists) UploadPlaylist(ctx context.Context, request operation
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security, "Token"); err != nil {
 		return nil, err
 	}
 
@@ -346,6 +354,16 @@ func (s *LibraryPlaylists) UploadPlaylist(ctx context.Context, request operation
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -355,10 +373,6 @@ func (s *LibraryPlaylists) UploadPlaylist(ctx context.Context, request operation
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -417,7 +431,7 @@ func (s *LibraryPlaylists) UploadPlaylist(ctx context.Context, request operation
 
 			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 			return nil, err
-		} else if utils.MatchStatusCodes([]string{"403", "4XX", "500", "5XX"}, httpRes.StatusCode) {
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
 			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 			if err != nil {
 				return nil, err
@@ -440,6 +454,7 @@ func (s *LibraryPlaylists) UploadPlaylist(ctx context.Context, request operation
 
 	switch {
 	case httpRes.StatusCode == 200:
+		utils.DrainBody(httpRes)
 	case httpRes.StatusCode == 403:
 		fallthrough
 	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
@@ -551,6 +566,16 @@ func (s *LibraryPlaylists) DeletePlaylist(ctx context.Context, request operation
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -560,10 +585,6 @@ func (s *LibraryPlaylists) DeletePlaylist(ctx context.Context, request operation
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -622,7 +643,7 @@ func (s *LibraryPlaylists) DeletePlaylist(ctx context.Context, request operation
 
 			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 			return nil, err
-		} else if utils.MatchStatusCodes([]string{"404", "4XX", "5XX"}, httpRes.StatusCode) {
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
 			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 			if err != nil {
 				return nil, err
@@ -645,6 +666,7 @@ func (s *LibraryPlaylists) DeletePlaylist(ctx context.Context, request operation
 
 	switch {
 	case httpRes.StatusCode == 204:
+		utils.DrainBody(httpRes)
 	case httpRes.StatusCode == 404:
 		fallthrough
 	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
@@ -754,6 +776,16 @@ func (s *LibraryPlaylists) UpdatePlaylist(ctx context.Context, request operation
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -763,10 +795,6 @@ func (s *LibraryPlaylists) UpdatePlaylist(ctx context.Context, request operation
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -825,7 +853,7 @@ func (s *LibraryPlaylists) UpdatePlaylist(ctx context.Context, request operation
 
 			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 			return nil, err
-		} else if utils.MatchStatusCodes([]string{"404", "4XX", "5XX"}, httpRes.StatusCode) {
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
 			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 			if err != nil {
 				return nil, err
@@ -848,6 +876,7 @@ func (s *LibraryPlaylists) UpdatePlaylist(ctx context.Context, request operation
 
 	switch {
 	case httpRes.StatusCode == 204:
+		utils.DrainBody(httpRes)
 	case httpRes.StatusCode == 404:
 		fallthrough
 	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
@@ -957,6 +986,16 @@ func (s *LibraryPlaylists) GetPlaylistGenerators(ctx context.Context, request op
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -966,10 +1005,6 @@ func (s *LibraryPlaylists) GetPlaylistGenerators(ctx context.Context, request op
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -1028,7 +1063,7 @@ func (s *LibraryPlaylists) GetPlaylistGenerators(ctx context.Context, request op
 
 			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 			return nil, err
-		} else if utils.MatchStatusCodes([]string{"404", "4XX", "5XX"}, httpRes.StatusCode) {
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
 			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 			if err != nil {
 				return nil, err
@@ -1180,6 +1215,16 @@ func (s *LibraryPlaylists) ClearPlaylistItems(ctx context.Context, request opera
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -1189,10 +1234,6 @@ func (s *LibraryPlaylists) ClearPlaylistItems(ctx context.Context, request opera
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -1251,7 +1292,7 @@ func (s *LibraryPlaylists) ClearPlaylistItems(ctx context.Context, request opera
 
 			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 			return nil, err
-		} else if utils.MatchStatusCodes([]string{"400", "404", "4XX", "5XX"}, httpRes.StatusCode) {
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
 			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 			if err != nil {
 				return nil, err
@@ -1409,6 +1450,16 @@ func (s *LibraryPlaylists) AddPlaylistItems(ctx context.Context, request operati
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -1418,10 +1469,6 @@ func (s *LibraryPlaylists) AddPlaylistItems(ctx context.Context, request operati
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -1480,7 +1527,7 @@ func (s *LibraryPlaylists) AddPlaylistItems(ctx context.Context, request operati
 
 			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 			return nil, err
-		} else if utils.MatchStatusCodes([]string{"400", "404", "4XX", "5XX"}, httpRes.StatusCode) {
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
 			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 			if err != nil {
 				return nil, err
@@ -1634,6 +1681,16 @@ func (s *LibraryPlaylists) DeletePlaylistItem(ctx context.Context, request opera
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -1643,10 +1700,6 @@ func (s *LibraryPlaylists) DeletePlaylistItem(ctx context.Context, request opera
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -1705,7 +1758,7 @@ func (s *LibraryPlaylists) DeletePlaylistItem(ctx context.Context, request opera
 
 			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 			return nil, err
-		} else if utils.MatchStatusCodes([]string{"400", "404", "4XX", "5XX"}, httpRes.StatusCode) {
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
 			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 			if err != nil {
 				return nil, err
@@ -1859,6 +1912,16 @@ func (s *LibraryPlaylists) GetPlaylistGenerator(ctx context.Context, request ope
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -1868,10 +1931,6 @@ func (s *LibraryPlaylists) GetPlaylistGenerator(ctx context.Context, request ope
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -1930,7 +1989,7 @@ func (s *LibraryPlaylists) GetPlaylistGenerator(ctx context.Context, request ope
 
 			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 			return nil, err
-		} else if utils.MatchStatusCodes([]string{"400", "404", "4XX", "5XX"}, httpRes.StatusCode) {
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
 			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 			if err != nil {
 				return nil, err
@@ -2088,6 +2147,16 @@ func (s *LibraryPlaylists) ModifyPlaylistGenerator(ctx context.Context, request 
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -2097,10 +2166,6 @@ func (s *LibraryPlaylists) ModifyPlaylistGenerator(ctx context.Context, request 
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -2159,7 +2224,7 @@ func (s *LibraryPlaylists) ModifyPlaylistGenerator(ctx context.Context, request 
 
 			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 			return nil, err
-		} else if utils.MatchStatusCodes([]string{"400", "404", "4XX", "5XX"}, httpRes.StatusCode) {
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
 			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 			if err != nil {
 				return nil, err
@@ -2313,6 +2378,16 @@ func (s *LibraryPlaylists) GetPlaylistGeneratorItems(ctx context.Context, reques
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -2322,10 +2397,6 @@ func (s *LibraryPlaylists) GetPlaylistGeneratorItems(ctx context.Context, reques
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -2384,7 +2455,7 @@ func (s *LibraryPlaylists) GetPlaylistGeneratorItems(ctx context.Context, reques
 
 			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 			return nil, err
-		} else if utils.MatchStatusCodes([]string{"400", "404", "4XX", "5XX"}, httpRes.StatusCode) {
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
 			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 			if err != nil {
 				return nil, err
@@ -2542,6 +2613,16 @@ func (s *LibraryPlaylists) MovePlaylistItem(ctx context.Context, request operati
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -2551,10 +2632,6 @@ func (s *LibraryPlaylists) MovePlaylistItem(ctx context.Context, request operati
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -2613,7 +2690,7 @@ func (s *LibraryPlaylists) MovePlaylistItem(ctx context.Context, request operati
 
 			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 			return nil, err
-		} else if utils.MatchStatusCodes([]string{"400", "404", "4XX", "5XX"}, httpRes.StatusCode) {
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
 			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 			if err != nil {
 				return nil, err
@@ -2767,6 +2844,16 @@ func (s *LibraryPlaylists) RefreshPlaylist(ctx context.Context, request operatio
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -2776,10 +2863,6 @@ func (s *LibraryPlaylists) RefreshPlaylist(ctx context.Context, request operatio
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -2838,7 +2921,7 @@ func (s *LibraryPlaylists) RefreshPlaylist(ctx context.Context, request operatio
 
 			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 			return nil, err
-		} else if utils.MatchStatusCodes([]string{"400", "404", "4XX", "5XX"}, httpRes.StatusCode) {
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
 			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 			if err != nil {
 				return nil, err
@@ -2861,6 +2944,7 @@ func (s *LibraryPlaylists) RefreshPlaylist(ctx context.Context, request operatio
 
 	switch {
 	case httpRes.StatusCode == 200:
+		utils.DrainBody(httpRes)
 	case httpRes.StatusCode == 400:
 		fallthrough
 	case httpRes.StatusCode == 404:

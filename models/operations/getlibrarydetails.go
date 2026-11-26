@@ -3,8 +3,11 @@
 package operations
 
 import (
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/models/components"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/ygelfand/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/models/components"
 	"net/http"
 )
 
@@ -252,14 +255,110 @@ func (g *GetLibraryDetailsRequest) GetIncludeDetails() *components.BoolInt {
 	return g.IncludeDetails
 }
 
+type Two string
+
+const (
+	TwoZero Two = "0"
+	TwoOne  Two = "1"
+)
+
+func (e Two) ToPointer() *Two {
+	return &e
+}
+func (e *Two) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = Two(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for Two: %v", v)
+	}
+}
+
+type AllowSyncType string
+
+const (
+	AllowSyncTypeBoolean AllowSyncType = "boolean"
+	AllowSyncTypeTwo     AllowSyncType = "2"
+)
+
+type AllowSync struct {
+	Boolean *bool `queryParam:"inline" union:"member"`
+	Two     *Two  `queryParam:"inline" union:"member"`
+
+	Type AllowSyncType
+}
+
+func CreateAllowSyncBoolean(boolean bool) AllowSync {
+	typ := AllowSyncTypeBoolean
+
+	return AllowSync{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateAllowSyncTwo(two Two) AllowSync {
+	typ := AllowSyncTypeTwo
+
+	return AllowSync{
+		Two:  &two,
+		Type: typ,
+	}
+}
+
+func (u *AllowSync) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = AllowSync{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = AllowSyncTypeBoolean
+		return nil
+	}
+
+	var two Two = Two("")
+	if err := utils.UnmarshalJSON(data, &two, "", true, nil); err == nil {
+		u.Two = &two
+		u.Type = AllowSyncTypeTwo
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for AllowSync", string(data))
+}
+
+func (u AllowSync) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.Two != nil {
+		return utils.MarshalJSON(u.Two, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type AllowSync: all fields are null")
+}
+
 type GetLibraryDetailsMediaContainer struct {
+	AllowSync *AllowSync `json:"allowSync,omitempty"`
+	Art       *string    `json:"art,omitempty"`
 	// The flavors of directory found here:
 	//   - Primary: (e.g. all, On Deck) These are still used in some clients to provide "shortcuts" to subsets of media. However, with the exception of On Deck, all of them can be created by media queries, and the desire is to allow these to be customized by users.
 	//   - Secondary: These are marked with `"secondary": true` and were used by old clients to provide nested menus allowing for primative (but structured) navigation.
 	//   - Special: There is a By Folder entry which allows browsing the media by the underlying filesystem structure, and there's a completely obsolete entry marked `"search": true` which used to be used to allow clients to build search dialogs on the fly.
 	Content          *string               `json:"content,omitempty"`
-	AllowSync        *bool                 `json:"allowSync,omitempty"`
-	Art              *string               `json:"art,omitempty"`
 	Directory        []components.Metadata `json:"Directory,omitempty"`
 	Identifier       *string               `json:"identifier,omitempty"`
 	LibrarySectionID *int64                `json:"librarySectionID,omitempty"`
@@ -273,14 +372,7 @@ type GetLibraryDetailsMediaContainer struct {
 	ViewMode         *int64                `json:"viewMode,omitempty"`
 }
 
-func (g *GetLibraryDetailsMediaContainer) GetContent() *string {
-	if g == nil {
-		return nil
-	}
-	return g.Content
-}
-
-func (g *GetLibraryDetailsMediaContainer) GetAllowSync() *bool {
+func (g *GetLibraryDetailsMediaContainer) GetAllowSync() *AllowSync {
 	if g == nil {
 		return nil
 	}
@@ -292,6 +384,13 @@ func (g *GetLibraryDetailsMediaContainer) GetArt() *string {
 		return nil
 	}
 	return g.Art
+}
+
+func (g *GetLibraryDetailsMediaContainer) GetContent() *string {
+	if g == nil {
+		return nil
+	}
+	return g.Content
 }
 
 func (g *GetLibraryDetailsMediaContainer) GetDirectory() []components.Metadata {

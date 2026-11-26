@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/LukeHagar/plexgo/types"
+	"github.com/ygelfand/plexgo/types"
 )
 
 // UnionCandidate represents a candidate type during union deserialization
@@ -128,8 +128,8 @@ func countFieldsRecursive(candidate *UnionCandidate, typ reflect.Type, val refle
 
 	// Handle unions
 	if isUnion, activeVariant, variantVal := findActiveUnionVariant(typ, val); isUnion {
-		if activeVariant != nil && !variantVal.IsNil() {
-			countFieldsRecursive(candidate, activeVariant.Type.Elem(), variantVal.Elem(), raw)
+		if activeVariant != nil {
+			countFieldsRecursive(candidate, activeVariant.Type, variantVal, raw)
 		}
 		return
 	}
@@ -253,7 +253,6 @@ func findActiveUnionVariant(typ reflect.Type, val reflect.Value) (bool, *reflect
 
 		isUnion = true
 
-		// All union variants are pointers - only set active if non-nil
 		fieldVal := val.Field(i)
 		if !fieldVal.IsNil() {
 			activeVariant = &field

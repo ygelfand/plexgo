@@ -5,12 +5,12 @@ package plexgo
 import (
 	"context"
 	"fmt"
-	"github.com/LukeHagar/plexgo/internal/config"
-	"github.com/LukeHagar/plexgo/internal/hooks"
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/models/operations"
-	"github.com/LukeHagar/plexgo/models/sdkerrors"
-	"github.com/LukeHagar/plexgo/retry"
+	"github.com/ygelfand/plexgo/internal/config"
+	"github.com/ygelfand/plexgo/internal/hooks"
+	"github.com/ygelfand/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/models/operations"
+	"github.com/ygelfand/plexgo/models/sdkerrors"
+	"github.com/ygelfand/plexgo/retry"
 	"net/http"
 	"net/url"
 )
@@ -118,6 +118,16 @@ func (s *Rate) SetRating(ctx context.Context, request operations.SetRatingReques
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -127,10 +137,6 @@ func (s *Rate) SetRating(ctx context.Context, request operations.SetRatingReques
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -189,7 +195,7 @@ func (s *Rate) SetRating(ctx context.Context, request operations.SetRatingReques
 
 			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 			return nil, err
-		} else if utils.MatchStatusCodes([]string{"400", "404", "4XX", "5XX"}, httpRes.StatusCode) {
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
 			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 			if err != nil {
 				return nil, err
@@ -212,6 +218,7 @@ func (s *Rate) SetRating(ctx context.Context, request operations.SetRatingReques
 
 	switch {
 	case httpRes.StatusCode == 200:
+		utils.DrainBody(httpRes)
 	case httpRes.StatusCode == 400:
 		fallthrough
 	case httpRes.StatusCode == 404:

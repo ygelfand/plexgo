@@ -3,8 +3,8 @@
 package operations
 
 import (
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/models/components"
+	"github.com/ygelfand/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/models/components"
 	"net/http"
 )
 
@@ -144,20 +144,34 @@ type ListPlaybackHistoryRequest struct {
 	DeviceName *string `header:"style=simple,explode=false,name=X-Plex-Device-Name"`
 	// The marketplace on which the client application is distributed
 	Marketplace *string `header:"style=simple,explode=false,name=X-Plex-Marketplace"`
+	// Pagination start offset
+	XPlexContainerStart *int64 `queryParam:"style=form,explode=true,name=X-Plex-Container-Start"`
+	// Pagination page size
+	XPlexContainerSize *int64 `queryParam:"style=form,explode=true,name=X-Plex-Container-Size"`
 	// The account id to restrict view history
 	AccountID *int64 `queryParam:"style=form,explode=true,name=accountID"`
 	// The time period to restrict history (typically of the form `viewedAt>=12456789`)
 	ViewedAt *int64 `queryParam:"style=form,explode=true,name=viewedAt"`
-	// Filter history to items viewed after or at this time
-	ViewedAtGte *int64 `queryParam:"style=form,explode=true,name=viewedAt>"`
-	// Filter history to items viewed before or at this time
-	ViewedAtLte *int64 `queryParam:"style=form,explode=true,name=viewedAt<"`
 	// The library section id to restrict view history
 	LibrarySectionID *int64 `queryParam:"style=form,explode=true,name=librarySectionID"`
 	// The metadata item to restrict view history (can provide the id for a show to see all of that show's view history).  Note this is translated to `metadata_items.id`, `parents.id`, or `grandparents.id` internally depending on the metadata type.
 	MetadataItemID *int64 `queryParam:"style=form,explode=true,name=metadataItemID"`
 	// The field on which to sort.  Multiple orderings can be specified separated by `,` and the direction specified following a `:` (`desc` or `asc`; `asc` is assumed if not provided).  Note `metadataItemID` may not be used here.
 	Sort []string `queryParam:"style=form,explode=true,name=sort"`
+	// Comma-separated list of elements to exclude from the response
+	ExcludeElements *string `queryParam:"style=form,explode=true,name=excludeElements"`
+	// Comma-separated list of fields to exclude from the response
+	ExcludeFields *string `queryParam:"style=form,explode=true,name=excludeFields"`
+	// Whitelist of fields to return
+	IncludeFields *string `queryParam:"style=form,explode=true,name=includeFields"`
+	// Whitelist of elements to include
+	IncludeElements *string `queryParam:"style=form,explode=true,name=includeElements"`
+	// Greater-than filter for viewedAt timestamp
+	ViewedAtGreaterThan *int64 `queryParam:"style=form,explode=true,name=viewedAt>"`
+	// Less-than filter for viewedAt timestamp
+	ViewedAtLessThan *int64 `queryParam:"style=form,explode=true,name=viewedAt<"`
+	// Filter by device ID
+	DeviceID *int64 `queryParam:"style=form,explode=true,name=deviceID"`
 }
 
 func (l ListPlaybackHistoryRequest) MarshalJSON() ([]byte, error) {
@@ -248,6 +262,20 @@ func (l *ListPlaybackHistoryRequest) GetMarketplace() *string {
 	return l.Marketplace
 }
 
+func (l *ListPlaybackHistoryRequest) GetXPlexContainerStart() *int64 {
+	if l == nil {
+		return nil
+	}
+	return l.XPlexContainerStart
+}
+
+func (l *ListPlaybackHistoryRequest) GetXPlexContainerSize() *int64 {
+	if l == nil {
+		return nil
+	}
+	return l.XPlexContainerSize
+}
+
 func (l *ListPlaybackHistoryRequest) GetAccountID() *int64 {
 	if l == nil {
 		return nil
@@ -260,20 +288,6 @@ func (l *ListPlaybackHistoryRequest) GetViewedAt() *int64 {
 		return nil
 	}
 	return l.ViewedAt
-}
-
-func (l *ListPlaybackHistoryRequest) GetViewedAtGte() *int64 {
-	if l == nil {
-		return nil
-	}
-	return l.ViewedAtGte
-}
-
-func (l *ListPlaybackHistoryRequest) GetViewedAtLte() *int64 {
-	if l == nil {
-		return nil
-	}
-	return l.ViewedAtLte
 }
 
 func (l *ListPlaybackHistoryRequest) GetLibrarySectionID() *int64 {
@@ -297,180 +311,53 @@ func (l *ListPlaybackHistoryRequest) GetSort() []string {
 	return l.Sort
 }
 
-type ListPlaybackHistoryMetadata struct {
-	// The account id of this playback
-	AccountID *int64 `json:"accountID,omitempty"`
-	// The device id which played the item
-	DeviceID *int64 `json:"deviceID,omitempty"`
-	// The key for this individual history item
-	HistoryKey *string `json:"historyKey,omitempty"`
-	// The metadata key for the item played
-	Key *string `json:"key,omitempty"`
-	// The library section id containing the item played
-	LibrarySectionID *string `json:"librarySectionID,omitempty"`
-	// The originally available at of the item played
-	OriginallyAvailableAt *string `json:"originallyAvailableAt,omitempty"`
-	// The rating key for the item played
-	RatingKey *string `json:"ratingKey,omitempty"`
-	// The thumb of the item played
-	Thumb *string `json:"thumb,omitempty"`
-	// The title of the item played
-	Title *string `json:"title,omitempty"`
-	// The metadata type of the item played
-	Type *string `json:"type,omitempty"`
-	// The time when the item was played
-	ViewedAt *int64 `json:"viewedAt,omitempty"`
-
-	// Hierarchical fields
-	GrandparentKey   *string `json:"grandparentKey,omitempty"`
-	GrandparentTitle *string `json:"grandparentTitle,omitempty"`
-	GrandparentThumb *string `json:"grandparentThumb,omitempty"`
-	GrandparentArt   *string `json:"grandparentArt,omitempty"`
-	ParentKey        *string `json:"parentKey,omitempty"`
-	ParentTitle      *string `json:"parentTitle,omitempty"`
-	ParentThumb      *string `json:"parentThumb,omitempty"`
-	ParentIndex      *int    `json:"parentIndex,omitempty"`
-	Index            *int    `json:"index,omitempty"`
-}
-
-func (l *ListPlaybackHistoryMetadata) GetAccountID() *int64 {
+func (l *ListPlaybackHistoryRequest) GetExcludeElements() *string {
 	if l == nil {
 		return nil
 	}
-	return l.AccountID
+	return l.ExcludeElements
 }
 
-func (l *ListPlaybackHistoryMetadata) GetDeviceID() *int64 {
+func (l *ListPlaybackHistoryRequest) GetExcludeFields() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ExcludeFields
+}
+
+func (l *ListPlaybackHistoryRequest) GetIncludeFields() *string {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeFields
+}
+
+func (l *ListPlaybackHistoryRequest) GetIncludeElements() *string {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeElements
+}
+
+func (l *ListPlaybackHistoryRequest) GetViewedAtGreaterThan() *int64 {
+	if l == nil {
+		return nil
+	}
+	return l.ViewedAtGreaterThan
+}
+
+func (l *ListPlaybackHistoryRequest) GetViewedAtLessThan() *int64 {
+	if l == nil {
+		return nil
+	}
+	return l.ViewedAtLessThan
+}
+
+func (l *ListPlaybackHistoryRequest) GetDeviceID() *int64 {
 	if l == nil {
 		return nil
 	}
 	return l.DeviceID
-}
-
-func (l *ListPlaybackHistoryMetadata) GetHistoryKey() *string {
-	if l == nil {
-		return nil
-	}
-	return l.HistoryKey
-}
-
-func (l *ListPlaybackHistoryMetadata) GetKey() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Key
-}
-
-func (l *ListPlaybackHistoryMetadata) GetLibrarySectionID() *string {
-	if l == nil {
-		return nil
-	}
-	return l.LibrarySectionID
-}
-
-func (l *ListPlaybackHistoryMetadata) GetOriginallyAvailableAt() *string {
-	if l == nil {
-		return nil
-	}
-	return l.OriginallyAvailableAt
-}
-
-func (l *ListPlaybackHistoryMetadata) GetRatingKey() *string {
-	if l == nil {
-		return nil
-	}
-	return l.RatingKey
-}
-
-func (l *ListPlaybackHistoryMetadata) GetThumb() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Thumb
-}
-
-func (l *ListPlaybackHistoryMetadata) GetTitle() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Title
-}
-
-func (l *ListPlaybackHistoryMetadata) GetType() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Type
-}
-
-func (l *ListPlaybackHistoryMetadata) GetViewedAt() *int64 {
-	if l == nil {
-		return nil
-	}
-	return l.ViewedAt
-}
-
-func (l *ListPlaybackHistoryMetadata) GetGrandparentKey() *string {
-	if l == nil {
-		return nil
-	}
-	return l.GrandparentKey
-}
-
-func (l *ListPlaybackHistoryMetadata) GetGrandparentTitle() *string {
-	if l == nil {
-		return nil
-	}
-	return l.GrandparentTitle
-}
-
-func (l *ListPlaybackHistoryMetadata) GetGrandparentThumb() *string {
-	if l == nil {
-		return nil
-	}
-	return l.GrandparentThumb
-}
-
-func (l *ListPlaybackHistoryMetadata) GetGrandparentArt() *string {
-	if l == nil {
-		return nil
-	}
-	return l.GrandparentArt
-}
-
-func (l *ListPlaybackHistoryMetadata) GetParentKey() *string {
-	if l == nil {
-		return nil
-	}
-	return l.ParentKey
-}
-
-func (l *ListPlaybackHistoryMetadata) GetParentTitle() *string {
-	if l == nil {
-		return nil
-	}
-	return l.ParentTitle
-}
-
-func (l *ListPlaybackHistoryMetadata) GetParentThumb() *string {
-	if l == nil {
-		return nil
-	}
-	return l.ParentThumb
-}
-
-func (l *ListPlaybackHistoryMetadata) GetParentIndex() *int {
-	if l == nil {
-		return nil
-	}
-	return l.ParentIndex
-}
-
-func (l *ListPlaybackHistoryMetadata) GetIndex() *int {
-	if l == nil {
-		return nil
-	}
-	return l.Index
 }
 
 // ListPlaybackHistoryMediaContainer - `MediaContainer` is the root element of most Plex API responses. It serves as a generic container for various types of content (Metadata, Hubs, Directories, etc.) and includes pagination information (offset, size, totalSize) when applicable.
@@ -479,13 +366,11 @@ func (l *ListPlaybackHistoryMetadata) GetIndex() *int {
 type ListPlaybackHistoryMediaContainer struct {
 	Identifier *string `json:"identifier,omitempty"`
 	// The offset of where this container page starts among the total objects available. Also provided in the `X-Plex-Container-Start` header.
-	//
 	Offset *int64 `json:"offset,omitempty"`
 	Size   *int64 `json:"size,omitempty"`
 	// The total size of objects available. Also provided in the `X-Plex-Container-Total-Size` header.
-	//
-	TotalSize *int64                        `json:"totalSize,omitempty"`
-	Metadata  []ListPlaybackHistoryMetadata `json:"Metadata,omitempty"`
+	TotalSize *int64                               `json:"totalSize,omitempty"`
+	Metadata  []components.PlaybackHistoryMetadata `json:"Metadata,omitempty"`
 }
 
 func (l *ListPlaybackHistoryMediaContainer) GetIdentifier() *string {
@@ -516,7 +401,7 @@ func (l *ListPlaybackHistoryMediaContainer) GetTotalSize() *int64 {
 	return l.TotalSize
 }
 
-func (l *ListPlaybackHistoryMediaContainer) GetMetadata() []ListPlaybackHistoryMetadata {
+func (l *ListPlaybackHistoryMediaContainer) GetMetadata() []components.PlaybackHistoryMetadata {
 	if l == nil {
 		return nil
 	}

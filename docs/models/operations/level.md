@@ -7,6 +7,15 @@ An integer log level to write to the PMS log with.
   - 3: Debug
   - 4: Verbose
 
+## Example Usage
+
+```go
+import (
+	"github.com/LukeHagar/plexgo/models/operations"
+)
+
+value := operations.LevelZero
+```
 
 
 ## Values

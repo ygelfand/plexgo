@@ -4,8 +4,8 @@ package config
 
 import (
 	"context"
-	"github.com/LukeHagar/plexgo/internal/globals"
-	"github.com/LukeHagar/plexgo/retry"
+	"github.com/ygelfand/plexgo/internal/globals"
+	"github.com/ygelfand/plexgo/retry"
 	"net/http"
 	"time"
 )
@@ -15,16 +15,19 @@ type HTTPClient interface {
 }
 
 type SDKConfiguration struct {
-	Client          HTTPClient
-	Security        func(context.Context) (interface{}, error)
-	ServerURL       string
-	ServerIndex     int
-	ServerList      []string
-	ServerVariables []map[string]string
-	UserAgent       string
-	Globals         globals.Globals
-	RetryConfig     *retry.Config
-	Timeout         *time.Duration
+	Client            HTTPClient
+	Security          func(context.Context) (interface{}, error)
+	ServerURL         string
+	ServerIndex       int
+	ServerList        []string
+	ServerVariables   []map[string]string
+	UserAgent         string
+	SDKVersion        string
+	GenVersion        string
+	OpenAPIDocVersion string
+	Globals           globals.Globals
+	RetryConfig       *retry.Config
+	Timeout           *time.Duration
 }
 
 func (c *SDKConfiguration) GetServerDetails() (string, map[string]string) {

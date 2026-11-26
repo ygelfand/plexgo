@@ -6,12 +6,12 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/LukeHagar/plexgo/internal/config"
-	"github.com/LukeHagar/plexgo/internal/hooks"
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/models/operations"
-	"github.com/LukeHagar/plexgo/models/sdkerrors"
-	"github.com/LukeHagar/plexgo/retry"
+	"github.com/ygelfand/plexgo/internal/config"
+	"github.com/ygelfand/plexgo/internal/hooks"
+	"github.com/ygelfand/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/models/operations"
+	"github.com/ygelfand/plexgo/models/sdkerrors"
+	"github.com/ygelfand/plexgo/retry"
 	"net/http"
 	"net/url"
 )
@@ -33,6 +33,8 @@ func newButler(rootSDK *PlexAPI, sdkConfig config.SDKConfiguration, hooks *hooks
 
 // StopTasks - Stop all Butler tasks
 // This endpoint will stop all currently running tasks and remove any scheduled tasks from the queue.
+//
+// If set, this operation will use [Security.Token] from the global security.
 func (s *Butler) StopTasks(ctx context.Context, opts ...operations.Option) (*operations.StopTasksResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
@@ -82,10 +84,10 @@ func (s *Butler) StopTasks(ctx context.Context, opts ...operations.Option) (*ope
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
-	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
 
-	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security, "Token"); err != nil {
 		return nil, err
 	}
 
@@ -98,6 +100,16 @@ func (s *Butler) StopTasks(ctx context.Context, opts ...operations.Option) (*ope
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -107,10 +119,6 @@ func (s *Butler) StopTasks(ctx context.Context, opts ...operations.Option) (*ope
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -192,6 +200,30 @@ func (s *Butler) StopTasks(ctx context.Context, opts ...operations.Option) (*ope
 
 	switch {
 	case httpRes.StatusCode == 200:
+		utils.DrainBody(httpRes)
+	case httpRes.StatusCode == 401:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+
+			var out sdkerrors.Error
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, sdkerrors.NewResponseValidationError("response did not match the declared error schema", httpRes.StatusCode, string(rawBody), httpRes, err)
+			}
+
+			return nil, &out
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, sdkerrors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode == 400:
+		fallthrough
 	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
 		rawBody, err := utils.ConsumeRawBody(httpRes)
 		if err != nil {
@@ -218,6 +250,8 @@ func (s *Butler) StopTasks(ctx context.Context, opts ...operations.Option) (*ope
 
 // GetTasks - Get all Butler tasks
 // Get the list of butler tasks and their scheduling
+//
+// If set, this operation will use [Security.Token] from the global security.
 func (s *Butler) GetTasks(ctx context.Context, opts ...operations.Option) (*operations.GetTasksResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
@@ -270,7 +304,7 @@ func (s *Butler) GetTasks(ctx context.Context, opts ...operations.Option) (*oper
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
 
-	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security, "Token"); err != nil {
 		return nil, err
 	}
 
@@ -283,6 +317,16 @@ func (s *Butler) GetTasks(ctx context.Context, opts ...operations.Option) (*oper
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -292,10 +336,6 @@ func (s *Butler) GetTasks(ctx context.Context, opts ...operations.Option) (*oper
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -397,6 +437,29 @@ func (s *Butler) GetTasks(ctx context.Context, opts ...operations.Option) (*oper
 			}
 			return nil, sdkerrors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
 		}
+	case httpRes.StatusCode == 401:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+
+			var out sdkerrors.Error
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, sdkerrors.NewResponseValidationError("response did not match the declared error schema", httpRes.StatusCode, string(rawBody), httpRes, err)
+			}
+
+			return nil, &out
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, sdkerrors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode == 400:
+		fallthrough
 	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
 		rawBody, err := utils.ConsumeRawBody(httpRes)
 		if err != nil {
@@ -428,6 +491,8 @@ func (s *Butler) GetTasks(ctx context.Context, opts ...operations.Option) (*oper
 //  2. If a task is configured to run at a random time during the configured window and we are outside that window, the task will start immediately.
 //  3. If a task is configured to run at a random time during the configured window and we are within that window, the task will be scheduled at a random time within the window.
 //  4. If we are outside the configured window, the task will start immediately.
+//
+// If set, this operation will use [Security.Token] from the global security.
 func (s *Butler) StartTasks(ctx context.Context, opts ...operations.Option) (*operations.StartTasksResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
@@ -477,10 +542,10 @@ func (s *Butler) StartTasks(ctx context.Context, opts ...operations.Option) (*op
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
-	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
 
-	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security, "Token"); err != nil {
 		return nil, err
 	}
 
@@ -493,6 +558,16 @@ func (s *Butler) StartTasks(ctx context.Context, opts ...operations.Option) (*op
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -502,10 +577,6 @@ func (s *Butler) StartTasks(ctx context.Context, opts ...operations.Option) (*op
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -587,6 +658,30 @@ func (s *Butler) StartTasks(ctx context.Context, opts ...operations.Option) (*op
 
 	switch {
 	case httpRes.StatusCode == 200:
+		utils.DrainBody(httpRes)
+	case httpRes.StatusCode == 401:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+
+			var out sdkerrors.Error
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, sdkerrors.NewResponseValidationError("response did not match the declared error schema", httpRes.StatusCode, string(rawBody), httpRes, err)
+			}
+
+			return nil, &out
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, sdkerrors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode == 400:
+		fallthrough
 	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
 		rawBody, err := utils.ConsumeRawBody(httpRes)
 		if err != nil {
@@ -613,6 +708,8 @@ func (s *Butler) StartTasks(ctx context.Context, opts ...operations.Option) (*op
 
 // StopTask - Stop a single Butler task
 // This endpoint will stop a currently running task by name, or remove it from the list of scheduled tasks if it exists
+//
+// If set, this operation will use [Security.Token] from the global security.
 func (s *Butler) StopTask(ctx context.Context, request operations.StopTaskRequest, opts ...operations.Option) (*operations.StopTaskResponse, error) {
 	globals := operations.StopTaskGlobals{
 		Accepts:          s.sdkConfiguration.Globals.Accepts,
@@ -681,7 +778,7 @@ func (s *Butler) StopTask(ctx context.Context, request operations.StopTaskReques
 
 	utils.PopulateHeaders(ctx, req, request, globals)
 
-	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security, "Token"); err != nil {
 		return nil, err
 	}
 
@@ -694,6 +791,16 @@ func (s *Butler) StopTask(ctx context.Context, request operations.StopTaskReques
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -703,10 +810,6 @@ func (s *Butler) StopTask(ctx context.Context, request operations.StopTaskReques
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -765,7 +868,7 @@ func (s *Butler) StopTask(ctx context.Context, request operations.StopTaskReques
 
 			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 			return nil, err
-		} else if utils.MatchStatusCodes([]string{"404", "4XX", "5XX"}, httpRes.StatusCode) {
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
 			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 			if err != nil {
 				return nil, err
@@ -788,6 +891,7 @@ func (s *Butler) StopTask(ctx context.Context, request operations.StopTaskReques
 
 	switch {
 	case httpRes.StatusCode == 200:
+		utils.DrainBody(httpRes)
 	case httpRes.StatusCode == 404:
 		fallthrough
 	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
@@ -816,6 +920,8 @@ func (s *Butler) StopTask(ctx context.Context, request operations.StopTaskReques
 
 // StartTask - Start a single Butler task
 // This endpoint will attempt to start a specific Butler task by name.
+//
+// If set, this operation will use [Security.Token] from the global security.
 func (s *Butler) StartTask(ctx context.Context, request operations.StartTaskRequest, opts ...operations.Option) (*operations.StartTaskResponse, error) {
 	globals := operations.StartTaskGlobals{
 		Accepts:          s.sdkConfiguration.Globals.Accepts,
@@ -879,12 +985,12 @@ func (s *Butler) StartTask(ctx context.Context, request operations.StartTaskRequ
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
-	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Accept", "text/html")
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
 
 	utils.PopulateHeaders(ctx, req, request, globals)
 
-	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security, "Token"); err != nil {
 		return nil, err
 	}
 
@@ -897,6 +1003,16 @@ func (s *Butler) StartTask(ctx context.Context, request operations.StartTaskRequ
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -906,10 +1022,6 @@ func (s *Butler) StartTask(ctx context.Context, request operations.StartTaskRequ
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -968,7 +1080,7 @@ func (s *Butler) StartTask(ctx context.Context, request operations.StartTaskRequ
 
 			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 			return nil, err
-		} else if utils.MatchStatusCodes([]string{"404", "4XX", "5XX"}, httpRes.StatusCode) {
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
 			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 			if err != nil {
 				return nil, err
@@ -991,8 +1103,38 @@ func (s *Butler) StartTask(ctx context.Context, request operations.StartTaskRequ
 
 	switch {
 	case httpRes.StatusCode == 200:
-		fallthrough
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `text/html`):
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+
+			res.Body = rawBody
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, sdkerrors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
 	case httpRes.StatusCode == 202:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `text/html`):
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+
+			out := string(rawBody)
+			res.Res = &out
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, sdkerrors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
 	case httpRes.StatusCode == 404:
 		fallthrough
 	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:

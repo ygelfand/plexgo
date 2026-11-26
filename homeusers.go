@@ -7,13 +7,13 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/LukeHagar/plexgo/internal/config"
-	"github.com/LukeHagar/plexgo/internal/hooks"
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/models/components"
-	"github.com/LukeHagar/plexgo/models/operations"
-	"github.com/LukeHagar/plexgo/models/sdkerrors"
-	"github.com/LukeHagar/plexgo/retry"
+	"github.com/ygelfand/plexgo/internal/config"
+	"github.com/ygelfand/plexgo/internal/hooks"
+	"github.com/ygelfand/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/models/components"
+	"github.com/ygelfand/plexgo/models/operations"
+	"github.com/ygelfand/plexgo/models/sdkerrors"
+	"github.com/ygelfand/plexgo/retry"
 )
 
 type HomeUsers struct {
@@ -31,8 +31,8 @@ func newHomeUsers(rootSDK *PlexAPI, sdkConfig config.SDKConfiguration, hooks *ho
 }
 
 // GetHomeUsers - Get list of all users in the home
-func (s *HomeUsers) GetHomeUsers(ctx context.Context, opts ...operations.Option) (*operations.GetHomeUsersResponse, error) {
-	globals := operations.GetHomeUsersGlobals{
+func (s *HomeUsers) GetHomeUsers(ctx context.Context, opts ...operations.Option) (*operations.ListHomeUsersResponse, error) {
+	globals := operations.ListHomeUsersGlobals{
 		Accepts:          s.sdkConfiguration.Globals.Accepts,
 		ClientIdentifier: s.sdkConfiguration.Globals.ClientIdentifier,
 		Product:          s.sdkConfiguration.Globals.Product,
@@ -58,7 +58,7 @@ func (s *HomeUsers) GetHomeUsers(ctx context.Context, opts ...operations.Option)
 		}
 	}
 
-	baseURL := utils.ReplaceParameters(operations.GetHomeUsersServerList[0], map[string]string{})
+	baseURL := utils.ReplaceParameters(operations.ListHomeUsersServerList[0], map[string]string{})
 	if o.ServerURL != nil {
 		baseURL = *o.ServerURL
 	}
@@ -96,7 +96,7 @@ func (s *HomeUsers) GetHomeUsers(ctx context.Context, opts ...operations.Option)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
 
-	utils.PopulateHeaders(ctx, req, operations.GetHomeUsersRequest{}, globals)
+	utils.PopulateHeaders(ctx, req, operations.ListHomeUsersRequest{}, globals)
 
 	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
 		return nil, err
@@ -117,7 +117,7 @@ func (s *HomeUsers) GetHomeUsers(ctx context.Context, opts ...operations.Option)
 	var httpRes *http.Response
 	if retryConfig != nil {
 		httpRes, err = utils.Retry(ctx, utils.Retries{
-			Config: retryConfig,
+			Config:      retryConfig,
 			StatusCodes: []string{"429", "500", "502", "503", "504"},
 		}, func() (*http.Response, error) {
 			req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
@@ -144,7 +144,7 @@ func (s *HomeUsers) GetHomeUsers(ctx context.Context, opts ...operations.Option)
 		}
 	}
 
-	res := &operations.GetHomeUsersResponse{
+	res := &operations.ListHomeUsersResponse{
 		StatusCode:  httpRes.StatusCode,
 		ContentType: httpRes.Header.Get("Content-Type"),
 		RawResponse: httpRes,
@@ -155,7 +155,7 @@ func (s *HomeUsers) GetHomeUsers(ctx context.Context, opts ...operations.Option)
 		if err != nil {
 			return nil, err
 		}
-		var out operations.GetHomeUsersResponseBody
+		var out operations.ListHomeUsersResponseBody
 		if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 			return nil, err
 		}

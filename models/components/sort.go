@@ -5,7 +5,7 @@ package components
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/LukeHagar/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/internal/utils"
 )
 
 type SortPivot struct {

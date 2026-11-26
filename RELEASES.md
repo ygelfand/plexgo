@@ -1273,3 +1273,103 @@ Based on:
 - [go v0.28.2] .
 ### Releases
 - [Go v0.28.2] https://github.com/LukeHagar/plexgo/releases/tag/v0.28.2 - .
+
+## 2026-03-11 00:12:57
+### Changes
+Based on:
+- OpenAPI Doc  
+- Speakeasy CLI 1.751.0 (2.858.2) https://github.com/speakeasy-api/speakeasy
+### Generated
+- [go v0.28.3] .
+### Releases
+- [Go v0.28.3] https://github.com/LukasParke/plexgo/releases/tag/v0.28.3 - .
+
+## 2026-03-12 00:13:58
+### Changes
+Based on:
+- OpenAPI Doc  
+- Speakeasy CLI 1.752.0 (2.859.2) https://github.com/speakeasy-api/speakeasy
+### Generated
+- [go v0.28.4] .
+### Releases
+- [Go v0.28.4] https://github.com/LukasParke/plexgo/releases/tag/v0.28.4 - .
+
+## 2026-04-01 00:20:44
+### Changes
+Based on:
+- OpenAPI Doc  
+- Speakeasy CLI 1.761.0 (2.879.1) https://github.com/speakeasy-api/speakeasy
+### Generated
+- [go v0.28.5] .
+### Releases
+- [Go v0.28.5] https://github.com/LukasParke/plexgo/releases/tag/v0.28.5 - .
+
+## 2026-05-19 00:34:06
+### Changes
+Based on:
+- OpenAPI Doc  
+- Speakeasy CLI 1.763.1 (2.884.4) https://github.com/speakeasy-api/speakeasy
+### Generated
+- [go v0.28.6] .
+### Releases
+- [Go v0.28.6] https://github.com/LukasParke/plexgo/releases/tag/v0.28.6 - .
+
+## 2026-07-19 00:25:29
+### Changes
+Based on:
+- OpenAPI Doc  
+- Speakeasy CLI 1.790.2 (2.918.3) https://github.com/speakeasy-api/speakeasy
+### Generated
+- [go v0.29.0] .
+### Releases
+- [Go v0.29.0] https://github.com/LukasParke/plexgo/releases/tag/v0.29.0 - .
+
+## 2026-08-14 00:18:08
+### Changes
+Based on:
+- OpenAPI Doc  
+- Speakeasy CLI 1.793.1 (2.928.0) https://github.com/speakeasy-api/speakeasy
+### Generated
+- [go v0.29.1] .
+### Releases
+- [Go v0.29.1] https://github.com/LukasParke/plexgo/releases/tag/v0.29.1 - .
+
+## 2026-08-21 00:09:08
+### Changes
+Based on:
+- OpenAPI Doc  
+- Speakeasy CLI 1.795.1 (2.932.9) https://github.com/speakeasy-api/speakeasy
+### Generated
+- [go v0.29.2] .
+### Releases
+- [Go v0.29.2] https://github.com/LukasParke/plexgo/releases/tag/v0.29.2 - .
+
+## 2026-10-17 02:23:09
+### Changes
+Based on:
+- OpenAPI Doc  
+- Speakeasy CLI 1.802.0 (2.948.4) https://github.com/speakeasy-api/speakeasy
+### Generated
+- [go v0.30.0] .
+### Releases
+- [Go v0.30.0] https://github.com/LukasParke/plexgo/releases/tag/v0.30.0 - .
+
+## 2026-10-18 02:23:32
+### Changes
+Based on:
+- OpenAPI Doc  
+- Speakeasy CLI 1.802.0 (2.948.4) https://github.com/speakeasy-api/speakeasy
+### Generated
+- [go v0.30.1] .
+### Releases
+- [Go v0.30.1] https://github.com/LukasParke/plexgo/releases/tag/v0.30.1 - .
+
+## 2026-10-20 02:50:23
+### Changes
+Based on:
+- OpenAPI Doc  
+- Speakeasy CLI 1.802.0 (2.948.4) https://github.com/speakeasy-api/speakeasy
+### Generated
+- [go v0.30.2] .
+### Releases
+- [Go v0.30.2] https://github.com/LukasParke/plexgo/releases/tag/v0.30.2 - .

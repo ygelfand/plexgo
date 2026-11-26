@@ -4,10 +4,10 @@ package operations
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/models/components"
-	"github.com/LukeHagar/plexgo/types"
+	"github.com/ygelfand/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/models/components"
 	"net/http"
 )
 
@@ -257,7 +257,6 @@ func (g *GetPlaylistGeneratorItemsRequest) GetGeneratorID() int64 {
 
 type GetPlaylistGeneratorItemsGuids struct {
 	// The unique identifier for the Guid. Can be prefixed with imdb://, tmdb://, tvdb://
-	//
 	ID string `json:"id"`
 }
 
@@ -266,6 +265,200 @@ func (g *GetPlaylistGeneratorItemsGuids) GetID() string {
 		return ""
 	}
 	return g.ID
+}
+
+type GetPlaylistGeneratorItemsSkipChildren2 string
+
+const (
+	GetPlaylistGeneratorItemsSkipChildren2Zero GetPlaylistGeneratorItemsSkipChildren2 = "0"
+	GetPlaylistGeneratorItemsSkipChildren2One  GetPlaylistGeneratorItemsSkipChildren2 = "1"
+)
+
+func (e GetPlaylistGeneratorItemsSkipChildren2) ToPointer() *GetPlaylistGeneratorItemsSkipChildren2 {
+	return &e
+}
+func (e *GetPlaylistGeneratorItemsSkipChildren2) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = GetPlaylistGeneratorItemsSkipChildren2(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for GetPlaylistGeneratorItemsSkipChildren2: %v", v)
+	}
+}
+
+type GetPlaylistGeneratorItemsSkipChildrenType string
+
+const (
+	GetPlaylistGeneratorItemsSkipChildrenTypeBoolean                                GetPlaylistGeneratorItemsSkipChildrenType = "boolean"
+	GetPlaylistGeneratorItemsSkipChildrenTypeGetPlaylistGeneratorItemsSkipChildren2 GetPlaylistGeneratorItemsSkipChildrenType = "getPlaylistGeneratorItems_skipChildren_2"
+)
+
+// GetPlaylistGeneratorItemsSkipChildren - When found on a show item, indicates that the children (seasons) should be skipped in favor of the grandchildren (episodes). Useful for mini-series, etc.
+type GetPlaylistGeneratorItemsSkipChildren struct {
+	Boolean                                *bool                                   `queryParam:"inline" union:"member"`
+	GetPlaylistGeneratorItemsSkipChildren2 *GetPlaylistGeneratorItemsSkipChildren2 `queryParam:"inline" union:"member"`
+
+	Type GetPlaylistGeneratorItemsSkipChildrenType
+}
+
+func CreateGetPlaylistGeneratorItemsSkipChildrenBoolean(boolean bool) GetPlaylistGeneratorItemsSkipChildren {
+	typ := GetPlaylistGeneratorItemsSkipChildrenTypeBoolean
+
+	return GetPlaylistGeneratorItemsSkipChildren{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateGetPlaylistGeneratorItemsSkipChildrenGetPlaylistGeneratorItemsSkipChildren2(getPlaylistGeneratorItemsSkipChildren2 GetPlaylistGeneratorItemsSkipChildren2) GetPlaylistGeneratorItemsSkipChildren {
+	typ := GetPlaylistGeneratorItemsSkipChildrenTypeGetPlaylistGeneratorItemsSkipChildren2
+
+	return GetPlaylistGeneratorItemsSkipChildren{
+		GetPlaylistGeneratorItemsSkipChildren2: &getPlaylistGeneratorItemsSkipChildren2,
+		Type:                                   typ,
+	}
+}
+
+func (u *GetPlaylistGeneratorItemsSkipChildren) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = GetPlaylistGeneratorItemsSkipChildren{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = GetPlaylistGeneratorItemsSkipChildrenTypeBoolean
+		return nil
+	}
+
+	var getPlaylistGeneratorItemsSkipChildren2 GetPlaylistGeneratorItemsSkipChildren2 = GetPlaylistGeneratorItemsSkipChildren2("")
+	if err := utils.UnmarshalJSON(data, &getPlaylistGeneratorItemsSkipChildren2, "", true, nil); err == nil {
+		u.GetPlaylistGeneratorItemsSkipChildren2 = &getPlaylistGeneratorItemsSkipChildren2
+		u.Type = GetPlaylistGeneratorItemsSkipChildrenTypeGetPlaylistGeneratorItemsSkipChildren2
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for GetPlaylistGeneratorItemsSkipChildren", string(data))
+}
+
+func (u GetPlaylistGeneratorItemsSkipChildren) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.GetPlaylistGeneratorItemsSkipChildren2 != nil {
+		return utils.MarshalJSON(u.GetPlaylistGeneratorItemsSkipChildren2, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type GetPlaylistGeneratorItemsSkipChildren: all fields are null")
+}
+
+type GetPlaylistGeneratorItemsSkipParent2 string
+
+const (
+	GetPlaylistGeneratorItemsSkipParent2Zero GetPlaylistGeneratorItemsSkipParent2 = "0"
+	GetPlaylistGeneratorItemsSkipParent2One  GetPlaylistGeneratorItemsSkipParent2 = "1"
+)
+
+func (e GetPlaylistGeneratorItemsSkipParent2) ToPointer() *GetPlaylistGeneratorItemsSkipParent2 {
+	return &e
+}
+func (e *GetPlaylistGeneratorItemsSkipParent2) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = GetPlaylistGeneratorItemsSkipParent2(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for GetPlaylistGeneratorItemsSkipParent2: %v", v)
+	}
+}
+
+type GetPlaylistGeneratorItemsSkipParentType string
+
+const (
+	GetPlaylistGeneratorItemsSkipParentTypeBoolean                              GetPlaylistGeneratorItemsSkipParentType = "boolean"
+	GetPlaylistGeneratorItemsSkipParentTypeGetPlaylistGeneratorItemsSkipParent2 GetPlaylistGeneratorItemsSkipParentType = "getPlaylistGeneratorItems_skipParent_2"
+)
+
+// GetPlaylistGeneratorItemsSkipParent - When present on an episode or track item, indicates parent should be skipped in favor of grandparent (show).
+type GetPlaylistGeneratorItemsSkipParent struct {
+	Boolean                              *bool                                 `queryParam:"inline" union:"member"`
+	GetPlaylistGeneratorItemsSkipParent2 *GetPlaylistGeneratorItemsSkipParent2 `queryParam:"inline" union:"member"`
+
+	Type GetPlaylistGeneratorItemsSkipParentType
+}
+
+func CreateGetPlaylistGeneratorItemsSkipParentBoolean(boolean bool) GetPlaylistGeneratorItemsSkipParent {
+	typ := GetPlaylistGeneratorItemsSkipParentTypeBoolean
+
+	return GetPlaylistGeneratorItemsSkipParent{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateGetPlaylistGeneratorItemsSkipParentGetPlaylistGeneratorItemsSkipParent2(getPlaylistGeneratorItemsSkipParent2 GetPlaylistGeneratorItemsSkipParent2) GetPlaylistGeneratorItemsSkipParent {
+	typ := GetPlaylistGeneratorItemsSkipParentTypeGetPlaylistGeneratorItemsSkipParent2
+
+	return GetPlaylistGeneratorItemsSkipParent{
+		GetPlaylistGeneratorItemsSkipParent2: &getPlaylistGeneratorItemsSkipParent2,
+		Type:                                 typ,
+	}
+}
+
+func (u *GetPlaylistGeneratorItemsSkipParent) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = GetPlaylistGeneratorItemsSkipParent{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = GetPlaylistGeneratorItemsSkipParentTypeBoolean
+		return nil
+	}
+
+	var getPlaylistGeneratorItemsSkipParent2 GetPlaylistGeneratorItemsSkipParent2 = GetPlaylistGeneratorItemsSkipParent2("")
+	if err := utils.UnmarshalJSON(data, &getPlaylistGeneratorItemsSkipParent2, "", true, nil); err == nil {
+		u.GetPlaylistGeneratorItemsSkipParent2 = &getPlaylistGeneratorItemsSkipParent2
+		u.Type = GetPlaylistGeneratorItemsSkipParentTypeGetPlaylistGeneratorItemsSkipParent2
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for GetPlaylistGeneratorItemsSkipParent", string(data))
+}
+
+func (u GetPlaylistGeneratorItemsSkipParent) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.GetPlaylistGeneratorItemsSkipParent2 != nil {
+		return utils.MarshalJSON(u.GetPlaylistGeneratorItemsSkipParent2, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type GetPlaylistGeneratorItemsSkipParent: all fields are null")
 }
 
 // ProcessingState - The state of processing if this generator is part of an optimizer playlist
@@ -373,13 +566,15 @@ type GetPlaylistGeneratorItemsMetadata struct {
 	// The title of the item (e.g. “300” or “The Simpsons”)
 	Title string `json:"title"`
 	// The type of the video item, such as `movie`, `episode`, or `clip`.
-	Type string `json:"type"`
+	Type *string `json:"type,omitempty"`
 	// When present, contains the disc number for a track on multi-disc albums.
 	AbsoluteIndex *int `json:"absoluteIndex,omitempty"`
 	// In units of seconds since the epoch, returns the time at which the item was added to the library.
-	AddedAt int64 `json:"addedAt"`
+	AddedAt *int64 `json:"addedAt,omitempty"`
 	// When present, the URL for the background artwork for the item.
 	Art *string `json:"art,omitempty"`
+	// Blur hash for background art.
+	ArtBlurHash *string `json:"artBlurHash,omitempty"`
 	// Some rating systems separate reviewer ratings from audience ratings
 	AudienceRating *float32 `json:"audienceRating,omitempty"`
 	// A URI representing the image to be shown with the audience rating (e.g. rottentomatoes://image.rating.spilled).
@@ -397,8 +592,14 @@ type GetPlaylistGeneratorItemsMetadata struct {
 	ContentRating *string          `json:"contentRating,omitempty"`
 	Country       []components.Tag `json:"Country,omitempty"`
 	Director      []components.Tag `json:"Director,omitempty"`
+	// Levenshtein distance for voice search results.
+	Distance *int64 `json:"distance,omitempty"`
 	// When present, the duration for the item, in units of milliseconds.
 	Duration *int `json:"duration,omitempty"`
+	// Edition string (e.g. "Director's Cut").
+	EditionTitle *string `json:"editionTitle,omitempty"`
+	// Whether credits marker generation is enabled for this item.
+	EnableCreditsMarkerGeneration *bool `json:"enableCreditsMarkerGeneration,omitempty"`
 	// Typically only seen in metadata at a library's top level
 	Filter []components.Filter `json:"Filter,omitempty"`
 	Genre  []components.Tag    `json:"Genre,omitempty"`
@@ -427,13 +628,23 @@ type GetPlaylistGeneratorItemsMetadata struct {
 	// When present, this represents the episode number for episodes, season number for seasons, or track number for audio tracks.
 	Index *int `json:"index,omitempty"`
 	// The key at which the item's details can be fetched.  In many cases a metadata item may be passed without all the details (such as in a hub) and this key corresponds to the endpoint to fetch additional details.
-	Key          string `json:"key"`
+	Key string `json:"key"`
+	// Per-item language override.
+	LanguageOverride *string `json:"languageOverride,omitempty"`
+	// Timestamp of the last user rating.
+	LastRatedAt  *int64 `json:"lastRatedAt,omitempty"`
 	LastViewedAt *int64 `json:"lastViewedAt,omitempty"`
 	// For shows and seasons, contains the number of total episodes.
-	LeafCount *int               `json:"leafCount,omitempty"`
-	Media     []components.Media `json:"Media,omitempty"`
-	// When present, in the format YYYY-MM-DD [HH:MM:SS] (the hours/minutes/seconds part is not always present). The air date, or a higher resolution release date for an item, depending on type. For example, episodes usually have air date like 1979-08-10 (we don't use epoch seconds because media existed prior to 1970). In some cases, recorded over-the-air content has higher resolution air date which includes a time component. Albums and movies may have day-resolution release dates as well.
-	OriginallyAvailableAt *types.Date `json:"originallyAvailableAt,omitempty"`
+	LeafCount *int `json:"leafCount,omitempty"`
+	// The library section containing this metadata item, when reported by the server.
+	LibrarySectionID *int64             `json:"librarySectionID,omitempty"`
+	Media            []components.Media `json:"Media,omitempty"`
+	// Analysis version for music items.
+	MusicAnalysisVersion *int64 `json:"musicAnalysisVersion,omitempty"`
+	// The original release or capture date as reported by the server.
+	// Values can be a date (YYYY-MM-DD), a date with a time (YYYY-MM-DD HH:MM:SS), or an ISO 8601 timestamp.
+	// Preserve the string representation so higher-resolution timestamps are not reduced to a date-only value.
+	OriginallyAvailableAt *string `json:"originallyAvailableAt,omitempty"`
 	// When present, used to indicate an item's original title, e.g. a movie's foreign title.
 	OriginalTitle *string `json:"originalTitle,omitempty"`
 	// The GUID of the parent media item.
@@ -450,6 +661,8 @@ type GetPlaylistGeneratorItemsMetadata struct {
 	ParentThumb *string `json:"parentThumb,omitempty"`
 	// The `title` of the parent
 	ParentTitle *string `json:"parentTitle,omitempty"`
+	// Item ID within a playlist.
+	PlaylistItemID *int64 `json:"playlistItemID,omitempty"`
 	// Indicates that the item has a primary extra; for a movie, this is a trailer, and for a music track it is a music video. The URL points to the metadata details endpoint for the item.
 	PrimaryExtraKey *string `json:"primaryExtraKey,omitempty"`
 	// Prompt to give the user for this directory (such as `Search Movies`)
@@ -469,11 +682,17 @@ type GetPlaylistGeneratorItemsMetadata struct {
 	// Used by old clients to provide nested menus allowing for primative (but structured) navigation.
 	Secondary *bool `json:"secondary,omitempty"`
 	// When found on a show item, indicates that the children (seasons) should be skipped in favor of the grandchildren (episodes). Useful for mini-series, etc.
-	SkipChildren *bool `json:"skipChildren,omitempty"`
+	SkipChildren *GetPlaylistGeneratorItemsSkipChildren `json:"skipChildren,omitempty"`
+	// Number of times this track has been skipped.
+	SkipCount *int64 `json:"skipCount,omitempty"`
 	// When present on an episode or track item, indicates parent should be skipped in favor of grandparent (show).
-	SkipParent *bool `json:"skipParent,omitempty"`
+	SkipParent *GetPlaylistGeneratorItemsSkipParent `json:"skipParent,omitempty"`
+	// URL-friendly slug for the item.
+	Slug *string `json:"slug,omitempty"`
 	// Typically only seen in metadata at a library's top level
 	Sort []components.Sort `json:"Sort,omitempty"`
+	// Remote or shared server item URI.
+	SourceURI *string `json:"sourceURI,omitempty"`
 	// When present, the studio or label which produced an item (e.g. movie studio for movies, record label for albums).
 	Studio *string `json:"studio,omitempty"`
 	// The subtype of the video item, such as `photo` when the video item is in a photo library
@@ -486,10 +705,14 @@ type GetPlaylistGeneratorItemsMetadata struct {
 	Theme *string `json:"theme,omitempty"`
 	// When present, the URL for the poster or thumbnail for the item. When available for types like movie, it will be the poster graphic, but fall-back to the extracted media thumbnail.
 	Thumb *string `json:"thumb,omitempty"`
+	// Blur hash for thumbnail.
+	ThumbBlurHash *string `json:"thumbBlurHash,omitempty"`
 	// Whene present, this is the string used for sorting the item. It's usually the title with any leading articles removed (e.g. “Simpsons”).
 	TitleSort *string `json:"titleSort,omitempty"`
 	// In units of seconds since the epoch, returns the time at which the item was last changed (e.g. had its metadata updated).
 	UpdatedAt *int64 `json:"updatedAt,omitempty"`
+	// Whether to display the original title.
+	UseOriginalTitle *bool `json:"useOriginalTitle,omitempty"`
 	// When the user has rated an item, this contains the user rating
 	UserRating *float32 `json:"userRating,omitempty"`
 	// When a users has completed watched or listened to an item, this attribute contains the number of consumptions.
@@ -526,9 +749,9 @@ func (g *GetPlaylistGeneratorItemsMetadata) GetTitle() string {
 	return g.Title
 }
 
-func (g *GetPlaylistGeneratorItemsMetadata) GetType() string {
+func (g *GetPlaylistGeneratorItemsMetadata) GetType() *string {
 	if g == nil {
-		return ""
+		return nil
 	}
 	return g.Type
 }
@@ -540,9 +763,9 @@ func (g *GetPlaylistGeneratorItemsMetadata) GetAbsoluteIndex() *int {
 	return g.AbsoluteIndex
 }
 
-func (g *GetPlaylistGeneratorItemsMetadata) GetAddedAt() int64 {
+func (g *GetPlaylistGeneratorItemsMetadata) GetAddedAt() *int64 {
 	if g == nil {
-		return 0
+		return nil
 	}
 	return g.AddedAt
 }
@@ -552,6 +775,13 @@ func (g *GetPlaylistGeneratorItemsMetadata) GetArt() *string {
 		return nil
 	}
 	return g.Art
+}
+
+func (g *GetPlaylistGeneratorItemsMetadata) GetArtBlurHash() *string {
+	if g == nil {
+		return nil
+	}
+	return g.ArtBlurHash
 }
 
 func (g *GetPlaylistGeneratorItemsMetadata) GetAudienceRating() *float32 {
@@ -624,11 +854,32 @@ func (g *GetPlaylistGeneratorItemsMetadata) GetDirector() []components.Tag {
 	return g.Director
 }
 
+func (g *GetPlaylistGeneratorItemsMetadata) GetDistance() *int64 {
+	if g == nil {
+		return nil
+	}
+	return g.Distance
+}
+
 func (g *GetPlaylistGeneratorItemsMetadata) GetDuration() *int {
 	if g == nil {
 		return nil
 	}
 	return g.Duration
+}
+
+func (g *GetPlaylistGeneratorItemsMetadata) GetEditionTitle() *string {
+	if g == nil {
+		return nil
+	}
+	return g.EditionTitle
+}
+
+func (g *GetPlaylistGeneratorItemsMetadata) GetEnableCreditsMarkerGeneration() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.EnableCreditsMarkerGeneration
 }
 
 func (g *GetPlaylistGeneratorItemsMetadata) GetFilter() []components.Filter {
@@ -743,6 +994,20 @@ func (g *GetPlaylistGeneratorItemsMetadata) GetKey() string {
 	return g.Key
 }
 
+func (g *GetPlaylistGeneratorItemsMetadata) GetLanguageOverride() *string {
+	if g == nil {
+		return nil
+	}
+	return g.LanguageOverride
+}
+
+func (g *GetPlaylistGeneratorItemsMetadata) GetLastRatedAt() *int64 {
+	if g == nil {
+		return nil
+	}
+	return g.LastRatedAt
+}
+
 func (g *GetPlaylistGeneratorItemsMetadata) GetLastViewedAt() *int64 {
 	if g == nil {
 		return nil
@@ -757,6 +1022,13 @@ func (g *GetPlaylistGeneratorItemsMetadata) GetLeafCount() *int {
 	return g.LeafCount
 }
 
+func (g *GetPlaylistGeneratorItemsMetadata) GetLibrarySectionID() *int64 {
+	if g == nil {
+		return nil
+	}
+	return g.LibrarySectionID
+}
+
 func (g *GetPlaylistGeneratorItemsMetadata) GetMedia() []components.Media {
 	if g == nil {
 		return nil
@@ -764,7 +1036,14 @@ func (g *GetPlaylistGeneratorItemsMetadata) GetMedia() []components.Media {
 	return g.Media
 }
 
-func (g *GetPlaylistGeneratorItemsMetadata) GetOriginallyAvailableAt() *types.Date {
+func (g *GetPlaylistGeneratorItemsMetadata) GetMusicAnalysisVersion() *int64 {
+	if g == nil {
+		return nil
+	}
+	return g.MusicAnalysisVersion
+}
+
+func (g *GetPlaylistGeneratorItemsMetadata) GetOriginallyAvailableAt() *string {
 	if g == nil {
 		return nil
 	}
@@ -825,6 +1104,13 @@ func (g *GetPlaylistGeneratorItemsMetadata) GetParentTitle() *string {
 		return nil
 	}
 	return g.ParentTitle
+}
+
+func (g *GetPlaylistGeneratorItemsMetadata) GetPlaylistItemID() *int64 {
+	if g == nil {
+		return nil
+	}
+	return g.PlaylistItemID
 }
 
 func (g *GetPlaylistGeneratorItemsMetadata) GetPrimaryExtraKey() *string {
@@ -897,18 +1183,32 @@ func (g *GetPlaylistGeneratorItemsMetadata) GetSecondary() *bool {
 	return g.Secondary
 }
 
-func (g *GetPlaylistGeneratorItemsMetadata) GetSkipChildren() *bool {
+func (g *GetPlaylistGeneratorItemsMetadata) GetSkipChildren() *GetPlaylistGeneratorItemsSkipChildren {
 	if g == nil {
 		return nil
 	}
 	return g.SkipChildren
 }
 
-func (g *GetPlaylistGeneratorItemsMetadata) GetSkipParent() *bool {
+func (g *GetPlaylistGeneratorItemsMetadata) GetSkipCount() *int64 {
+	if g == nil {
+		return nil
+	}
+	return g.SkipCount
+}
+
+func (g *GetPlaylistGeneratorItemsMetadata) GetSkipParent() *GetPlaylistGeneratorItemsSkipParent {
 	if g == nil {
 		return nil
 	}
 	return g.SkipParent
+}
+
+func (g *GetPlaylistGeneratorItemsMetadata) GetSlug() *string {
+	if g == nil {
+		return nil
+	}
+	return g.Slug
 }
 
 func (g *GetPlaylistGeneratorItemsMetadata) GetSort() []components.Sort {
@@ -916,6 +1216,13 @@ func (g *GetPlaylistGeneratorItemsMetadata) GetSort() []components.Sort {
 		return nil
 	}
 	return g.Sort
+}
+
+func (g *GetPlaylistGeneratorItemsMetadata) GetSourceURI() *string {
+	if g == nil {
+		return nil
+	}
+	return g.SourceURI
 }
 
 func (g *GetPlaylistGeneratorItemsMetadata) GetStudio() *string {
@@ -960,6 +1267,13 @@ func (g *GetPlaylistGeneratorItemsMetadata) GetThumb() *string {
 	return g.Thumb
 }
 
+func (g *GetPlaylistGeneratorItemsMetadata) GetThumbBlurHash() *string {
+	if g == nil {
+		return nil
+	}
+	return g.ThumbBlurHash
+}
+
 func (g *GetPlaylistGeneratorItemsMetadata) GetTitleSort() *string {
 	if g == nil {
 		return nil
@@ -972,6 +1286,13 @@ func (g *GetPlaylistGeneratorItemsMetadata) GetUpdatedAt() *int64 {
 		return nil
 	}
 	return g.UpdatedAt
+}
+
+func (g *GetPlaylistGeneratorItemsMetadata) GetUseOriginalTitle() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.UseOriginalTitle
 }
 
 func (g *GetPlaylistGeneratorItemsMetadata) GetUserRating() *float32 {
@@ -1043,11 +1364,9 @@ func (g *GetPlaylistGeneratorItemsMetadata) GetAdditionalProperties() map[string
 type GetPlaylistGeneratorItemsMediaContainer struct {
 	Identifier *string `json:"identifier,omitempty"`
 	// The offset of where this container page starts among the total objects available. Also provided in the `X-Plex-Container-Start` header.
-	//
 	Offset *int64 `json:"offset,omitempty"`
 	Size   *int64 `json:"size,omitempty"`
 	// The total size of objects available. Also provided in the `X-Plex-Container-Total-Size` header.
-	//
 	TotalSize *int64                             `json:"totalSize,omitempty"`
 	Metadata  *GetPlaylistGeneratorItemsMetadata `json:"Metadata,omitempty"`
 }

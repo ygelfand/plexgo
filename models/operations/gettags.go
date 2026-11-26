@@ -3,8 +3,8 @@
 package operations
 
 import (
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/models/components"
+	"github.com/ygelfand/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/models/components"
 	"net/http"
 )
 
@@ -150,14 +150,19 @@ type GetTagsRequest struct {
 	// 2 = show
 	// 3 = season
 	// 4 = episode
-	// 5 = artist
-	// 6 = album
-	// 7 = track
-	// 8 = photo_album
-	// 9 = photo
+	// 5 = trailer
+	// 7 = person
+	// 8 = artist
+	// 9 = album
+	// 10 = track
+	// 12 = clip
+	// 13 = photo
+	// 14 = photoalbum
+	// 15 = playlist
+	// 16 = playlistfolder
+	// 18 = collection
 	//
 	// E.g. A movie library will not return anything with type 3 as there are no seasons for movie libraries
-	//
 	Type *components.MediaType `queryParam:"style=form,explode=true,name=type"`
 }
 
@@ -318,11 +323,9 @@ func (d *Directory) GetThumb() *string {
 type GetTagsMediaContainer struct {
 	Identifier *string `json:"identifier,omitempty"`
 	// The offset of where this container page starts among the total objects available. Also provided in the `X-Plex-Container-Start` header.
-	//
 	Offset *int64 `json:"offset,omitempty"`
 	Size   *int64 `json:"size,omitempty"`
 	// The total size of objects available. Also provided in the `X-Plex-Container-Total-Size` header.
-	//
 	TotalSize *int64      `json:"totalSize,omitempty"`
 	Directory []Directory `json:"Directory,omitempty"`
 }

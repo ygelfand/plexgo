@@ -5,7 +5,7 @@ package hooks
 import (
 	"context"
 	"errors"
-	"github.com/LukeHagar/plexgo/internal/config"
+	"github.com/ygelfand/plexgo/internal/config"
 	"net/http"
 )
 

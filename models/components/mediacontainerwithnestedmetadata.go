@@ -3,13 +3,14 @@
 package components
 
 import (
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/types"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/ygelfand/plexgo/internal/utils"
 )
 
 type MediaContainerWithNestedMetadataGuids struct {
 	// The unique identifier for the Guid. Can be prefixed with imdb://, tmdb://, tvdb://
-	//
 	ID string `json:"id"`
 }
 
@@ -18,6 +19,200 @@ func (m *MediaContainerWithNestedMetadataGuids) GetID() string {
 		return ""
 	}
 	return m.ID
+}
+
+type MediaContainerWithNestedMetadataSkipChildren2 string
+
+const (
+	MediaContainerWithNestedMetadataSkipChildren2Zero MediaContainerWithNestedMetadataSkipChildren2 = "0"
+	MediaContainerWithNestedMetadataSkipChildren2One  MediaContainerWithNestedMetadataSkipChildren2 = "1"
+)
+
+func (e MediaContainerWithNestedMetadataSkipChildren2) ToPointer() *MediaContainerWithNestedMetadataSkipChildren2 {
+	return &e
+}
+func (e *MediaContainerWithNestedMetadataSkipChildren2) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = MediaContainerWithNestedMetadataSkipChildren2(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for MediaContainerWithNestedMetadataSkipChildren2: %v", v)
+	}
+}
+
+type MediaContainerWithNestedMetadataSkipChildrenType string
+
+const (
+	MediaContainerWithNestedMetadataSkipChildrenTypeBoolean                                       MediaContainerWithNestedMetadataSkipChildrenType = "boolean"
+	MediaContainerWithNestedMetadataSkipChildrenTypeMediaContainerWithNestedMetadataSkipChildren2 MediaContainerWithNestedMetadataSkipChildrenType = "MediaContainerWithNestedMetadata_skipChildren_2"
+)
+
+// MediaContainerWithNestedMetadataSkipChildren - When found on a show item, indicates that the children (seasons) should be skipped in favor of the grandchildren (episodes). Useful for mini-series, etc.
+type MediaContainerWithNestedMetadataSkipChildren struct {
+	Boolean                                       *bool                                          `queryParam:"inline" union:"member"`
+	MediaContainerWithNestedMetadataSkipChildren2 *MediaContainerWithNestedMetadataSkipChildren2 `queryParam:"inline" union:"member"`
+
+	Type MediaContainerWithNestedMetadataSkipChildrenType
+}
+
+func CreateMediaContainerWithNestedMetadataSkipChildrenBoolean(boolean bool) MediaContainerWithNestedMetadataSkipChildren {
+	typ := MediaContainerWithNestedMetadataSkipChildrenTypeBoolean
+
+	return MediaContainerWithNestedMetadataSkipChildren{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateMediaContainerWithNestedMetadataSkipChildrenMediaContainerWithNestedMetadataSkipChildren2(mediaContainerWithNestedMetadataSkipChildren2 MediaContainerWithNestedMetadataSkipChildren2) MediaContainerWithNestedMetadataSkipChildren {
+	typ := MediaContainerWithNestedMetadataSkipChildrenTypeMediaContainerWithNestedMetadataSkipChildren2
+
+	return MediaContainerWithNestedMetadataSkipChildren{
+		MediaContainerWithNestedMetadataSkipChildren2: &mediaContainerWithNestedMetadataSkipChildren2,
+		Type: typ,
+	}
+}
+
+func (u *MediaContainerWithNestedMetadataSkipChildren) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = MediaContainerWithNestedMetadataSkipChildren{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = MediaContainerWithNestedMetadataSkipChildrenTypeBoolean
+		return nil
+	}
+
+	var mediaContainerWithNestedMetadataSkipChildren2 MediaContainerWithNestedMetadataSkipChildren2 = MediaContainerWithNestedMetadataSkipChildren2("")
+	if err := utils.UnmarshalJSON(data, &mediaContainerWithNestedMetadataSkipChildren2, "", true, nil); err == nil {
+		u.MediaContainerWithNestedMetadataSkipChildren2 = &mediaContainerWithNestedMetadataSkipChildren2
+		u.Type = MediaContainerWithNestedMetadataSkipChildrenTypeMediaContainerWithNestedMetadataSkipChildren2
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for MediaContainerWithNestedMetadataSkipChildren", string(data))
+}
+
+func (u MediaContainerWithNestedMetadataSkipChildren) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.MediaContainerWithNestedMetadataSkipChildren2 != nil {
+		return utils.MarshalJSON(u.MediaContainerWithNestedMetadataSkipChildren2, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type MediaContainerWithNestedMetadataSkipChildren: all fields are null")
+}
+
+type MediaContainerWithNestedMetadataSkipParent2 string
+
+const (
+	MediaContainerWithNestedMetadataSkipParent2Zero MediaContainerWithNestedMetadataSkipParent2 = "0"
+	MediaContainerWithNestedMetadataSkipParent2One  MediaContainerWithNestedMetadataSkipParent2 = "1"
+)
+
+func (e MediaContainerWithNestedMetadataSkipParent2) ToPointer() *MediaContainerWithNestedMetadataSkipParent2 {
+	return &e
+}
+func (e *MediaContainerWithNestedMetadataSkipParent2) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = MediaContainerWithNestedMetadataSkipParent2(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for MediaContainerWithNestedMetadataSkipParent2: %v", v)
+	}
+}
+
+type MediaContainerWithNestedMetadataSkipParentType string
+
+const (
+	MediaContainerWithNestedMetadataSkipParentTypeBoolean                                     MediaContainerWithNestedMetadataSkipParentType = "boolean"
+	MediaContainerWithNestedMetadataSkipParentTypeMediaContainerWithNestedMetadataSkipParent2 MediaContainerWithNestedMetadataSkipParentType = "MediaContainerWithNestedMetadata_skipParent_2"
+)
+
+// MediaContainerWithNestedMetadataSkipParent - When present on an episode or track item, indicates parent should be skipped in favor of grandparent (show).
+type MediaContainerWithNestedMetadataSkipParent struct {
+	Boolean                                     *bool                                        `queryParam:"inline" union:"member"`
+	MediaContainerWithNestedMetadataSkipParent2 *MediaContainerWithNestedMetadataSkipParent2 `queryParam:"inline" union:"member"`
+
+	Type MediaContainerWithNestedMetadataSkipParentType
+}
+
+func CreateMediaContainerWithNestedMetadataSkipParentBoolean(boolean bool) MediaContainerWithNestedMetadataSkipParent {
+	typ := MediaContainerWithNestedMetadataSkipParentTypeBoolean
+
+	return MediaContainerWithNestedMetadataSkipParent{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateMediaContainerWithNestedMetadataSkipParentMediaContainerWithNestedMetadataSkipParent2(mediaContainerWithNestedMetadataSkipParent2 MediaContainerWithNestedMetadataSkipParent2) MediaContainerWithNestedMetadataSkipParent {
+	typ := MediaContainerWithNestedMetadataSkipParentTypeMediaContainerWithNestedMetadataSkipParent2
+
+	return MediaContainerWithNestedMetadataSkipParent{
+		MediaContainerWithNestedMetadataSkipParent2: &mediaContainerWithNestedMetadataSkipParent2,
+		Type: typ,
+	}
+}
+
+func (u *MediaContainerWithNestedMetadataSkipParent) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = MediaContainerWithNestedMetadataSkipParent{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = MediaContainerWithNestedMetadataSkipParentTypeBoolean
+		return nil
+	}
+
+	var mediaContainerWithNestedMetadataSkipParent2 MediaContainerWithNestedMetadataSkipParent2 = MediaContainerWithNestedMetadataSkipParent2("")
+	if err := utils.UnmarshalJSON(data, &mediaContainerWithNestedMetadataSkipParent2, "", true, nil); err == nil {
+		u.MediaContainerWithNestedMetadataSkipParent2 = &mediaContainerWithNestedMetadataSkipParent2
+		u.Type = MediaContainerWithNestedMetadataSkipParentTypeMediaContainerWithNestedMetadataSkipParent2
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for MediaContainerWithNestedMetadataSkipParent", string(data))
+}
+
+func (u MediaContainerWithNestedMetadataSkipParent) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.MediaContainerWithNestedMetadataSkipParent2 != nil {
+		return utils.MarshalJSON(u.MediaContainerWithNestedMetadataSkipParent2, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type MediaContainerWithNestedMetadataSkipParent: all fields are null")
 }
 
 // MetadataItem - Items in a library are referred to as "metadata items." These metadata items are distinct from "media items" which represent actual instances of media that can be consumed. Consider a TV library that has a single video file in it for a particular episode of a show. The library has a single media item, but it has three metadata items: one for the show, one for the season, and one for the episode. Consider a movie library that has two video files in it: the same movie, but two different resolutions. The library has a single metadata item for the movie, but that metadata item has two media items, one for each resolution. Additionally a "media item" will have one or more "media parts" where the the parts are intended to be watched together, such as a CD1 and CD2 parts of the same movie.
@@ -29,13 +224,15 @@ type MetadataItem struct {
 	// The title of the item (e.g. “300” or “The Simpsons”)
 	Title string `json:"title"`
 	// The type of the video item, such as `movie`, `episode`, or `clip`.
-	Type string `json:"type"`
+	Type *string `json:"type,omitempty"`
 	// When present, contains the disc number for a track on multi-disc albums.
 	AbsoluteIndex *int `json:"absoluteIndex,omitempty"`
 	// In units of seconds since the epoch, returns the time at which the item was added to the library.
-	AddedAt int64 `json:"addedAt"`
+	AddedAt *int64 `json:"addedAt,omitempty"`
 	// When present, the URL for the background artwork for the item.
 	Art *string `json:"art,omitempty"`
+	// Blur hash for background art.
+	ArtBlurHash *string `json:"artBlurHash,omitempty"`
 	// Some rating systems separate reviewer ratings from audience ratings
 	AudienceRating *float32 `json:"audienceRating,omitempty"`
 	// A URI representing the image to be shown with the audience rating (e.g. rottentomatoes://image.rating.spilled).
@@ -53,8 +250,14 @@ type MetadataItem struct {
 	ContentRating *string `json:"contentRating,omitempty"`
 	Country       []Tag   `json:"Country,omitempty"`
 	Director      []Tag   `json:"Director,omitempty"`
+	// Levenshtein distance for voice search results.
+	Distance *int64 `json:"distance,omitempty"`
 	// When present, the duration for the item, in units of milliseconds.
 	Duration *int `json:"duration,omitempty"`
+	// Edition string (e.g. "Director's Cut").
+	EditionTitle *string `json:"editionTitle,omitempty"`
+	// Whether credits marker generation is enabled for this item.
+	EnableCreditsMarkerGeneration *bool `json:"enableCreditsMarkerGeneration,omitempty"`
 	// Typically only seen in metadata at a library's top level
 	Filter []Filter `json:"Filter,omitempty"`
 	Genre  []Tag    `json:"Genre,omitempty"`
@@ -83,13 +286,23 @@ type MetadataItem struct {
 	// When present, this represents the episode number for episodes, season number for seasons, or track number for audio tracks.
 	Index *int `json:"index,omitempty"`
 	// The key at which the item's details can be fetched.  In many cases a metadata item may be passed without all the details (such as in a hub) and this key corresponds to the endpoint to fetch additional details.
-	Key          string `json:"key"`
+	Key string `json:"key"`
+	// Per-item language override.
+	LanguageOverride *string `json:"languageOverride,omitempty"`
+	// Timestamp of the last user rating.
+	LastRatedAt  *int64 `json:"lastRatedAt,omitempty"`
 	LastViewedAt *int64 `json:"lastViewedAt,omitempty"`
 	// For shows and seasons, contains the number of total episodes.
-	LeafCount *int    `json:"leafCount,omitempty"`
-	Media     []Media `json:"Media,omitempty"`
-	// When present, in the format YYYY-MM-DD [HH:MM:SS] (the hours/minutes/seconds part is not always present). The air date, or a higher resolution release date for an item, depending on type. For example, episodes usually have air date like 1979-08-10 (we don't use epoch seconds because media existed prior to 1970). In some cases, recorded over-the-air content has higher resolution air date which includes a time component. Albums and movies may have day-resolution release dates as well.
-	OriginallyAvailableAt *types.Date `json:"originallyAvailableAt,omitempty"`
+	LeafCount *int `json:"leafCount,omitempty"`
+	// The library section containing this metadata item, when reported by the server.
+	LibrarySectionID *int64  `json:"librarySectionID,omitempty"`
+	Media            []Media `json:"Media,omitempty"`
+	// Analysis version for music items.
+	MusicAnalysisVersion *int64 `json:"musicAnalysisVersion,omitempty"`
+	// The original release or capture date as reported by the server.
+	// Values can be a date (YYYY-MM-DD), a date with a time (YYYY-MM-DD HH:MM:SS), or an ISO 8601 timestamp.
+	// Preserve the string representation so higher-resolution timestamps are not reduced to a date-only value.
+	OriginallyAvailableAt *string `json:"originallyAvailableAt,omitempty"`
 	// When present, used to indicate an item's original title, e.g. a movie's foreign title.
 	OriginalTitle *string `json:"originalTitle,omitempty"`
 	// The GUID of the parent media item.
@@ -106,6 +319,8 @@ type MetadataItem struct {
 	ParentThumb *string `json:"parentThumb,omitempty"`
 	// The `title` of the parent
 	ParentTitle *string `json:"parentTitle,omitempty"`
+	// Item ID within a playlist.
+	PlaylistItemID *int64 `json:"playlistItemID,omitempty"`
 	// Indicates that the item has a primary extra; for a movie, this is a trailer, and for a music track it is a music video. The URL points to the metadata details endpoint for the item.
 	PrimaryExtraKey *string `json:"primaryExtraKey,omitempty"`
 	// Prompt to give the user for this directory (such as `Search Movies`)
@@ -125,11 +340,17 @@ type MetadataItem struct {
 	// Used by old clients to provide nested menus allowing for primative (but structured) navigation.
 	Secondary *bool `json:"secondary,omitempty"`
 	// When found on a show item, indicates that the children (seasons) should be skipped in favor of the grandchildren (episodes). Useful for mini-series, etc.
-	SkipChildren *bool `json:"skipChildren,omitempty"`
+	SkipChildren *MediaContainerWithNestedMetadataSkipChildren `json:"skipChildren,omitempty"`
+	// Number of times this track has been skipped.
+	SkipCount *int64 `json:"skipCount,omitempty"`
 	// When present on an episode or track item, indicates parent should be skipped in favor of grandparent (show).
-	SkipParent *bool `json:"skipParent,omitempty"`
+	SkipParent *MediaContainerWithNestedMetadataSkipParent `json:"skipParent,omitempty"`
+	// URL-friendly slug for the item.
+	Slug *string `json:"slug,omitempty"`
 	// Typically only seen in metadata at a library's top level
 	Sort []Sort `json:"Sort,omitempty"`
+	// Remote or shared server item URI.
+	SourceURI *string `json:"sourceURI,omitempty"`
 	// When present, the studio or label which produced an item (e.g. movie studio for movies, record label for albums).
 	Studio *string `json:"studio,omitempty"`
 	// The subtype of the video item, such as `photo` when the video item is in a photo library
@@ -142,10 +363,14 @@ type MetadataItem struct {
 	Theme *string `json:"theme,omitempty"`
 	// When present, the URL for the poster or thumbnail for the item. When available for types like movie, it will be the poster graphic, but fall-back to the extracted media thumbnail.
 	Thumb *string `json:"thumb,omitempty"`
+	// Blur hash for thumbnail.
+	ThumbBlurHash *string `json:"thumbBlurHash,omitempty"`
 	// Whene present, this is the string used for sorting the item. It's usually the title with any leading articles removed (e.g. “Simpsons”).
 	TitleSort *string `json:"titleSort,omitempty"`
 	// In units of seconds since the epoch, returns the time at which the item was last changed (e.g. had its metadata updated).
 	UpdatedAt *int64 `json:"updatedAt,omitempty"`
+	// Whether to display the original title.
+	UseOriginalTitle *bool `json:"useOriginalTitle,omitempty"`
 	// When the user has rated an item, this contains the user rating
 	UserRating *float32 `json:"userRating,omitempty"`
 	// When a users has completed watched or listened to an item, this attribute contains the number of consumptions.
@@ -179,9 +404,9 @@ func (m *MetadataItem) GetTitle() string {
 	return m.Title
 }
 
-func (m *MetadataItem) GetType() string {
+func (m *MetadataItem) GetType() *string {
 	if m == nil {
-		return ""
+		return nil
 	}
 	return m.Type
 }
@@ -193,9 +418,9 @@ func (m *MetadataItem) GetAbsoluteIndex() *int {
 	return m.AbsoluteIndex
 }
 
-func (m *MetadataItem) GetAddedAt() int64 {
+func (m *MetadataItem) GetAddedAt() *int64 {
 	if m == nil {
-		return 0
+		return nil
 	}
 	return m.AddedAt
 }
@@ -205,6 +430,13 @@ func (m *MetadataItem) GetArt() *string {
 		return nil
 	}
 	return m.Art
+}
+
+func (m *MetadataItem) GetArtBlurHash() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ArtBlurHash
 }
 
 func (m *MetadataItem) GetAudienceRating() *float32 {
@@ -277,11 +509,32 @@ func (m *MetadataItem) GetDirector() []Tag {
 	return m.Director
 }
 
+func (m *MetadataItem) GetDistance() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.Distance
+}
+
 func (m *MetadataItem) GetDuration() *int {
 	if m == nil {
 		return nil
 	}
 	return m.Duration
+}
+
+func (m *MetadataItem) GetEditionTitle() *string {
+	if m == nil {
+		return nil
+	}
+	return m.EditionTitle
+}
+
+func (m *MetadataItem) GetEnableCreditsMarkerGeneration() *bool {
+	if m == nil {
+		return nil
+	}
+	return m.EnableCreditsMarkerGeneration
 }
 
 func (m *MetadataItem) GetFilter() []Filter {
@@ -396,6 +649,20 @@ func (m *MetadataItem) GetKey() string {
 	return m.Key
 }
 
+func (m *MetadataItem) GetLanguageOverride() *string {
+	if m == nil {
+		return nil
+	}
+	return m.LanguageOverride
+}
+
+func (m *MetadataItem) GetLastRatedAt() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.LastRatedAt
+}
+
 func (m *MetadataItem) GetLastViewedAt() *int64 {
 	if m == nil {
 		return nil
@@ -410,6 +677,13 @@ func (m *MetadataItem) GetLeafCount() *int {
 	return m.LeafCount
 }
 
+func (m *MetadataItem) GetLibrarySectionID() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.LibrarySectionID
+}
+
 func (m *MetadataItem) GetMedia() []Media {
 	if m == nil {
 		return nil
@@ -417,7 +691,14 @@ func (m *MetadataItem) GetMedia() []Media {
 	return m.Media
 }
 
-func (m *MetadataItem) GetOriginallyAvailableAt() *types.Date {
+func (m *MetadataItem) GetMusicAnalysisVersion() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.MusicAnalysisVersion
+}
+
+func (m *MetadataItem) GetOriginallyAvailableAt() *string {
 	if m == nil {
 		return nil
 	}
@@ -478,6 +759,13 @@ func (m *MetadataItem) GetParentTitle() *string {
 		return nil
 	}
 	return m.ParentTitle
+}
+
+func (m *MetadataItem) GetPlaylistItemID() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.PlaylistItemID
 }
 
 func (m *MetadataItem) GetPrimaryExtraKey() *string {
@@ -550,18 +838,32 @@ func (m *MetadataItem) GetSecondary() *bool {
 	return m.Secondary
 }
 
-func (m *MetadataItem) GetSkipChildren() *bool {
+func (m *MetadataItem) GetSkipChildren() *MediaContainerWithNestedMetadataSkipChildren {
 	if m == nil {
 		return nil
 	}
 	return m.SkipChildren
 }
 
-func (m *MetadataItem) GetSkipParent() *bool {
+func (m *MetadataItem) GetSkipCount() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.SkipCount
+}
+
+func (m *MetadataItem) GetSkipParent() *MediaContainerWithNestedMetadataSkipParent {
 	if m == nil {
 		return nil
 	}
 	return m.SkipParent
+}
+
+func (m *MetadataItem) GetSlug() *string {
+	if m == nil {
+		return nil
+	}
+	return m.Slug
 }
 
 func (m *MetadataItem) GetSort() []Sort {
@@ -569,6 +871,13 @@ func (m *MetadataItem) GetSort() []Sort {
 		return nil
 	}
 	return m.Sort
+}
+
+func (m *MetadataItem) GetSourceURI() *string {
+	if m == nil {
+		return nil
+	}
+	return m.SourceURI
 }
 
 func (m *MetadataItem) GetStudio() *string {
@@ -613,6 +922,13 @@ func (m *MetadataItem) GetThumb() *string {
 	return m.Thumb
 }
 
+func (m *MetadataItem) GetThumbBlurHash() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ThumbBlurHash
+}
+
 func (m *MetadataItem) GetTitleSort() *string {
 	if m == nil {
 		return nil
@@ -625,6 +941,13 @@ func (m *MetadataItem) GetUpdatedAt() *int64 {
 		return nil
 	}
 	return m.UpdatedAt
+}
+
+func (m *MetadataItem) GetUseOriginalTitle() *bool {
+	if m == nil {
+		return nil
+	}
+	return m.UseOriginalTitle
 }
 
 func (m *MetadataItem) GetUserRating() *float32 {
@@ -689,11 +1012,9 @@ func (m *MetadataItem) GetAdditionalProperties() map[string]any {
 type MediaContainerWithNestedMetadataMediaContainer struct {
 	Identifier *string `json:"identifier,omitempty"`
 	// The offset of where this container page starts among the total objects available. Also provided in the `X-Plex-Container-Start` header.
-	//
 	Offset *int64 `json:"offset,omitempty"`
 	Size   *int64 `json:"size,omitempty"`
 	// The total size of objects available. Also provided in the `X-Plex-Container-Total-Size` header.
-	//
 	TotalSize    *int64         `json:"totalSize,omitempty"`
 	MetadataItem []MetadataItem `json:"MetadataItem,omitempty"`
 }

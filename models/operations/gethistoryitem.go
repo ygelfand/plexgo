@@ -3,8 +3,8 @@
 package operations
 
 import (
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/models/components"
+	"github.com/ygelfand/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/models/components"
 	"net/http"
 )
 
@@ -250,7 +250,7 @@ type GetHistoryItemResponse struct {
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
-	// OK
+	// Successfully retrieved get single history item
 	HistoryAllGetResponses200 *components.HistoryAllGetResponses200
 	Headers                   map[string][]string
 }

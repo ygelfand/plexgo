@@ -7,6 +7,15 @@
 - `3`: IPTV
 - `4`: Virtual
 
+## Example Usage
+
+```go
+import (
+	"github.com/LukeHagar/plexgo/models/components"
+)
+
+value := components.LineupTypeMinus1
+```
 
 
 ## Values

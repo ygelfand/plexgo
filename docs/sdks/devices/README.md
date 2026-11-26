@@ -37,6 +37,7 @@ Example SSDP output
   - UDN: (string) A UUID for the device. This should be unique across models of a device at minimum.
   - URLBase: (string) The base HTTP URL for the device from which all of the other endpoints are hosted.
 
+Note: This tag covers media grabber and network tuner devices only. For client device discovery, use `/clients` or `/resources`.
 
 ### Available Operations
 
@@ -118,6 +119,7 @@ func main() {
 
 | Error Type         | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
+| sdkerrors.Error    | 401                | application/json   |
 | sdkerrors.SDKError | 4XX, 5XX           | \*/\*              |
 
 ## ListDevices
@@ -168,6 +170,7 @@ func main() {
 
 | Error Type         | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
+| sdkerrors.Error    | 401                | application/json   |
 | sdkerrors.SDKError | 4XX, 5XX           | \*/\*              |
 
 ## AddDevice
@@ -242,7 +245,7 @@ Tell grabbers to discover devices
 
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="discoverDevices" method="post" path="/media/grabbers/devices/discover" -->
+<!-- UsageSnippet language="go" operationID="discoverDevices" method="get" path="/media/grabbers/devices/discover" -->
 ```go
 package main
 
@@ -259,7 +262,7 @@ func main() {
         plexgo.WithSecurity("<YOUR_API_KEY_HERE>"),
     )
 
-    res, err := s.Devices.DiscoverDevices(ctx)
+    res, err := s.Devices.DiscoverDevices(ctx, nil, nil)
     if err != nil {
         log.Fatal(err)
     }
@@ -271,10 +274,12 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                | Type                                                     | Required                                                 | Description                                              |
-| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
-| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |
-| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |
+| Parameter                                                   | Type                                                        | Required                                                    | Description                                                 |
+| ----------------------------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------- |
+| `ctx`                                                       | [context.Context](https://pkg.go.dev/context#Context)       | :heavy_check_mark:                                          | The context to use for the request.                         |
+| `protocol`                                                  | [*operations.Protocol](../../models/operations/protocol.md) | :heavy_minus_sign:                                          | Protocol to filter discovery.                               |
+| `grabberIdentifier`                                         | `*string`                                                   | :heavy_minus_sign:                                          | Targeted grabber identifier.                                |
+| `opts`                                                      | [][operations.Option](../../models/operations/option.md)    | :heavy_minus_sign:                                          | The options for this request.                               |
 
 ### Response
 
@@ -284,6 +289,7 @@ func main() {
 
 | Error Type         | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
+| sdkerrors.Error    | 401                | application/json   |
 | sdkerrors.SDKError | 4XX, 5XX           | \*/\*              |
 
 ## RemoveDevice
@@ -526,20 +532,9 @@ func main() {
         ChannelMapping: &operations.ChannelMapping{},
         ChannelMappingByKey: &operations.ChannelMappingByKey{},
         ChannelsEnabled: []string{
-            "4",
-            "6",
-            ".",
-            "1",
-            ",",
-            "4",
-            "4",
-            ".",
-            "1",
-            ",",
-            "4",
-            "5",
-            ".",
-            "1",
+            "46.1",
+            "44.1",
+            "45.1",
         },
     })
     if err != nil {
@@ -567,6 +562,7 @@ func main() {
 
 | Error Type         | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
+| sdkerrors.Error    | 401                | application/json   |
 | sdkerrors.SDKError | 4XX, 5XX           | \*/\*              |
 
 ## GetDevicesChannels
@@ -699,6 +695,7 @@ func main() {
 
 | Error Type         | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
+| sdkerrors.Error    | 401                | application/json   |
 | sdkerrors.SDKError | 4XX, 5XX           | \*/\*              |
 
 ## StopScan
@@ -765,6 +762,7 @@ func main() {
 
 | Error Type         | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
+| sdkerrors.Error    | 401                | application/json   |
 | sdkerrors.SDKError | 4XX, 5XX           | \*/\*              |
 
 ## Scan
@@ -832,6 +830,7 @@ func main() {
 
 | Error Type         | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
+| sdkerrors.Error    | 401                | application/json   |
 | sdkerrors.SDKError | 4XX, 5XX           | \*/\*              |
 
 ## GetThumb
@@ -877,7 +876,7 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    if res != nil {
+    if res.BinaryResponse != nil {
         // handle response
     }
 }

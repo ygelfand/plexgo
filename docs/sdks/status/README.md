@@ -61,6 +61,7 @@ func main() {
 
 | Error Type         | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
+| sdkerrors.Error    | 401                | application/json   |
 | sdkerrors.SDKError | 4XX, 5XX           | \*/\*              |
 
 ## GetBackgroundTasks
@@ -111,6 +112,7 @@ func main() {
 
 | Error Type         | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
+| sdkerrors.Error    | 401                | application/json   |
 | sdkerrors.SDKError | 4XX, 5XX           | \*/\*              |
 
 ## ListPlaybackHistory
@@ -152,29 +154,8 @@ func main() {
 
     res, err := s.Status.ListPlaybackHistory(ctx, operations.ListPlaybackHistoryRequest{
         Sort: []string{
-            "v",
-            "i",
-            "e",
-            "w",
-            "e",
-            "d",
-            "A",
-            "t",
-            ":",
-            "d",
-            "e",
-            "s",
-            "c",
-            ",",
-            "a",
-            "c",
-            "c",
-            "o",
-            "u",
-            "n",
-            "t",
-            "I",
-            "D",
+            "viewedAt:desc",
+            "accountID",
         },
     })
     if err != nil {
@@ -202,6 +183,7 @@ func main() {
 
 | Error Type         | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
+| sdkerrors.Error    | 401                | application/json   |
 | sdkerrors.SDKError | 4XX, 5XX           | \*/\*              |
 
 ## TerminateSession

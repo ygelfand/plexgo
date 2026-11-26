@@ -4,8 +4,8 @@ package operations
 
 import (
 	"errors"
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/retry"
+	"github.com/ygelfand/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/retry"
 	"time"
 )
 
@@ -21,15 +21,21 @@ const (
 type AcceptHeaderEnum string
 
 const (
-	AcceptHeaderEnumApplicationJson        AcceptHeaderEnum = "application/json"
-	AcceptHeaderEnumApplicationOctetStream AcceptHeaderEnum = "application/octet-stream"
-	AcceptHeaderEnumWildcardRootWildcard   AcceptHeaderEnum = "*/*"
-	AcceptHeaderEnumAudioMpeg3             AcceptHeaderEnum = "audio/mpeg3"
-	AcceptHeaderEnumImageJpeg              AcceptHeaderEnum = "image/jpeg"
-	AcceptHeaderEnumTextPlain              AcceptHeaderEnum = "text/plain"
-	AcceptHeaderEnumImagePng               AcceptHeaderEnum = "image/png"
-	AcceptHeaderEnumImageXPortablePixmap   AcceptHeaderEnum = "image/x-portable-pixmap"
-	AcceptHeaderEnumVideoXMatroska         AcceptHeaderEnum = "video/x-matroska"
+	AcceptHeaderEnumApplicationJson            AcceptHeaderEnum = "application/json"
+	AcceptHeaderEnumApplicationOctetStream     AcceptHeaderEnum = "application/octet-stream"
+	AcceptHeaderEnumWildcardRootWildcard       AcceptHeaderEnum = "*/*"
+	AcceptHeaderEnumApplicationXml             AcceptHeaderEnum = "application/xml"
+	AcceptHeaderEnumTextHtml                   AcceptHeaderEnum = "text/html"
+	AcceptHeaderEnumAudioMpeg3                 AcceptHeaderEnum = "audio/mpeg3"
+	AcceptHeaderEnumImageJpeg                  AcceptHeaderEnum = "image/jpeg"
+	AcceptHeaderEnumTextPlain                  AcceptHeaderEnum = "text/plain"
+	AcceptHeaderEnumApplicationVndAppleMpegurl AcceptHeaderEnum = "application/vnd.apple.mpegurl"
+	AcceptHeaderEnumImagePng                   AcceptHeaderEnum = "image/png"
+	AcceptHeaderEnumImageXPortablePixmap       AcceptHeaderEnum = "image/x-portable-pixmap"
+	AcceptHeaderEnumTextSrt                    AcceptHeaderEnum = "text/srt"
+	AcceptHeaderEnumVideoXMatroska             AcceptHeaderEnum = "video/x-matroska"
+	AcceptHeaderEnumVideoMp4                   AcceptHeaderEnum = "video/mp4"
+	AcceptHeaderEnumVideoMp2t                  AcceptHeaderEnum = "video/mp2t"
 )
 
 func (e AcceptHeaderEnum) ToPointer() *AcceptHeaderEnum {
@@ -82,7 +88,7 @@ func WithRetries(config retry.Config) Option {
 // WithOperationTimeout allows setting the request timeout applied for an operation.
 func WithOperationTimeout(timeout time.Duration) Option {
 	return func(opts *Options, supportedOptions ...string) error {
-		if !utils.Contains(supportedOptions, SupportedOptionRetries) {
+		if !utils.Contains(supportedOptions, SupportedOptionTimeout) {
 			return ErrUnsupportedOption
 		}
 

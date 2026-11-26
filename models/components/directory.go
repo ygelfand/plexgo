@@ -3,7 +3,7 @@
 package components
 
 import (
-	"github.com/LukeHagar/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/internal/utils"
 )
 
 type Pivot struct {

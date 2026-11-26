@@ -3,8 +3,8 @@
 package operations
 
 import (
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/models/components"
+	"github.com/ygelfand/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/models/components"
 	"net/http"
 )
 
@@ -277,7 +277,7 @@ type AddToPlayQueueResponse struct {
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
-	// OK
+	// Successfully updated add a generator or playlist to a play queue
 	MediaContainerWithPlaylistMetadata *components.MediaContainerWithPlaylistMetadata
 }
 

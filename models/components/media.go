@@ -3,30 +3,163 @@
 package components
 
 import (
-	"github.com/LukeHagar/plexgo/internal/utils"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/ygelfand/plexgo/internal/utils"
 )
+
+type Two string
+
+const (
+	TwoZero Two = "0"
+	TwoOne  Two = "1"
+)
+
+func (e Two) ToPointer() *Two {
+	return &e
+}
+func (e *Two) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = Two(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for Two: %v", v)
+	}
+}
+
+type HasVoiceActivityType string
+
+const (
+	HasVoiceActivityTypeBoolean HasVoiceActivityType = "boolean"
+	HasVoiceActivityTypeTwo     HasVoiceActivityType = "2"
+)
+
+// HasVoiceActivity - Voice activity detection availability flag returned by PMS.
+// PMS may return this as a boolean or as string values (`"0"` or `"1"`).
+type HasVoiceActivity struct {
+	Boolean *bool `queryParam:"inline" union:"member"`
+	Two     *Two  `queryParam:"inline" union:"member"`
+
+	Type HasVoiceActivityType
+}
+
+func CreateHasVoiceActivityBoolean(boolean bool) HasVoiceActivity {
+	typ := HasVoiceActivityTypeBoolean
+
+	return HasVoiceActivity{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateHasVoiceActivityTwo(two Two) HasVoiceActivity {
+	typ := HasVoiceActivityTypeTwo
+
+	return HasVoiceActivity{
+		Two:  &two,
+		Type: typ,
+	}
+}
+
+func (u *HasVoiceActivity) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = HasVoiceActivity{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = HasVoiceActivityTypeBoolean
+		return nil
+	}
+
+	var two Two = Two("")
+	if err := utils.UnmarshalJSON(data, &two, "", true, nil); err == nil {
+		u.Two = &two
+		u.Type = HasVoiceActivityTypeTwo
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for HasVoiceActivity", string(data))
+}
+
+func (u HasVoiceActivity) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.Two != nil {
+		return utils.MarshalJSON(u.Two, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type HasVoiceActivity: all fields are null")
+}
+
+type OptimizedForStreaming int
+
+const (
+	OptimizedForStreamingZero OptimizedForStreaming = 0
+	OptimizedForStreamingOne  OptimizedForStreaming = 1
+)
+
+func (e OptimizedForStreaming) ToPointer() *OptimizedForStreaming {
+	return &e
+}
+func (e *OptimizedForStreaming) UnmarshalJSON(data []byte) error {
+	var v int
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case 0:
+		fallthrough
+	case 1:
+		*e = OptimizedForStreaming(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for OptimizedForStreaming: %v", v)
+	}
+}
 
 // Media - `Media` represents an one or more media files (parts) and is a child of a metadata item. There aren't necessarily any guaranteed attributes on media elements since the attributes will vary based on the type. The possible attributes are not documented here, but they typically have self-evident names. High-level media information that can be used for badging and flagging, such as `videoResolution` and codecs, is included on the media element.
 type Media struct {
-	AspectRatio           *StringFloat32 `json:"aspectRatio,omitempty"`
-	AudioChannels         *int           `json:"audioChannels,omitempty"`
-	AudioCodec            *string        `json:"audioCodec,omitempty"`
-	AudioProfile          *string        `json:"audioProfile,omitempty"`
-	Bitrate               *int           `json:"bitrate,omitempty"`
-	Container             *string        `json:"container,omitempty"`
-	Duration              *int           `json:"duration,omitempty"`
-	Has64bitOffsets       *Bool          `json:"has64bitOffsets,omitempty"`
-	HasVoiceActivity      *Bool          `json:"hasVoiceActivity,omitempty"`
-	Height                *int           `json:"height,omitempty"`
-	ID                    StringInt64    `json:"id"`
-	OptimizedForStreaming *Bool          `json:"optimizedForStreaming,omitempty"`
-	Part                  []Part         `json:"Part,omitempty"`
-	VideoCodec            *string        `json:"videoCodec,omitempty"`
-	VideoFrameRate        *string        `json:"videoFrameRate,omitempty"`
-	VideoProfile          *string        `json:"videoProfile,omitempty"`
-	VideoResolution       *string        `json:"videoResolution,omitempty"`
-	Width                 *int           `json:"width,omitempty"`
-	AdditionalProperties  map[string]any `additionalProperties:"true" json:"-"`
+	AspectRatio     *StringFloat32 `json:"aspectRatio,omitempty"`
+	AudioChannels   *int           `json:"audioChannels,omitempty"`
+	AudioCodec      *string        `json:"audioCodec,omitempty"`
+	AudioProfile    *string        `json:"audioProfile,omitempty"`
+	Bitrate         *int           `json:"bitrate,omitempty"`
+	Container       *string        `json:"container,omitempty"`
+	Duration        *int           `json:"duration,omitempty"`
+	Has64bitOffsets *Bool          `json:"has64bitOffsets,omitempty"`
+	// Voice activity detection availability flag returned by PMS.
+	// PMS may return this as a boolean or as string values (`"0"` or `"1"`).
+	HasVoiceActivity      *HasVoiceActivity      `json:"hasVoiceActivity,omitempty"`
+	Height                *int                   `json:"height,omitempty"`
+	ID                    StringInt64            `json:"id"`
+	OptimizedForStreaming *OptimizedForStreaming `json:"optimizedForStreaming,omitempty"`
+	Part                  []Part                 `json:"Part,omitempty"`
+	// Whether this media version is selected for playback.
+	Selected *bool `json:"selected,omitempty"`
+	// Unique identifier for this media instance.
+	UUID                 *string        `json:"uuid,omitempty"`
+	VideoCodec           *string        `json:"videoCodec,omitempty"`
+	VideoFrameRate       *string        `json:"videoFrameRate,omitempty"`
+	VideoProfile         *string        `json:"videoProfile,omitempty"`
+	VideoResolution      *string        `json:"videoResolution,omitempty"`
+	Width                *int           `json:"width,omitempty"`
+	AdditionalProperties map[string]any `additionalProperties:"true" json:"-"`
 }
 
 func (m Media) MarshalJSON() ([]byte, error) {
@@ -96,7 +229,7 @@ func (m *Media) GetHas64bitOffsets() *Bool {
 	return m.Has64bitOffsets
 }
 
-func (m *Media) GetHasVoiceActivity() *Bool {
+func (m *Media) GetHasVoiceActivity() *HasVoiceActivity {
 	if m == nil {
 		return nil
 	}
@@ -117,7 +250,7 @@ func (m *Media) GetID() StringInt64 {
 	return m.ID
 }
 
-func (m *Media) GetOptimizedForStreaming() *Bool {
+func (m *Media) GetOptimizedForStreaming() *OptimizedForStreaming {
 	if m == nil {
 		return nil
 	}
@@ -129,6 +262,20 @@ func (m *Media) GetPart() []Part {
 		return nil
 	}
 	return m.Part
+}
+
+func (m *Media) GetSelected() *bool {
+	if m == nil {
+		return nil
+	}
+	return m.Selected
+}
+
+func (m *Media) GetUUID() *string {
+	if m == nil {
+		return nil
+	}
+	return m.UUID
 }
 
 func (m *Media) GetVideoCodec() *string {

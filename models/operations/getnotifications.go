@@ -3,8 +3,8 @@
 package operations
 
 import (
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/models/components"
+	"github.com/ygelfand/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/models/components"
 	"io"
 	"net/http"
 )
@@ -151,7 +151,6 @@ type GetNotificationsRequest struct {
 	// - `filters=foo,bar`: Only the foo and bar event types.
 	// - `filters=`: All events types.
 	// - `filters=-foo,bar`: All event types except foo and bar.
-	//
 	Filter []string `queryParam:"style=form,explode=true,name=filter"`
 }
 

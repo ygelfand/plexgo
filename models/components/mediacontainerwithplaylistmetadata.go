@@ -4,9 +4,9 @@ package components
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/types"
+	"github.com/ygelfand/plexgo/internal/utils"
 )
 
 // PlaylistType - The type of the playlist.
@@ -41,7 +41,6 @@ func (e *PlaylistType) UnmarshalJSON(data []byte) error {
 
 type MediaContainerWithPlaylistMetadataGuids struct {
 	// The unique identifier for the Guid. Can be prefixed with imdb://, tmdb://, tvdb://
-	//
 	ID string `json:"id"`
 }
 
@@ -50,6 +49,200 @@ func (m *MediaContainerWithPlaylistMetadataGuids) GetID() string {
 		return ""
 	}
 	return m.ID
+}
+
+type MediaContainerWithPlaylistMetadataSkipChildren2 string
+
+const (
+	MediaContainerWithPlaylistMetadataSkipChildren2Zero MediaContainerWithPlaylistMetadataSkipChildren2 = "0"
+	MediaContainerWithPlaylistMetadataSkipChildren2One  MediaContainerWithPlaylistMetadataSkipChildren2 = "1"
+)
+
+func (e MediaContainerWithPlaylistMetadataSkipChildren2) ToPointer() *MediaContainerWithPlaylistMetadataSkipChildren2 {
+	return &e
+}
+func (e *MediaContainerWithPlaylistMetadataSkipChildren2) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = MediaContainerWithPlaylistMetadataSkipChildren2(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for MediaContainerWithPlaylistMetadataSkipChildren2: %v", v)
+	}
+}
+
+type MediaContainerWithPlaylistMetadataSkipChildrenType string
+
+const (
+	MediaContainerWithPlaylistMetadataSkipChildrenTypeBoolean                                         MediaContainerWithPlaylistMetadataSkipChildrenType = "boolean"
+	MediaContainerWithPlaylistMetadataSkipChildrenTypeMediaContainerWithPlaylistMetadataSkipChildren2 MediaContainerWithPlaylistMetadataSkipChildrenType = "MediaContainerWithPlaylistMetadata_skipChildren_2"
+)
+
+// MediaContainerWithPlaylistMetadataSkipChildren - When found on a show item, indicates that the children (seasons) should be skipped in favor of the grandchildren (episodes). Useful for mini-series, etc.
+type MediaContainerWithPlaylistMetadataSkipChildren struct {
+	Boolean                                         *bool                                            `queryParam:"inline" union:"member"`
+	MediaContainerWithPlaylistMetadataSkipChildren2 *MediaContainerWithPlaylistMetadataSkipChildren2 `queryParam:"inline" union:"member"`
+
+	Type MediaContainerWithPlaylistMetadataSkipChildrenType
+}
+
+func CreateMediaContainerWithPlaylistMetadataSkipChildrenBoolean(boolean bool) MediaContainerWithPlaylistMetadataSkipChildren {
+	typ := MediaContainerWithPlaylistMetadataSkipChildrenTypeBoolean
+
+	return MediaContainerWithPlaylistMetadataSkipChildren{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateMediaContainerWithPlaylistMetadataSkipChildrenMediaContainerWithPlaylistMetadataSkipChildren2(mediaContainerWithPlaylistMetadataSkipChildren2 MediaContainerWithPlaylistMetadataSkipChildren2) MediaContainerWithPlaylistMetadataSkipChildren {
+	typ := MediaContainerWithPlaylistMetadataSkipChildrenTypeMediaContainerWithPlaylistMetadataSkipChildren2
+
+	return MediaContainerWithPlaylistMetadataSkipChildren{
+		MediaContainerWithPlaylistMetadataSkipChildren2: &mediaContainerWithPlaylistMetadataSkipChildren2,
+		Type: typ,
+	}
+}
+
+func (u *MediaContainerWithPlaylistMetadataSkipChildren) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = MediaContainerWithPlaylistMetadataSkipChildren{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = MediaContainerWithPlaylistMetadataSkipChildrenTypeBoolean
+		return nil
+	}
+
+	var mediaContainerWithPlaylistMetadataSkipChildren2 MediaContainerWithPlaylistMetadataSkipChildren2 = MediaContainerWithPlaylistMetadataSkipChildren2("")
+	if err := utils.UnmarshalJSON(data, &mediaContainerWithPlaylistMetadataSkipChildren2, "", true, nil); err == nil {
+		u.MediaContainerWithPlaylistMetadataSkipChildren2 = &mediaContainerWithPlaylistMetadataSkipChildren2
+		u.Type = MediaContainerWithPlaylistMetadataSkipChildrenTypeMediaContainerWithPlaylistMetadataSkipChildren2
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for MediaContainerWithPlaylistMetadataSkipChildren", string(data))
+}
+
+func (u MediaContainerWithPlaylistMetadataSkipChildren) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.MediaContainerWithPlaylistMetadataSkipChildren2 != nil {
+		return utils.MarshalJSON(u.MediaContainerWithPlaylistMetadataSkipChildren2, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type MediaContainerWithPlaylistMetadataSkipChildren: all fields are null")
+}
+
+type MediaContainerWithPlaylistMetadataSkipParent2 string
+
+const (
+	MediaContainerWithPlaylistMetadataSkipParent2Zero MediaContainerWithPlaylistMetadataSkipParent2 = "0"
+	MediaContainerWithPlaylistMetadataSkipParent2One  MediaContainerWithPlaylistMetadataSkipParent2 = "1"
+)
+
+func (e MediaContainerWithPlaylistMetadataSkipParent2) ToPointer() *MediaContainerWithPlaylistMetadataSkipParent2 {
+	return &e
+}
+func (e *MediaContainerWithPlaylistMetadataSkipParent2) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = MediaContainerWithPlaylistMetadataSkipParent2(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for MediaContainerWithPlaylistMetadataSkipParent2: %v", v)
+	}
+}
+
+type MediaContainerWithPlaylistMetadataSkipParentType string
+
+const (
+	MediaContainerWithPlaylistMetadataSkipParentTypeBoolean                                       MediaContainerWithPlaylistMetadataSkipParentType = "boolean"
+	MediaContainerWithPlaylistMetadataSkipParentTypeMediaContainerWithPlaylistMetadataSkipParent2 MediaContainerWithPlaylistMetadataSkipParentType = "MediaContainerWithPlaylistMetadata_skipParent_2"
+)
+
+// MediaContainerWithPlaylistMetadataSkipParent - When present on an episode or track item, indicates parent should be skipped in favor of grandparent (show).
+type MediaContainerWithPlaylistMetadataSkipParent struct {
+	Boolean                                       *bool                                          `queryParam:"inline" union:"member"`
+	MediaContainerWithPlaylistMetadataSkipParent2 *MediaContainerWithPlaylistMetadataSkipParent2 `queryParam:"inline" union:"member"`
+
+	Type MediaContainerWithPlaylistMetadataSkipParentType
+}
+
+func CreateMediaContainerWithPlaylistMetadataSkipParentBoolean(boolean bool) MediaContainerWithPlaylistMetadataSkipParent {
+	typ := MediaContainerWithPlaylistMetadataSkipParentTypeBoolean
+
+	return MediaContainerWithPlaylistMetadataSkipParent{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateMediaContainerWithPlaylistMetadataSkipParentMediaContainerWithPlaylistMetadataSkipParent2(mediaContainerWithPlaylistMetadataSkipParent2 MediaContainerWithPlaylistMetadataSkipParent2) MediaContainerWithPlaylistMetadataSkipParent {
+	typ := MediaContainerWithPlaylistMetadataSkipParentTypeMediaContainerWithPlaylistMetadataSkipParent2
+
+	return MediaContainerWithPlaylistMetadataSkipParent{
+		MediaContainerWithPlaylistMetadataSkipParent2: &mediaContainerWithPlaylistMetadataSkipParent2,
+		Type: typ,
+	}
+}
+
+func (u *MediaContainerWithPlaylistMetadataSkipParent) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = MediaContainerWithPlaylistMetadataSkipParent{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = MediaContainerWithPlaylistMetadataSkipParentTypeBoolean
+		return nil
+	}
+
+	var mediaContainerWithPlaylistMetadataSkipParent2 MediaContainerWithPlaylistMetadataSkipParent2 = MediaContainerWithPlaylistMetadataSkipParent2("")
+	if err := utils.UnmarshalJSON(data, &mediaContainerWithPlaylistMetadataSkipParent2, "", true, nil); err == nil {
+		u.MediaContainerWithPlaylistMetadataSkipParent2 = &mediaContainerWithPlaylistMetadataSkipParent2
+		u.Type = MediaContainerWithPlaylistMetadataSkipParentTypeMediaContainerWithPlaylistMetadataSkipParent2
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for MediaContainerWithPlaylistMetadataSkipParent", string(data))
+}
+
+func (u MediaContainerWithPlaylistMetadataSkipParent) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.MediaContainerWithPlaylistMetadataSkipParent2 != nil {
+		return utils.MarshalJSON(u.MediaContainerWithPlaylistMetadataSkipParent2, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type MediaContainerWithPlaylistMetadataSkipParent: all fields are null")
 }
 
 // MediaContainerWithPlaylistMetadataMetadata - Items in a library are referred to as "metadata items." These metadata items are distinct from "media items" which represent actual instances of media that can be consumed. Consider a TV library that has a single video file in it for a particular episode of a show. The library has a single media item, but it has three metadata items: one for the show, one for the season, and one for the episode. Consider a movie library that has two video files in it: the same movie, but two different resolutions. The library has a single metadata item for the movie, but that metadata item has two media items, one for each resolution. Additionally a "media item" will have one or more "media parts" where the the parts are intended to be watched together, such as a CD1 and CD2 parts of the same movie.
@@ -64,12 +257,16 @@ type MediaContainerWithPlaylistMetadataMetadata struct {
 	Composite *string `json:"composite,omitempty"`
 	// When present, the duration for the item, in units of milliseconds.
 	Duration *int `json:"duration,omitempty"`
+	// Total duration in seconds (redundant but present in XML).
+	DurationInSeconds *int64 `json:"durationInSeconds,omitempty"`
 	// The key at which the item's details can be fetched.  In many cases a metadata item may be passed without all the details (such as in a hub) and this key corresponds to the endpoint to fetch additional details.
 	Key string `json:"key"`
 	// For shows and seasons, contains the number of total episodes.
 	LeafCount *int `json:"leafCount,omitempty"`
 	// The type of the playlist.
 	PlaylistType *PlaylistType `json:"playlistType,omitempty"`
+	// Whether this is a generated radio playlist.
+	Radio *bool `json:"radio,omitempty"`
 	// Whether or not the playlist is smart.
 	Smart *bool `json:"smart,omitempty"`
 	// If this is a special playlist, this returns its type (e.g. favorites).
@@ -77,13 +274,15 @@ type MediaContainerWithPlaylistMetadataMetadata struct {
 	// The title of the item (e.g. “300” or “The Simpsons”)
 	Title string `json:"title"`
 	// The type of the video item, such as `movie`, `episode`, or `clip`.
-	Type string `json:"type"`
+	Type *string `json:"type,omitempty"`
 	// When present, contains the disc number for a track on multi-disc albums.
 	AbsoluteIndex *int `json:"absoluteIndex,omitempty"`
 	// In units of seconds since the epoch, returns the time at which the item was added to the library.
-	AddedAt int64 `json:"addedAt"`
+	AddedAt *int64 `json:"addedAt,omitempty"`
 	// When present, the URL for the background artwork for the item.
 	Art *string `json:"art,omitempty"`
+	// Blur hash for background art.
+	ArtBlurHash *string `json:"artBlurHash,omitempty"`
 	// Some rating systems separate reviewer ratings from audience ratings
 	AudienceRating *float32 `json:"audienceRating,omitempty"`
 	// A URI representing the image to be shown with the audience rating (e.g. rottentomatoes://image.rating.spilled).
@@ -99,6 +298,12 @@ type MediaContainerWithPlaylistMetadataMetadata struct {
 	ContentRating *string `json:"contentRating,omitempty"`
 	Country       []Tag   `json:"Country,omitempty"`
 	Director      []Tag   `json:"Director,omitempty"`
+	// Levenshtein distance for voice search results.
+	Distance *int64 `json:"distance,omitempty"`
+	// Edition string (e.g. "Director's Cut").
+	EditionTitle *string `json:"editionTitle,omitempty"`
+	// Whether credits marker generation is enabled for this item.
+	EnableCreditsMarkerGeneration *bool `json:"enableCreditsMarkerGeneration,omitempty"`
 	// Typically only seen in metadata at a library's top level
 	Filter []Filter `json:"Filter,omitempty"`
 	Genre  []Tag    `json:"Genre,omitempty"`
@@ -125,11 +330,21 @@ type MediaContainerWithPlaylistMetadataMetadata struct {
 	Hero  *string `json:"hero,omitempty"`
 	Image []Image `json:"Image,omitempty"`
 	// When present, this represents the episode number for episodes, season number for seasons, or track number for audio tracks.
-	Index        *int    `json:"index,omitempty"`
-	LastViewedAt *int64  `json:"lastViewedAt,omitempty"`
-	Media        []Media `json:"Media,omitempty"`
-	// When present, in the format YYYY-MM-DD [HH:MM:SS] (the hours/minutes/seconds part is not always present). The air date, or a higher resolution release date for an item, depending on type. For example, episodes usually have air date like 1979-08-10 (we don't use epoch seconds because media existed prior to 1970). In some cases, recorded over-the-air content has higher resolution air date which includes a time component. Albums and movies may have day-resolution release dates as well.
-	OriginallyAvailableAt *types.Date `json:"originallyAvailableAt,omitempty"`
+	Index *int `json:"index,omitempty"`
+	// Per-item language override.
+	LanguageOverride *string `json:"languageOverride,omitempty"`
+	// Timestamp of the last user rating.
+	LastRatedAt  *int64 `json:"lastRatedAt,omitempty"`
+	LastViewedAt *int64 `json:"lastViewedAt,omitempty"`
+	// The library section containing this metadata item, when reported by the server.
+	LibrarySectionID *int64  `json:"librarySectionID,omitempty"`
+	Media            []Media `json:"Media,omitempty"`
+	// Analysis version for music items.
+	MusicAnalysisVersion *int64 `json:"musicAnalysisVersion,omitempty"`
+	// The original release or capture date as reported by the server.
+	// Values can be a date (YYYY-MM-DD), a date with a time (YYYY-MM-DD HH:MM:SS), or an ISO 8601 timestamp.
+	// Preserve the string representation so higher-resolution timestamps are not reduced to a date-only value.
+	OriginallyAvailableAt *string `json:"originallyAvailableAt,omitempty"`
 	// When present, used to indicate an item's original title, e.g. a movie's foreign title.
 	OriginalTitle *string `json:"originalTitle,omitempty"`
 	// The GUID of the parent media item.
@@ -146,6 +361,8 @@ type MediaContainerWithPlaylistMetadataMetadata struct {
 	ParentThumb *string `json:"parentThumb,omitempty"`
 	// The `title` of the parent
 	ParentTitle *string `json:"parentTitle,omitempty"`
+	// Item ID within a playlist.
+	PlaylistItemID *int64 `json:"playlistItemID,omitempty"`
 	// Indicates that the item has a primary extra; for a movie, this is a trailer, and for a music track it is a music video. The URL points to the metadata details endpoint for the item.
 	PrimaryExtraKey *string `json:"primaryExtraKey,omitempty"`
 	// Prompt to give the user for this directory (such as `Search Movies`)
@@ -165,11 +382,17 @@ type MediaContainerWithPlaylistMetadataMetadata struct {
 	// Used by old clients to provide nested menus allowing for primative (but structured) navigation.
 	Secondary *bool `json:"secondary,omitempty"`
 	// When found on a show item, indicates that the children (seasons) should be skipped in favor of the grandchildren (episodes). Useful for mini-series, etc.
-	SkipChildren *bool `json:"skipChildren,omitempty"`
+	SkipChildren *MediaContainerWithPlaylistMetadataSkipChildren `json:"skipChildren,omitempty"`
+	// Number of times this track has been skipped.
+	SkipCount *int64 `json:"skipCount,omitempty"`
 	// When present on an episode or track item, indicates parent should be skipped in favor of grandparent (show).
-	SkipParent *bool `json:"skipParent,omitempty"`
+	SkipParent *MediaContainerWithPlaylistMetadataSkipParent `json:"skipParent,omitempty"`
+	// URL-friendly slug for the item.
+	Slug *string `json:"slug,omitempty"`
 	// Typically only seen in metadata at a library's top level
 	Sort []Sort `json:"Sort,omitempty"`
+	// Remote or shared server item URI.
+	SourceURI *string `json:"sourceURI,omitempty"`
 	// When present, the studio or label which produced an item (e.g. movie studio for movies, record label for albums).
 	Studio *string `json:"studio,omitempty"`
 	// The subtype of the video item, such as `photo` when the video item is in a photo library
@@ -182,10 +405,14 @@ type MediaContainerWithPlaylistMetadataMetadata struct {
 	Theme *string `json:"theme,omitempty"`
 	// When present, the URL for the poster or thumbnail for the item. When available for types like movie, it will be the poster graphic, but fall-back to the extracted media thumbnail.
 	Thumb *string `json:"thumb,omitempty"`
+	// Blur hash for thumbnail.
+	ThumbBlurHash *string `json:"thumbBlurHash,omitempty"`
 	// Whene present, this is the string used for sorting the item. It's usually the title with any leading articles removed (e.g. “Simpsons”).
 	TitleSort *string `json:"titleSort,omitempty"`
 	// In units of seconds since the epoch, returns the time at which the item was last changed (e.g. had its metadata updated).
 	UpdatedAt *int64 `json:"updatedAt,omitempty"`
+	// Whether to display the original title.
+	UseOriginalTitle *bool `json:"useOriginalTitle,omitempty"`
 	// When the user has rated an item, this contains the user rating
 	UserRating *float32 `json:"userRating,omitempty"`
 	// When a users has completed watched or listened to an item, this attribute contains the number of consumptions.
@@ -232,6 +459,13 @@ func (m *MediaContainerWithPlaylistMetadataMetadata) GetDuration() *int {
 	return m.Duration
 }
 
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetDurationInSeconds() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.DurationInSeconds
+}
+
 func (m *MediaContainerWithPlaylistMetadataMetadata) GetKey() string {
 	if m == nil {
 		return ""
@@ -251,6 +485,13 @@ func (m *MediaContainerWithPlaylistMetadataMetadata) GetPlaylistType() *Playlist
 		return nil
 	}
 	return m.PlaylistType
+}
+
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetRadio() *bool {
+	if m == nil {
+		return nil
+	}
+	return m.Radio
 }
 
 func (m *MediaContainerWithPlaylistMetadataMetadata) GetSmart() *bool {
@@ -274,9 +515,9 @@ func (m *MediaContainerWithPlaylistMetadataMetadata) GetTitle() string {
 	return m.Title
 }
 
-func (m *MediaContainerWithPlaylistMetadataMetadata) GetType() string {
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetType() *string {
 	if m == nil {
-		return ""
+		return nil
 	}
 	return m.Type
 }
@@ -288,9 +529,9 @@ func (m *MediaContainerWithPlaylistMetadataMetadata) GetAbsoluteIndex() *int {
 	return m.AbsoluteIndex
 }
 
-func (m *MediaContainerWithPlaylistMetadataMetadata) GetAddedAt() int64 {
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetAddedAt() *int64 {
 	if m == nil {
-		return 0
+		return nil
 	}
 	return m.AddedAt
 }
@@ -300,6 +541,13 @@ func (m *MediaContainerWithPlaylistMetadataMetadata) GetArt() *string {
 		return nil
 	}
 	return m.Art
+}
+
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetArtBlurHash() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ArtBlurHash
 }
 
 func (m *MediaContainerWithPlaylistMetadataMetadata) GetAudienceRating() *float32 {
@@ -363,6 +611,27 @@ func (m *MediaContainerWithPlaylistMetadataMetadata) GetDirector() []Tag {
 		return nil
 	}
 	return m.Director
+}
+
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetDistance() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.Distance
+}
+
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetEditionTitle() *string {
+	if m == nil {
+		return nil
+	}
+	return m.EditionTitle
+}
+
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetEnableCreditsMarkerGeneration() *bool {
+	if m == nil {
+		return nil
+	}
+	return m.EnableCreditsMarkerGeneration
 }
 
 func (m *MediaContainerWithPlaylistMetadataMetadata) GetFilter() []Filter {
@@ -470,11 +739,32 @@ func (m *MediaContainerWithPlaylistMetadataMetadata) GetIndex() *int {
 	return m.Index
 }
 
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetLanguageOverride() *string {
+	if m == nil {
+		return nil
+	}
+	return m.LanguageOverride
+}
+
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetLastRatedAt() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.LastRatedAt
+}
+
 func (m *MediaContainerWithPlaylistMetadataMetadata) GetLastViewedAt() *int64 {
 	if m == nil {
 		return nil
 	}
 	return m.LastViewedAt
+}
+
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetLibrarySectionID() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.LibrarySectionID
 }
 
 func (m *MediaContainerWithPlaylistMetadataMetadata) GetMedia() []Media {
@@ -484,7 +774,14 @@ func (m *MediaContainerWithPlaylistMetadataMetadata) GetMedia() []Media {
 	return m.Media
 }
 
-func (m *MediaContainerWithPlaylistMetadataMetadata) GetOriginallyAvailableAt() *types.Date {
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetMusicAnalysisVersion() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.MusicAnalysisVersion
+}
+
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetOriginallyAvailableAt() *string {
 	if m == nil {
 		return nil
 	}
@@ -545,6 +842,13 @@ func (m *MediaContainerWithPlaylistMetadataMetadata) GetParentTitle() *string {
 		return nil
 	}
 	return m.ParentTitle
+}
+
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetPlaylistItemID() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.PlaylistItemID
 }
 
 func (m *MediaContainerWithPlaylistMetadataMetadata) GetPrimaryExtraKey() *string {
@@ -617,18 +921,32 @@ func (m *MediaContainerWithPlaylistMetadataMetadata) GetSecondary() *bool {
 	return m.Secondary
 }
 
-func (m *MediaContainerWithPlaylistMetadataMetadata) GetSkipChildren() *bool {
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetSkipChildren() *MediaContainerWithPlaylistMetadataSkipChildren {
 	if m == nil {
 		return nil
 	}
 	return m.SkipChildren
 }
 
-func (m *MediaContainerWithPlaylistMetadataMetadata) GetSkipParent() *bool {
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetSkipCount() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.SkipCount
+}
+
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetSkipParent() *MediaContainerWithPlaylistMetadataSkipParent {
 	if m == nil {
 		return nil
 	}
 	return m.SkipParent
+}
+
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetSlug() *string {
+	if m == nil {
+		return nil
+	}
+	return m.Slug
 }
 
 func (m *MediaContainerWithPlaylistMetadataMetadata) GetSort() []Sort {
@@ -636,6 +954,13 @@ func (m *MediaContainerWithPlaylistMetadataMetadata) GetSort() []Sort {
 		return nil
 	}
 	return m.Sort
+}
+
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetSourceURI() *string {
+	if m == nil {
+		return nil
+	}
+	return m.SourceURI
 }
 
 func (m *MediaContainerWithPlaylistMetadataMetadata) GetStudio() *string {
@@ -680,6 +1005,13 @@ func (m *MediaContainerWithPlaylistMetadataMetadata) GetThumb() *string {
 	return m.Thumb
 }
 
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetThumbBlurHash() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ThumbBlurHash
+}
+
 func (m *MediaContainerWithPlaylistMetadataMetadata) GetTitleSort() *string {
 	if m == nil {
 		return nil
@@ -692,6 +1024,13 @@ func (m *MediaContainerWithPlaylistMetadataMetadata) GetUpdatedAt() *int64 {
 		return nil
 	}
 	return m.UpdatedAt
+}
+
+func (m *MediaContainerWithPlaylistMetadataMetadata) GetUseOriginalTitle() *bool {
+	if m == nil {
+		return nil
+	}
+	return m.UseOriginalTitle
 }
 
 func (m *MediaContainerWithPlaylistMetadataMetadata) GetUserRating() *float32 {
@@ -749,11 +1088,9 @@ func (m *MediaContainerWithPlaylistMetadataMetadata) GetAdditionalProperties() m
 type MediaContainerWithPlaylistMetadataMediaContainer struct {
 	Identifier *string `json:"identifier,omitempty"`
 	// The offset of where this container page starts among the total objects available. Also provided in the `X-Plex-Container-Start` header.
-	//
 	Offset *int64 `json:"offset,omitempty"`
 	Size   *int64 `json:"size,omitempty"`
 	// The total size of objects available. Also provided in the `X-Plex-Container-Total-Size` header.
-	//
 	TotalSize *int64                                       `json:"totalSize,omitempty"`
 	Metadata  []MediaContainerWithPlaylistMetadataMetadata `json:"Metadata,omitempty"`
 }

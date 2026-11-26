@@ -3,8 +3,8 @@
 package operations
 
 import (
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/models/components"
+	"github.com/ygelfand/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/models/components"
 	"net/http"
 )
 
@@ -148,6 +148,8 @@ type SetDevicePreferencesRequest struct {
 	DeviceID int64 `pathParam:"style=simple,explode=false,name=deviceId"`
 	// The preference names and values.
 	Name *string `queryParam:"style=form,explode=true,name=name"`
+	// Preference value to set.
+	Value *string `queryParam:"style=form,explode=true,name=value"`
 }
 
 func (s SetDevicePreferencesRequest) MarshalJSON() ([]byte, error) {
@@ -250,6 +252,13 @@ func (s *SetDevicePreferencesRequest) GetName() *string {
 		return nil
 	}
 	return s.Name
+}
+
+func (s *SetDevicePreferencesRequest) GetValue() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Value
 }
 
 type SetDevicePreferencesResponse struct {

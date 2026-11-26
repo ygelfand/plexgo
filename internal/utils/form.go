@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/LukeHagar/plexgo/optionalnullable"
-	"github.com/LukeHagar/plexgo/types"
+	"github.com/ygelfand/plexgo/optionalnullable"
+	"github.com/ygelfand/plexgo/types"
 )
 
 func populateForm(paramName string, explode bool, objType reflect.Type, objValue reflect.Value, delimiter string, defaultValue *string, allowEmptyValue map[string]struct{}, getFieldName func(reflect.StructField) string) url.Values {
@@ -57,6 +57,11 @@ func populateForm(paramName string, explode bool, objType reflect.Type, objValue
 					valType = valType.Elem()
 				}
 
+				valType, hasValue := unwrapOptionalNullable(valType)
+				if !hasValue {
+					continue
+				}
+
 				fieldName := getFieldName(fieldType)
 				if fieldName == "" {
 					continue
@@ -82,9 +87,10 @@ func populateForm(paramName string, explode bool, objType reflect.Type, objValue
 	case reflect.Map:
 		// check if optionalnullable.OptionalNullable[T]
 		if nullableValue, ok := optionalnullable.AsOptionalNullable(objValue); ok {
-			// Handle optionalnullable.OptionalNullable[T] using GetUntyped method
+			// Serialize the wrapped value using the rules for its own type
 			if value, isSet := nullableValue.GetUntyped(); isSet && value != nil {
-				formValues.Add(paramName, valToString(value))
+				innerValue := reflect.ValueOf(value)
+				return populateForm(paramName, explode, innerValue.Type(), innerValue, delimiter, defaultValue, allowEmptyValue, getFieldName)
 			}
 			// If not set or explicitly null, skip adding to form
 			return formValues

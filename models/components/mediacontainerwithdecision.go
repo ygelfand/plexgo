@@ -4,15 +4,14 @@ package components
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/types"
+	"github.com/ygelfand/plexgo/internal/utils"
 )
 
 type MediaContainerWithDecisionGuids struct {
 	// The unique identifier for the Guid. Can be prefixed with imdb://, tmdb://, tvdb://
-	//
 	ID string `json:"id"`
 }
 
@@ -21,6 +20,493 @@ func (m *MediaContainerWithDecisionGuids) GetID() string {
 		return ""
 	}
 	return m.ID
+}
+
+type HasVoiceActivity2 string
+
+const (
+	HasVoiceActivity2Zero HasVoiceActivity2 = "0"
+	HasVoiceActivity2One  HasVoiceActivity2 = "1"
+)
+
+func (e HasVoiceActivity2) ToPointer() *HasVoiceActivity2 {
+	return &e
+}
+func (e *HasVoiceActivity2) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = HasVoiceActivity2(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for HasVoiceActivity2: %v", v)
+	}
+}
+
+type MediaContainerWithDecisionHasVoiceActivityType string
+
+const (
+	MediaContainerWithDecisionHasVoiceActivityTypeBoolean           MediaContainerWithDecisionHasVoiceActivityType = "boolean"
+	MediaContainerWithDecisionHasVoiceActivityTypeHasVoiceActivity2 MediaContainerWithDecisionHasVoiceActivityType = "hasVoiceActivity_2"
+)
+
+// MediaContainerWithDecisionHasVoiceActivity - Voice activity detection availability flag returned by PMS.
+// PMS may return this as a boolean or as string values (`"0"` or `"1"`).
+type MediaContainerWithDecisionHasVoiceActivity struct {
+	Boolean           *bool              `queryParam:"inline" union:"member"`
+	HasVoiceActivity2 *HasVoiceActivity2 `queryParam:"inline" union:"member"`
+
+	Type MediaContainerWithDecisionHasVoiceActivityType
+}
+
+func CreateMediaContainerWithDecisionHasVoiceActivityBoolean(boolean bool) MediaContainerWithDecisionHasVoiceActivity {
+	typ := MediaContainerWithDecisionHasVoiceActivityTypeBoolean
+
+	return MediaContainerWithDecisionHasVoiceActivity{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateMediaContainerWithDecisionHasVoiceActivityHasVoiceActivity2(hasVoiceActivity2 HasVoiceActivity2) MediaContainerWithDecisionHasVoiceActivity {
+	typ := MediaContainerWithDecisionHasVoiceActivityTypeHasVoiceActivity2
+
+	return MediaContainerWithDecisionHasVoiceActivity{
+		HasVoiceActivity2: &hasVoiceActivity2,
+		Type:              typ,
+	}
+}
+
+func (u *MediaContainerWithDecisionHasVoiceActivity) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = MediaContainerWithDecisionHasVoiceActivity{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = MediaContainerWithDecisionHasVoiceActivityTypeBoolean
+		return nil
+	}
+
+	var hasVoiceActivity2 HasVoiceActivity2 = HasVoiceActivity2("")
+	if err := utils.UnmarshalJSON(data, &hasVoiceActivity2, "", true, nil); err == nil {
+		u.HasVoiceActivity2 = &hasVoiceActivity2
+		u.Type = MediaContainerWithDecisionHasVoiceActivityTypeHasVoiceActivity2
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for MediaContainerWithDecisionHasVoiceActivity", string(data))
+}
+
+func (u MediaContainerWithDecisionHasVoiceActivity) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.HasVoiceActivity2 != nil {
+		return utils.MarshalJSON(u.HasVoiceActivity2, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type MediaContainerWithDecisionHasVoiceActivity: all fields are null")
+}
+
+type MediaContainerWithDecisionOptimizedForStreaming int
+
+const (
+	MediaContainerWithDecisionOptimizedForStreamingZero MediaContainerWithDecisionOptimizedForStreaming = 0
+	MediaContainerWithDecisionOptimizedForStreamingOne  MediaContainerWithDecisionOptimizedForStreaming = 1
+)
+
+func (e MediaContainerWithDecisionOptimizedForStreaming) ToPointer() *MediaContainerWithDecisionOptimizedForStreaming {
+	return &e
+}
+func (e *MediaContainerWithDecisionOptimizedForStreaming) UnmarshalJSON(data []byte) error {
+	var v int
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case 0:
+		fallthrough
+	case 1:
+		*e = MediaContainerWithDecisionOptimizedForStreaming(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for MediaContainerWithDecisionOptimizedForStreaming: %v", v)
+	}
+}
+
+// MediaContainerWithDecisionBitrateMode - Audio bitrate mode (cbr or vbr).
+type MediaContainerWithDecisionBitrateMode string
+
+const (
+	MediaContainerWithDecisionBitrateModeCbr MediaContainerWithDecisionBitrateMode = "cbr"
+	MediaContainerWithDecisionBitrateModeVbr MediaContainerWithDecisionBitrateMode = "vbr"
+)
+
+func (e MediaContainerWithDecisionBitrateMode) ToPointer() *MediaContainerWithDecisionBitrateMode {
+	return &e
+}
+func (e *MediaContainerWithDecisionBitrateMode) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "cbr":
+		fallthrough
+	case "vbr":
+		*e = MediaContainerWithDecisionBitrateMode(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for MediaContainerWithDecisionBitrateMode: %v", v)
+	}
+}
+
+type MediaContainerWithDecisionCanAutoSync2 string
+
+const (
+	MediaContainerWithDecisionCanAutoSync2Zero MediaContainerWithDecisionCanAutoSync2 = "0"
+	MediaContainerWithDecisionCanAutoSync2One  MediaContainerWithDecisionCanAutoSync2 = "1"
+)
+
+func (e MediaContainerWithDecisionCanAutoSync2) ToPointer() *MediaContainerWithDecisionCanAutoSync2 {
+	return &e
+}
+func (e *MediaContainerWithDecisionCanAutoSync2) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = MediaContainerWithDecisionCanAutoSync2(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for MediaContainerWithDecisionCanAutoSync2: %v", v)
+	}
+}
+
+type MediaContainerWithDecisionCanAutoSyncType string
+
+const (
+	MediaContainerWithDecisionCanAutoSyncTypeBoolean                                MediaContainerWithDecisionCanAutoSyncType = "boolean"
+	MediaContainerWithDecisionCanAutoSyncTypeMediaContainerWithDecisionCanAutoSync2 MediaContainerWithDecisionCanAutoSyncType = "MediaContainerWithDecision_canAutoSync_2"
+)
+
+// MediaContainerWithDecisionCanAutoSync - Indicates if the stream can auto-sync.
+type MediaContainerWithDecisionCanAutoSync struct {
+	Boolean                                *bool                                   `queryParam:"inline" union:"member"`
+	MediaContainerWithDecisionCanAutoSync2 *MediaContainerWithDecisionCanAutoSync2 `queryParam:"inline" union:"member"`
+
+	Type MediaContainerWithDecisionCanAutoSyncType
+}
+
+func CreateMediaContainerWithDecisionCanAutoSyncBoolean(boolean bool) MediaContainerWithDecisionCanAutoSync {
+	typ := MediaContainerWithDecisionCanAutoSyncTypeBoolean
+
+	return MediaContainerWithDecisionCanAutoSync{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateMediaContainerWithDecisionCanAutoSyncMediaContainerWithDecisionCanAutoSync2(mediaContainerWithDecisionCanAutoSync2 MediaContainerWithDecisionCanAutoSync2) MediaContainerWithDecisionCanAutoSync {
+	typ := MediaContainerWithDecisionCanAutoSyncTypeMediaContainerWithDecisionCanAutoSync2
+
+	return MediaContainerWithDecisionCanAutoSync{
+		MediaContainerWithDecisionCanAutoSync2: &mediaContainerWithDecisionCanAutoSync2,
+		Type:                                   typ,
+	}
+}
+
+func (u *MediaContainerWithDecisionCanAutoSync) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = MediaContainerWithDecisionCanAutoSync{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = MediaContainerWithDecisionCanAutoSyncTypeBoolean
+		return nil
+	}
+
+	var mediaContainerWithDecisionCanAutoSync2 MediaContainerWithDecisionCanAutoSync2 = MediaContainerWithDecisionCanAutoSync2("")
+	if err := utils.UnmarshalJSON(data, &mediaContainerWithDecisionCanAutoSync2, "", true, nil); err == nil {
+		u.MediaContainerWithDecisionCanAutoSync2 = &mediaContainerWithDecisionCanAutoSync2
+		u.Type = MediaContainerWithDecisionCanAutoSyncTypeMediaContainerWithDecisionCanAutoSync2
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for MediaContainerWithDecisionCanAutoSync", string(data))
+}
+
+func (u MediaContainerWithDecisionCanAutoSync) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.MediaContainerWithDecisionCanAutoSync2 != nil {
+		return utils.MarshalJSON(u.MediaContainerWithDecisionCanAutoSync2, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type MediaContainerWithDecisionCanAutoSync: all fields are null")
+}
+
+type MediaContainerWithDecisionLoudnessType string
+
+const (
+	MediaContainerWithDecisionLoudnessTypeNumber MediaContainerWithDecisionLoudnessType = "number"
+	MediaContainerWithDecisionLoudnessTypeStr    MediaContainerWithDecisionLoudnessType = "str"
+)
+
+// MediaContainerWithDecisionLoudness - Integrated loudness in LUFS. Plex may return a numeric value as a number or numeric string, or the sentinel string "-inf".
+type MediaContainerWithDecisionLoudness struct {
+	Number *float64 `queryParam:"inline" union:"member"`
+	Str    *string  `queryParam:"inline" union:"member"`
+
+	Type MediaContainerWithDecisionLoudnessType
+}
+
+func CreateMediaContainerWithDecisionLoudnessNumber(number float64) MediaContainerWithDecisionLoudness {
+	typ := MediaContainerWithDecisionLoudnessTypeNumber
+
+	return MediaContainerWithDecisionLoudness{
+		Number: &number,
+		Type:   typ,
+	}
+}
+
+func CreateMediaContainerWithDecisionLoudnessStr(str string) MediaContainerWithDecisionLoudness {
+	typ := MediaContainerWithDecisionLoudnessTypeStr
+
+	return MediaContainerWithDecisionLoudness{
+		Str:  &str,
+		Type: typ,
+	}
+}
+
+func (u *MediaContainerWithDecisionLoudness) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = MediaContainerWithDecisionLoudness{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var number float64 = float64(0)
+	if err := utils.UnmarshalJSON(data, &number, "", true, nil); err == nil {
+		u.Number = &number
+		u.Type = MediaContainerWithDecisionLoudnessTypeNumber
+		return nil
+	}
+
+	var str string = ""
+	if err := utils.UnmarshalJSON(data, &str, "", true, nil); err == nil {
+		u.Str = &str
+		u.Type = MediaContainerWithDecisionLoudnessTypeStr
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for MediaContainerWithDecisionLoudness", string(data))
+}
+
+func (u MediaContainerWithDecisionLoudness) MarshalJSON() ([]byte, error) {
+	if u.Number != nil {
+		return utils.MarshalJSON(u.Number, "", true)
+	}
+
+	if u.Str != nil {
+		return utils.MarshalJSON(u.Str, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type MediaContainerWithDecisionLoudness: all fields are null")
+}
+
+type MediaContainerWithDecisionPeakType string
+
+const (
+	MediaContainerWithDecisionPeakTypeNumber MediaContainerWithDecisionPeakType = "number"
+	MediaContainerWithDecisionPeakTypeStr    MediaContainerWithDecisionPeakType = "str"
+)
+
+// MediaContainerWithDecisionPeak - Track peak amplitude. Plex may return a numeric value as a number or numeric string, or the sentinel string "-inf".
+type MediaContainerWithDecisionPeak struct {
+	Number *float64 `queryParam:"inline" union:"member"`
+	Str    *string  `queryParam:"inline" union:"member"`
+
+	Type MediaContainerWithDecisionPeakType
+}
+
+func CreateMediaContainerWithDecisionPeakNumber(number float64) MediaContainerWithDecisionPeak {
+	typ := MediaContainerWithDecisionPeakTypeNumber
+
+	return MediaContainerWithDecisionPeak{
+		Number: &number,
+		Type:   typ,
+	}
+}
+
+func CreateMediaContainerWithDecisionPeakStr(str string) MediaContainerWithDecisionPeak {
+	typ := MediaContainerWithDecisionPeakTypeStr
+
+	return MediaContainerWithDecisionPeak{
+		Str:  &str,
+		Type: typ,
+	}
+}
+
+func (u *MediaContainerWithDecisionPeak) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = MediaContainerWithDecisionPeak{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var number float64 = float64(0)
+	if err := utils.UnmarshalJSON(data, &number, "", true, nil); err == nil {
+		u.Number = &number
+		u.Type = MediaContainerWithDecisionPeakTypeNumber
+		return nil
+	}
+
+	var str string = ""
+	if err := utils.UnmarshalJSON(data, &str, "", true, nil); err == nil {
+		u.Str = &str
+		u.Type = MediaContainerWithDecisionPeakTypeStr
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for MediaContainerWithDecisionPeak", string(data))
+}
+
+func (u MediaContainerWithDecisionPeak) MarshalJSON() ([]byte, error) {
+	if u.Number != nil {
+		return utils.MarshalJSON(u.Number, "", true)
+	}
+
+	if u.Str != nil {
+		return utils.MarshalJSON(u.Str, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type MediaContainerWithDecisionPeak: all fields are null")
+}
+
+type MediaContainerWithDecisionPerfectMatch2 string
+
+const (
+	MediaContainerWithDecisionPerfectMatch2Zero MediaContainerWithDecisionPerfectMatch2 = "0"
+	MediaContainerWithDecisionPerfectMatch2One  MediaContainerWithDecisionPerfectMatch2 = "1"
+)
+
+func (e MediaContainerWithDecisionPerfectMatch2) ToPointer() *MediaContainerWithDecisionPerfectMatch2 {
+	return &e
+}
+func (e *MediaContainerWithDecisionPerfectMatch2) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = MediaContainerWithDecisionPerfectMatch2(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for MediaContainerWithDecisionPerfectMatch2: %v", v)
+	}
+}
+
+type MediaContainerWithDecisionPerfectMatchType string
+
+const (
+	MediaContainerWithDecisionPerfectMatchTypeBoolean                                 MediaContainerWithDecisionPerfectMatchType = "boolean"
+	MediaContainerWithDecisionPerfectMatchTypeMediaContainerWithDecisionPerfectMatch2 MediaContainerWithDecisionPerfectMatchType = "MediaContainerWithDecision_perfectMatch_2"
+)
+
+// MediaContainerWithDecisionPerfectMatch - Whether the subtitle is an exact match.
+type MediaContainerWithDecisionPerfectMatch struct {
+	Boolean                                 *bool                                    `queryParam:"inline" union:"member"`
+	MediaContainerWithDecisionPerfectMatch2 *MediaContainerWithDecisionPerfectMatch2 `queryParam:"inline" union:"member"`
+
+	Type MediaContainerWithDecisionPerfectMatchType
+}
+
+func CreateMediaContainerWithDecisionPerfectMatchBoolean(boolean bool) MediaContainerWithDecisionPerfectMatch {
+	typ := MediaContainerWithDecisionPerfectMatchTypeBoolean
+
+	return MediaContainerWithDecisionPerfectMatch{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateMediaContainerWithDecisionPerfectMatchMediaContainerWithDecisionPerfectMatch2(mediaContainerWithDecisionPerfectMatch2 MediaContainerWithDecisionPerfectMatch2) MediaContainerWithDecisionPerfectMatch {
+	typ := MediaContainerWithDecisionPerfectMatchTypeMediaContainerWithDecisionPerfectMatch2
+
+	return MediaContainerWithDecisionPerfectMatch{
+		MediaContainerWithDecisionPerfectMatch2: &mediaContainerWithDecisionPerfectMatch2,
+		Type:                                    typ,
+	}
+}
+
+func (u *MediaContainerWithDecisionPerfectMatch) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = MediaContainerWithDecisionPerfectMatch{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = MediaContainerWithDecisionPerfectMatchTypeBoolean
+		return nil
+	}
+
+	var mediaContainerWithDecisionPerfectMatch2 MediaContainerWithDecisionPerfectMatch2 = MediaContainerWithDecisionPerfectMatch2("")
+	if err := utils.UnmarshalJSON(data, &mediaContainerWithDecisionPerfectMatch2, "", true, nil); err == nil {
+		u.MediaContainerWithDecisionPerfectMatch2 = &mediaContainerWithDecisionPerfectMatch2
+		u.Type = MediaContainerWithDecisionPerfectMatchTypeMediaContainerWithDecisionPerfectMatch2
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for MediaContainerWithDecisionPerfectMatch", string(data))
+}
+
+func (u MediaContainerWithDecisionPerfectMatch) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.MediaContainerWithDecisionPerfectMatch2 != nil {
+		return utils.MarshalJSON(u.MediaContainerWithDecisionPerfectMatch2, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type MediaContainerWithDecisionPerfectMatch: all fields are null")
 }
 
 // MediaContainerWithDecisionStreamType - Stream type:
@@ -55,6 +541,200 @@ func (e *MediaContainerWithDecisionStreamType) UnmarshalJSON(data []byte) error 
 	default:
 		return fmt.Errorf("invalid value for MediaContainerWithDecisionStreamType: %v", v)
 	}
+}
+
+type MediaContainerWithDecisionTimed2 string
+
+const (
+	MediaContainerWithDecisionTimed2Zero MediaContainerWithDecisionTimed2 = "0"
+	MediaContainerWithDecisionTimed2One  MediaContainerWithDecisionTimed2 = "1"
+)
+
+func (e MediaContainerWithDecisionTimed2) ToPointer() *MediaContainerWithDecisionTimed2 {
+	return &e
+}
+func (e *MediaContainerWithDecisionTimed2) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = MediaContainerWithDecisionTimed2(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for MediaContainerWithDecisionTimed2: %v", v)
+	}
+}
+
+type MediaContainerWithDecisionTimedType string
+
+const (
+	MediaContainerWithDecisionTimedTypeBoolean                          MediaContainerWithDecisionTimedType = "boolean"
+	MediaContainerWithDecisionTimedTypeMediaContainerWithDecisionTimed2 MediaContainerWithDecisionTimedType = "MediaContainerWithDecision_timed_2"
+)
+
+// MediaContainerWithDecisionTimed - Whether lyrics are timestamped.
+type MediaContainerWithDecisionTimed struct {
+	Boolean                          *bool                             `queryParam:"inline" union:"member"`
+	MediaContainerWithDecisionTimed2 *MediaContainerWithDecisionTimed2 `queryParam:"inline" union:"member"`
+
+	Type MediaContainerWithDecisionTimedType
+}
+
+func CreateMediaContainerWithDecisionTimedBoolean(boolean bool) MediaContainerWithDecisionTimed {
+	typ := MediaContainerWithDecisionTimedTypeBoolean
+
+	return MediaContainerWithDecisionTimed{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateMediaContainerWithDecisionTimedMediaContainerWithDecisionTimed2(mediaContainerWithDecisionTimed2 MediaContainerWithDecisionTimed2) MediaContainerWithDecisionTimed {
+	typ := MediaContainerWithDecisionTimedTypeMediaContainerWithDecisionTimed2
+
+	return MediaContainerWithDecisionTimed{
+		MediaContainerWithDecisionTimed2: &mediaContainerWithDecisionTimed2,
+		Type:                             typ,
+	}
+}
+
+func (u *MediaContainerWithDecisionTimed) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = MediaContainerWithDecisionTimed{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = MediaContainerWithDecisionTimedTypeBoolean
+		return nil
+	}
+
+	var mediaContainerWithDecisionTimed2 MediaContainerWithDecisionTimed2 = MediaContainerWithDecisionTimed2("")
+	if err := utils.UnmarshalJSON(data, &mediaContainerWithDecisionTimed2, "", true, nil); err == nil {
+		u.MediaContainerWithDecisionTimed2 = &mediaContainerWithDecisionTimed2
+		u.Type = MediaContainerWithDecisionTimedTypeMediaContainerWithDecisionTimed2
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for MediaContainerWithDecisionTimed", string(data))
+}
+
+func (u MediaContainerWithDecisionTimed) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.MediaContainerWithDecisionTimed2 != nil {
+		return utils.MarshalJSON(u.MediaContainerWithDecisionTimed2, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type MediaContainerWithDecisionTimed: all fields are null")
+}
+
+type MediaContainerWithDecisionTransient2 string
+
+const (
+	MediaContainerWithDecisionTransient2Zero MediaContainerWithDecisionTransient2 = "0"
+	MediaContainerWithDecisionTransient2One  MediaContainerWithDecisionTransient2 = "1"
+)
+
+func (e MediaContainerWithDecisionTransient2) ToPointer() *MediaContainerWithDecisionTransient2 {
+	return &e
+}
+func (e *MediaContainerWithDecisionTransient2) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = MediaContainerWithDecisionTransient2(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for MediaContainerWithDecisionTransient2: %v", v)
+	}
+}
+
+type MediaContainerWithDecisionTransientType string
+
+const (
+	MediaContainerWithDecisionTransientTypeBoolean                              MediaContainerWithDecisionTransientType = "boolean"
+	MediaContainerWithDecisionTransientTypeMediaContainerWithDecisionTransient2 MediaContainerWithDecisionTransientType = "MediaContainerWithDecision_transient_2"
+)
+
+// MediaContainerWithDecisionTransient - Whether the subtitle is temporary or downloaded.
+type MediaContainerWithDecisionTransient struct {
+	Boolean                              *bool                                 `queryParam:"inline" union:"member"`
+	MediaContainerWithDecisionTransient2 *MediaContainerWithDecisionTransient2 `queryParam:"inline" union:"member"`
+
+	Type MediaContainerWithDecisionTransientType
+}
+
+func CreateMediaContainerWithDecisionTransientBoolean(boolean bool) MediaContainerWithDecisionTransient {
+	typ := MediaContainerWithDecisionTransientTypeBoolean
+
+	return MediaContainerWithDecisionTransient{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateMediaContainerWithDecisionTransientMediaContainerWithDecisionTransient2(mediaContainerWithDecisionTransient2 MediaContainerWithDecisionTransient2) MediaContainerWithDecisionTransient {
+	typ := MediaContainerWithDecisionTransientTypeMediaContainerWithDecisionTransient2
+
+	return MediaContainerWithDecisionTransient{
+		MediaContainerWithDecisionTransient2: &mediaContainerWithDecisionTransient2,
+		Type:                                 typ,
+	}
+}
+
+func (u *MediaContainerWithDecisionTransient) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = MediaContainerWithDecisionTransient{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = MediaContainerWithDecisionTransientTypeBoolean
+		return nil
+	}
+
+	var mediaContainerWithDecisionTransient2 MediaContainerWithDecisionTransient2 = MediaContainerWithDecisionTransient2("")
+	if err := utils.UnmarshalJSON(data, &mediaContainerWithDecisionTransient2, "", true, nil); err == nil {
+		u.MediaContainerWithDecisionTransient2 = &mediaContainerWithDecisionTransient2
+		u.Type = MediaContainerWithDecisionTransientTypeMediaContainerWithDecisionTransient2
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for MediaContainerWithDecisionTransient", string(data))
+}
+
+func (u MediaContainerWithDecisionTransient) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.MediaContainerWithDecisionTransient2 != nil {
+		return utils.MarshalJSON(u.MediaContainerWithDecisionTransient2, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type MediaContainerWithDecisionTransient: all fields are null")
 }
 
 type MediaContainerWithDecisionDecision string
@@ -143,14 +823,51 @@ func (e *MediaContainerWithDecisionLocation) UnmarshalJSON(data []byte) error {
 
 // MediaContainerWithDecisionStream - `Stream` represents a particular stream from a media item, such as the video stream, audio stream, or subtitle stream. The stream may either be part of the file represented by the parent `Part` or, especially for subtitles, an external file. The stream contains more detailed information about the specific stream. For example, a video may include the `aspectRatio` at the `Media` level, but detailed information about the video stream like the color space will be included on the `Stream` for the video stream.  Note that photos do not have streams (mostly as an optimization).
 type MediaContainerWithDecisionStream struct {
+	// Optional title for the stream (e.g., language variant).
+	Title *string `json:"title,omitempty"`
+	// Format of the stream (e.g., srt).
+	Format *string `json:"format,omitempty"`
 	// Indicates if this stream is default.
 	Default *bool `json:"default,omitempty"`
+	// ReplayGain album gain in dB.
+	AlbumGain *float64 `json:"albumGain,omitempty"`
+	// ReplayGain album peak amplitude.
+	AlbumPeak *float64 `json:"albumPeak,omitempty"`
+	// ReplayGain album dynamic range in dB.
+	AlbumRange *float64 `json:"albumRange,omitempty"`
 	// Audio channel layout.
 	AudioChannelLayout *string `json:"audioChannelLayout,omitempty"`
-	// Number of audio channels (for audio streams).
-	Channels *int `json:"channels,omitempty"`
 	// Bit depth of the video stream.
 	BitDepth *int `json:"bitDepth,omitempty"`
+	// Bitrate of the stream.
+	Bitrate *int `json:"bitrate,omitempty"`
+	// Audio bitrate mode (cbr or vbr).
+	BitrateMode *MediaContainerWithDecisionBitrateMode `json:"bitrateMode,omitempty"`
+	// Indicates if the stream can auto-sync.
+	CanAutoSync *MediaContainerWithDecisionCanAutoSync `json:"canAutoSync,omitempty"`
+	// Number of audio channels (for audio streams).
+	Channels *int `json:"channels,omitempty"`
+	// Chroma sample location.
+	ChromaLocation *string `json:"chromaLocation,omitempty"`
+	// Chroma subsampling format.
+	ChromaSubsampling *string `json:"chromaSubsampling,omitempty"`
+	ClosedCaptions    *bool   `json:"closedCaptions,omitempty"`
+	// Codec used by the stream.
+	Codec string `json:"codec"`
+	// Coded video height.
+	CodedHeight *int `json:"codedHeight,omitempty"`
+	// Coded video width.
+	CodedWidth *int `json:"codedWidth,omitempty"`
+	// Color primaries used.
+	ColorPrimaries *string `json:"colorPrimaries,omitempty"`
+	// Color range (e.g., tv).
+	ColorRange *string `json:"colorRange,omitempty"`
+	// Color space.
+	ColorSpace *string `json:"colorSpace,omitempty"`
+	// Color transfer characteristics.
+	ColorTrc *string `json:"colorTrc,omitempty"`
+	// Display title for the stream.
+	DisplayTitle string `json:"displayTitle"`
 	// Dolby Vision BL compatibility ID.
 	DOVIBLCompatID *int `json:"DOVIBLCompatID,omitempty"`
 	// Indicates if Dolby Vision BL is present.
@@ -167,36 +884,23 @@ type MediaContainerWithDecisionStream struct {
 	DOVIRPUPresent *bool `json:"DOVIRPUPresent,omitempty"`
 	// Dolby Vision version.
 	DOVIVersion *string `json:"DOVIVersion,omitempty"`
-	// Bitrate of the stream.
-	Bitrate *int `json:"bitrate,omitempty"`
-	// Indicates if the stream can auto-sync.
-	CanAutoSync *bool `json:"canAutoSync,omitempty"`
-	// Chroma sample location.
-	ChromaLocation *string `json:"chromaLocation,omitempty"`
-	// Chroma subsampling format.
-	ChromaSubsampling *string `json:"chromaSubsampling,omitempty"`
-	// Coded video height.
-	CodedHeight *int `json:"codedHeight,omitempty"`
-	// Coded video width.
-	CodedWidth     *int  `json:"codedWidth,omitempty"`
-	ClosedCaptions *bool `json:"closedCaptions,omitempty"`
-	// Codec used by the stream.
-	Codec string `json:"codec"`
-	// Color primaries used.
-	ColorPrimaries *string `json:"colorPrimaries,omitempty"`
-	// Color range (e.g., tv).
-	ColorRange *string `json:"colorRange,omitempty"`
-	// Color space.
-	ColorSpace *string `json:"colorSpace,omitempty"`
-	// Color transfer characteristics.
-	ColorTrc *string `json:"colorTrc,omitempty"`
-	// Display title for the stream.
-	DisplayTitle string `json:"displayTitle"`
+	// Indicates if the stream is a dub.
+	Dub             *bool   `json:"dub,omitempty"`
+	EmbeddedInVideo *string `json:"embeddedInVideo,omitempty"`
+	// Loudness ramp end type.
+	EndRamp *string `json:"endRamp,omitempty"`
 	// Extended display title for the stream.
 	ExtendedDisplayTitle *string `json:"extendedDisplayTitle,omitempty"`
+	Forced               *bool   `json:"forced,omitempty"`
 	// Frame rate of the stream.
-	FrameRate        *float32 `json:"frameRate,omitempty"`
+	FrameRate *float32 `json:"frameRate,omitempty"`
+	// Track replay gain in dB.
+	Gain             *float64 `json:"gain,omitempty"`
 	HasScalingMatrix *bool    `json:"hasScalingMatrix,omitempty"`
+	// Indicates whether header compression is enabled.
+	HeaderCompression *bool `json:"headerCompression,omitempty"`
+	// Indicates if the stream is for the hearing impaired.
+	HearingImpaired *bool `json:"hearingImpaired,omitempty"`
 	// Height of the video stream.
 	Height *int `json:"height,omitempty"`
 	// Unique stream identifier.
@@ -211,33 +915,49 @@ type MediaContainerWithDecisionStream struct {
 	LanguageCode *string `json:"languageCode,omitempty"`
 	// Language tag (e.g., en).
 	LanguageTag *string `json:"languageTag,omitempty"`
-	// Format of the stream (e.g., srt).
-	Format *string `json:"format,omitempty"`
-	// Indicates whether header compression is enabled.
-	HeaderCompression *bool `json:"headerCompression,omitempty"`
 	// Video level.
 	Level *int `json:"level,omitempty"`
+	// Integrated loudness in LUFS. Plex may return a numeric value as a number or numeric string, or the sentinel string "-inf".
+	Loudness *MediaContainerWithDecisionLoudness `json:"loudness,omitempty"`
+	// Loudness range in LU.
+	Lra *float64 `json:"lra,omitempty"`
+	// Minimum lines in the lyric file.
+	MinLines *int64 `json:"minLines,omitempty"`
 	// Indicates if this is the original stream.
 	Original *bool `json:"original,omitempty"`
+	// Track peak amplitude. Plex may return a numeric value as a number or numeric string, or the sentinel string "-inf".
+	Peak *MediaContainerWithDecisionPeak `json:"peak,omitempty"`
+	// Whether the subtitle is an exact match.
+	PerfectMatch *MediaContainerWithDecisionPerfectMatch `json:"perfectMatch,omitempty"`
 	// Video profile.
 	Profile *string `json:"profile,omitempty"`
+	// Lyric or subtitle provider name.
+	Provider *string `json:"provider,omitempty"`
+	// Subtitle provider display name.
+	ProviderTitle *string `json:"providerTitle,omitempty"`
 	// Number of reference frames.
 	RefFrames *int `json:"refFrames,omitempty"`
 	// Sampling rate for the audio stream.
-	SamplingRate    *int    `json:"samplingRate,omitempty"`
-	ScanType        *string `json:"scanType,omitempty"`
-	EmbeddedInVideo *string `json:"embeddedInVideo,omitempty"`
+	SamplingRate *int    `json:"samplingRate,omitempty"`
+	ScanType     *string `json:"scanType,omitempty"`
+	// Subtitle match confidence score (0-100).
+	Score *float64 `json:"score,omitempty"`
 	// Indicates if this stream is selected (applicable for audio streams).
 	Selected *bool `json:"selected,omitempty"`
-	Forced   *bool `json:"forced,omitempty"`
-	// Indicates if the stream is for the hearing impaired.
-	HearingImpaired *bool `json:"hearingImpaired,omitempty"`
-	// Indicates if the stream is a dub.
-	Dub *bool `json:"dub,omitempty"`
-	// Optional title for the stream (e.g., language variant).
-	Title            *string                              `json:"title,omitempty"`
+	// Source identifier for the subtitle.
+	SourceKey *string `json:"sourceKey,omitempty"`
+	// Loudness ramp start type.
+	StartRamp        *string                              `json:"startRamp,omitempty"`
 	StreamIdentifier *int                                 `json:"streamIdentifier,omitempty"`
 	StreamType       MediaContainerWithDecisionStreamType `json:"streamType"`
+	// Whether lyrics are timestamped.
+	Timed *MediaContainerWithDecisionTimed `json:"timed,omitempty"`
+	// Whether the subtitle is temporary or downloaded.
+	Transient *MediaContainerWithDecisionTransient `json:"transient,omitempty"`
+	// ID of the user who added the subtitle.
+	UserID *int64 `json:"userID,omitempty"`
+	// Whether this audio track is an audio description track.
+	VisualImpaired *bool `json:"visualImpaired,omitempty"`
 	// Width of the video stream.
 	Width                *int                                `json:"width,omitempty"`
 	Decision             *MediaContainerWithDecisionDecision `json:"decision,omitempty"`
@@ -256,11 +976,46 @@ func (m *MediaContainerWithDecisionStream) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+func (m *MediaContainerWithDecisionStream) GetTitle() *string {
+	if m == nil {
+		return nil
+	}
+	return m.Title
+}
+
+func (m *MediaContainerWithDecisionStream) GetFormat() *string {
+	if m == nil {
+		return nil
+	}
+	return m.Format
+}
+
 func (m *MediaContainerWithDecisionStream) GetDefault() *bool {
 	if m == nil {
 		return nil
 	}
 	return m.Default
+}
+
+func (m *MediaContainerWithDecisionStream) GetAlbumGain() *float64 {
+	if m == nil {
+		return nil
+	}
+	return m.AlbumGain
+}
+
+func (m *MediaContainerWithDecisionStream) GetAlbumPeak() *float64 {
+	if m == nil {
+		return nil
+	}
+	return m.AlbumPeak
+}
+
+func (m *MediaContainerWithDecisionStream) GetAlbumRange() *float64 {
+	if m == nil {
+		return nil
+	}
+	return m.AlbumRange
 }
 
 func (m *MediaContainerWithDecisionStream) GetAudioChannelLayout() *string {
@@ -270,6 +1025,34 @@ func (m *MediaContainerWithDecisionStream) GetAudioChannelLayout() *string {
 	return m.AudioChannelLayout
 }
 
+func (m *MediaContainerWithDecisionStream) GetBitDepth() *int {
+	if m == nil {
+		return nil
+	}
+	return m.BitDepth
+}
+
+func (m *MediaContainerWithDecisionStream) GetBitrate() *int {
+	if m == nil {
+		return nil
+	}
+	return m.Bitrate
+}
+
+func (m *MediaContainerWithDecisionStream) GetBitrateMode() *MediaContainerWithDecisionBitrateMode {
+	if m == nil {
+		return nil
+	}
+	return m.BitrateMode
+}
+
+func (m *MediaContainerWithDecisionStream) GetCanAutoSync() *MediaContainerWithDecisionCanAutoSync {
+	if m == nil {
+		return nil
+	}
+	return m.CanAutoSync
+}
+
 func (m *MediaContainerWithDecisionStream) GetChannels() *int {
 	if m == nil {
 		return nil
@@ -277,11 +1060,81 @@ func (m *MediaContainerWithDecisionStream) GetChannels() *int {
 	return m.Channels
 }
 
-func (m *MediaContainerWithDecisionStream) GetBitDepth() *int {
+func (m *MediaContainerWithDecisionStream) GetChromaLocation() *string {
 	if m == nil {
 		return nil
 	}
-	return m.BitDepth
+	return m.ChromaLocation
+}
+
+func (m *MediaContainerWithDecisionStream) GetChromaSubsampling() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ChromaSubsampling
+}
+
+func (m *MediaContainerWithDecisionStream) GetClosedCaptions() *bool {
+	if m == nil {
+		return nil
+	}
+	return m.ClosedCaptions
+}
+
+func (m *MediaContainerWithDecisionStream) GetCodec() string {
+	if m == nil {
+		return ""
+	}
+	return m.Codec
+}
+
+func (m *MediaContainerWithDecisionStream) GetCodedHeight() *int {
+	if m == nil {
+		return nil
+	}
+	return m.CodedHeight
+}
+
+func (m *MediaContainerWithDecisionStream) GetCodedWidth() *int {
+	if m == nil {
+		return nil
+	}
+	return m.CodedWidth
+}
+
+func (m *MediaContainerWithDecisionStream) GetColorPrimaries() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ColorPrimaries
+}
+
+func (m *MediaContainerWithDecisionStream) GetColorRange() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ColorRange
+}
+
+func (m *MediaContainerWithDecisionStream) GetColorSpace() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ColorSpace
+}
+
+func (m *MediaContainerWithDecisionStream) GetColorTrc() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ColorTrc
+}
+
+func (m *MediaContainerWithDecisionStream) GetDisplayTitle() string {
+	if m == nil {
+		return ""
+	}
+	return m.DisplayTitle
 }
 
 func (m *MediaContainerWithDecisionStream) GetDOVIBLCompatID() *int {
@@ -340,95 +1193,25 @@ func (m *MediaContainerWithDecisionStream) GetDOVIVersion() *string {
 	return m.DOVIVersion
 }
 
-func (m *MediaContainerWithDecisionStream) GetBitrate() *int {
+func (m *MediaContainerWithDecisionStream) GetDub() *bool {
 	if m == nil {
 		return nil
 	}
-	return m.Bitrate
+	return m.Dub
 }
 
-func (m *MediaContainerWithDecisionStream) GetCanAutoSync() *bool {
+func (m *MediaContainerWithDecisionStream) GetEmbeddedInVideo() *string {
 	if m == nil {
 		return nil
 	}
-	return m.CanAutoSync
+	return m.EmbeddedInVideo
 }
 
-func (m *MediaContainerWithDecisionStream) GetChromaLocation() *string {
+func (m *MediaContainerWithDecisionStream) GetEndRamp() *string {
 	if m == nil {
 		return nil
 	}
-	return m.ChromaLocation
-}
-
-func (m *MediaContainerWithDecisionStream) GetChromaSubsampling() *string {
-	if m == nil {
-		return nil
-	}
-	return m.ChromaSubsampling
-}
-
-func (m *MediaContainerWithDecisionStream) GetCodedHeight() *int {
-	if m == nil {
-		return nil
-	}
-	return m.CodedHeight
-}
-
-func (m *MediaContainerWithDecisionStream) GetCodedWidth() *int {
-	if m == nil {
-		return nil
-	}
-	return m.CodedWidth
-}
-
-func (m *MediaContainerWithDecisionStream) GetClosedCaptions() *bool {
-	if m == nil {
-		return nil
-	}
-	return m.ClosedCaptions
-}
-
-func (m *MediaContainerWithDecisionStream) GetCodec() string {
-	if m == nil {
-		return ""
-	}
-	return m.Codec
-}
-
-func (m *MediaContainerWithDecisionStream) GetColorPrimaries() *string {
-	if m == nil {
-		return nil
-	}
-	return m.ColorPrimaries
-}
-
-func (m *MediaContainerWithDecisionStream) GetColorRange() *string {
-	if m == nil {
-		return nil
-	}
-	return m.ColorRange
-}
-
-func (m *MediaContainerWithDecisionStream) GetColorSpace() *string {
-	if m == nil {
-		return nil
-	}
-	return m.ColorSpace
-}
-
-func (m *MediaContainerWithDecisionStream) GetColorTrc() *string {
-	if m == nil {
-		return nil
-	}
-	return m.ColorTrc
-}
-
-func (m *MediaContainerWithDecisionStream) GetDisplayTitle() string {
-	if m == nil {
-		return ""
-	}
-	return m.DisplayTitle
+	return m.EndRamp
 }
 
 func (m *MediaContainerWithDecisionStream) GetExtendedDisplayTitle() *string {
@@ -438,6 +1221,13 @@ func (m *MediaContainerWithDecisionStream) GetExtendedDisplayTitle() *string {
 	return m.ExtendedDisplayTitle
 }
 
+func (m *MediaContainerWithDecisionStream) GetForced() *bool {
+	if m == nil {
+		return nil
+	}
+	return m.Forced
+}
+
 func (m *MediaContainerWithDecisionStream) GetFrameRate() *float32 {
 	if m == nil {
 		return nil
@@ -445,11 +1235,32 @@ func (m *MediaContainerWithDecisionStream) GetFrameRate() *float32 {
 	return m.FrameRate
 }
 
+func (m *MediaContainerWithDecisionStream) GetGain() *float64 {
+	if m == nil {
+		return nil
+	}
+	return m.Gain
+}
+
 func (m *MediaContainerWithDecisionStream) GetHasScalingMatrix() *bool {
 	if m == nil {
 		return nil
 	}
 	return m.HasScalingMatrix
+}
+
+func (m *MediaContainerWithDecisionStream) GetHeaderCompression() *bool {
+	if m == nil {
+		return nil
+	}
+	return m.HeaderCompression
+}
+
+func (m *MediaContainerWithDecisionStream) GetHearingImpaired() *bool {
+	if m == nil {
+		return nil
+	}
+	return m.HearingImpaired
 }
 
 func (m *MediaContainerWithDecisionStream) GetHeight() *int {
@@ -501,25 +1312,32 @@ func (m *MediaContainerWithDecisionStream) GetLanguageTag() *string {
 	return m.LanguageTag
 }
 
-func (m *MediaContainerWithDecisionStream) GetFormat() *string {
-	if m == nil {
-		return nil
-	}
-	return m.Format
-}
-
-func (m *MediaContainerWithDecisionStream) GetHeaderCompression() *bool {
-	if m == nil {
-		return nil
-	}
-	return m.HeaderCompression
-}
-
 func (m *MediaContainerWithDecisionStream) GetLevel() *int {
 	if m == nil {
 		return nil
 	}
 	return m.Level
+}
+
+func (m *MediaContainerWithDecisionStream) GetLoudness() *MediaContainerWithDecisionLoudness {
+	if m == nil {
+		return nil
+	}
+	return m.Loudness
+}
+
+func (m *MediaContainerWithDecisionStream) GetLra() *float64 {
+	if m == nil {
+		return nil
+	}
+	return m.Lra
+}
+
+func (m *MediaContainerWithDecisionStream) GetMinLines() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.MinLines
 }
 
 func (m *MediaContainerWithDecisionStream) GetOriginal() *bool {
@@ -529,11 +1347,39 @@ func (m *MediaContainerWithDecisionStream) GetOriginal() *bool {
 	return m.Original
 }
 
+func (m *MediaContainerWithDecisionStream) GetPeak() *MediaContainerWithDecisionPeak {
+	if m == nil {
+		return nil
+	}
+	return m.Peak
+}
+
+func (m *MediaContainerWithDecisionStream) GetPerfectMatch() *MediaContainerWithDecisionPerfectMatch {
+	if m == nil {
+		return nil
+	}
+	return m.PerfectMatch
+}
+
 func (m *MediaContainerWithDecisionStream) GetProfile() *string {
 	if m == nil {
 		return nil
 	}
 	return m.Profile
+}
+
+func (m *MediaContainerWithDecisionStream) GetProvider() *string {
+	if m == nil {
+		return nil
+	}
+	return m.Provider
+}
+
+func (m *MediaContainerWithDecisionStream) GetProviderTitle() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ProviderTitle
 }
 
 func (m *MediaContainerWithDecisionStream) GetRefFrames() *int {
@@ -557,11 +1403,11 @@ func (m *MediaContainerWithDecisionStream) GetScanType() *string {
 	return m.ScanType
 }
 
-func (m *MediaContainerWithDecisionStream) GetEmbeddedInVideo() *string {
+func (m *MediaContainerWithDecisionStream) GetScore() *float64 {
 	if m == nil {
 		return nil
 	}
-	return m.EmbeddedInVideo
+	return m.Score
 }
 
 func (m *MediaContainerWithDecisionStream) GetSelected() *bool {
@@ -571,32 +1417,18 @@ func (m *MediaContainerWithDecisionStream) GetSelected() *bool {
 	return m.Selected
 }
 
-func (m *MediaContainerWithDecisionStream) GetForced() *bool {
+func (m *MediaContainerWithDecisionStream) GetSourceKey() *string {
 	if m == nil {
 		return nil
 	}
-	return m.Forced
+	return m.SourceKey
 }
 
-func (m *MediaContainerWithDecisionStream) GetHearingImpaired() *bool {
+func (m *MediaContainerWithDecisionStream) GetStartRamp() *string {
 	if m == nil {
 		return nil
 	}
-	return m.HearingImpaired
-}
-
-func (m *MediaContainerWithDecisionStream) GetDub() *bool {
-	if m == nil {
-		return nil
-	}
-	return m.Dub
-}
-
-func (m *MediaContainerWithDecisionStream) GetTitle() *string {
-	if m == nil {
-		return nil
-	}
-	return m.Title
+	return m.StartRamp
 }
 
 func (m *MediaContainerWithDecisionStream) GetStreamIdentifier() *int {
@@ -611,6 +1443,34 @@ func (m *MediaContainerWithDecisionStream) GetStreamType() MediaContainerWithDec
 		return MediaContainerWithDecisionStreamType(0)
 	}
 	return m.StreamType
+}
+
+func (m *MediaContainerWithDecisionStream) GetTimed() *MediaContainerWithDecisionTimed {
+	if m == nil {
+		return nil
+	}
+	return m.Timed
+}
+
+func (m *MediaContainerWithDecisionStream) GetTransient() *MediaContainerWithDecisionTransient {
+	if m == nil {
+		return nil
+	}
+	return m.Transient
+}
+
+func (m *MediaContainerWithDecisionStream) GetUserID() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.UserID
+}
+
+func (m *MediaContainerWithDecisionStream) GetVisualImpaired() *bool {
+	if m == nil {
+		return nil
+	}
+	return m.VisualImpaired
 }
 
 func (m *MediaContainerWithDecisionStream) GetWidth() *int {
@@ -678,6 +1538,8 @@ type MediaContainerWithDecisionPart struct {
 	AudioProfile *string `json:"audioProfile,omitempty"`
 	// The container of the media file, such as `mp4` or `mkv`
 	Container *string `json:"container,omitempty"`
+	// Deep analysis version for this part.
+	DeepAnalysisVersion *int64 `json:"deepAnalysisVersion,omitempty"`
 	// The duration of the media item, in milliseconds
 	Duration *int `json:"duration,omitempty"`
 	// Indicates if the part exists.
@@ -690,13 +1552,23 @@ type MediaContainerWithDecisionPart struct {
 	// The key from which the media can be streamed
 	Key                   string `json:"key"`
 	OptimizedForStreaming *bool  `json:"optimizedForStreaming,omitempty"`
+	// RTP packet length for streaming.
+	PacketLength *int64 `json:"packetLength,omitempty"`
+	// Streaming protocol (e.g. dash, hls, direct).
+	Protocol *string `json:"protocol,omitempty"`
+	// Comma-separated list of bandwidth requirements.
+	RequiredBandwidths *string `json:"requiredBandwidths,omitempty"`
 	// The size of the media, in bytes
-	Size                 *int64                             `json:"size,omitempty"`
-	Stream               []MediaContainerWithDecisionStream `json:"Stream,omitempty"`
-	VideoProfile         *string                            `json:"videoProfile,omitempty"`
-	Decision             *Decision                          `json:"decision,omitempty"`
-	Selected             *bool                              `json:"selected,omitempty"`
-	AdditionalProperties map[string]any                     `additionalProperties:"true" json:"-"`
+	Size   *int64                             `json:"size,omitempty"`
+	Stream []MediaContainerWithDecisionStream `json:"Stream,omitempty"`
+	// Mobile sync item association ID.
+	SyncItemID *int64 `json:"syncItemId,omitempty"`
+	// Sync state (e.g. pending, downloaded, processing).
+	SyncState            *string        `json:"syncState,omitempty"`
+	VideoProfile         *string        `json:"videoProfile,omitempty"`
+	Decision             *Decision      `json:"decision,omitempty"`
+	Selected             *bool          `json:"selected,omitempty"`
+	AdditionalProperties map[string]any `additionalProperties:"true" json:"-"`
 }
 
 func (m MediaContainerWithDecisionPart) MarshalJSON() ([]byte, error) {
@@ -729,6 +1601,13 @@ func (m *MediaContainerWithDecisionPart) GetContainer() *string {
 		return nil
 	}
 	return m.Container
+}
+
+func (m *MediaContainerWithDecisionPart) GetDeepAnalysisVersion() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.DeepAnalysisVersion
 }
 
 func (m *MediaContainerWithDecisionPart) GetDuration() *int {
@@ -787,6 +1666,27 @@ func (m *MediaContainerWithDecisionPart) GetOptimizedForStreaming() *bool {
 	return m.OptimizedForStreaming
 }
 
+func (m *MediaContainerWithDecisionPart) GetPacketLength() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.PacketLength
+}
+
+func (m *MediaContainerWithDecisionPart) GetProtocol() *string {
+	if m == nil {
+		return nil
+	}
+	return m.Protocol
+}
+
+func (m *MediaContainerWithDecisionPart) GetRequiredBandwidths() *string {
+	if m == nil {
+		return nil
+	}
+	return m.RequiredBandwidths
+}
+
 func (m *MediaContainerWithDecisionPart) GetSize() *int64 {
 	if m == nil {
 		return nil
@@ -799,6 +1699,20 @@ func (m *MediaContainerWithDecisionPart) GetStream() []MediaContainerWithDecisio
 		return nil
 	}
 	return m.Stream
+}
+
+func (m *MediaContainerWithDecisionPart) GetSyncItemID() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.SyncItemID
+}
+
+func (m *MediaContainerWithDecisionPart) GetSyncState() *string {
+	if m == nil {
+		return nil
+	}
+	return m.SyncState
 }
 
 func (m *MediaContainerWithDecisionPart) GetVideoProfile() *string {
@@ -831,28 +1745,32 @@ func (m *MediaContainerWithDecisionPart) GetAdditionalProperties() map[string]an
 
 // MediaContainerWithDecisionMedia - `Media` represents an one or more media files (parts) and is a child of a metadata item. There aren't necessarily any guaranteed attributes on media elements since the attributes will vary based on the type. The possible attributes are not documented here, but they typically have self-evident names. High-level media information that can be used for badging and flagging, such as `videoResolution` and codecs, is included on the media element.
 type MediaContainerWithDecisionMedia struct {
-	AspectRatio           *float32                         `json:"aspectRatio,omitempty"`
-	AudioChannels         *int                             `json:"audioChannels,omitempty"`
-	AudioCodec            *string                          `json:"audioCodec,omitempty"`
-	AudioProfile          *string                          `json:"audioProfile,omitempty"`
-	Bitrate               *int                             `json:"bitrate,omitempty"`
-	Container             *string                          `json:"container,omitempty"`
-	Duration              *int                             `json:"duration,omitempty"`
-	Has64bitOffsets       *bool                            `json:"has64bitOffsets,omitempty"`
-	HasVoiceActivity      *bool                            `json:"hasVoiceActivity,omitempty"`
-	Height                *int                             `json:"height,omitempty"`
-	ID                    int64                            `json:"id"`
-	OptimizedForStreaming *bool                            `json:"optimizedForStreaming,omitempty"`
-	Part                  []MediaContainerWithDecisionPart `json:"Part,omitempty"`
-	VideoCodec            *string                          `json:"videoCodec,omitempty"`
-	VideoFrameRate        *string                          `json:"videoFrameRate,omitempty"`
-	VideoProfile          *string                          `json:"videoProfile,omitempty"`
-	VideoResolution       *string                          `json:"videoResolution,omitempty"`
-	Width                 *int                             `json:"width,omitempty"`
-	Abr                   *bool                            `json:"abr,omitempty"`
-	ResourceSession       *string                          `json:"resourceSession,omitempty"`
-	Selected              *bool                            `json:"selected,omitempty"`
-	AdditionalProperties  map[string]any                   `additionalProperties:"true" json:"-"`
+	AspectRatio     *float32 `json:"aspectRatio,omitempty"`
+	AudioChannels   *int     `json:"audioChannels,omitempty"`
+	AudioCodec      *string  `json:"audioCodec,omitempty"`
+	AudioProfile    *string  `json:"audioProfile,omitempty"`
+	Bitrate         *int     `json:"bitrate,omitempty"`
+	Container       *string  `json:"container,omitempty"`
+	Duration        *int     `json:"duration,omitempty"`
+	Has64bitOffsets *bool    `json:"has64bitOffsets,omitempty"`
+	// Voice activity detection availability flag returned by PMS.
+	// PMS may return this as a boolean or as string values (`"0"` or `"1"`).
+	HasVoiceActivity      *MediaContainerWithDecisionHasVoiceActivity      `json:"hasVoiceActivity,omitempty"`
+	Height                *int                                             `json:"height,omitempty"`
+	ID                    int64                                            `json:"id"`
+	OptimizedForStreaming *MediaContainerWithDecisionOptimizedForStreaming `json:"optimizedForStreaming,omitempty"`
+	Part                  []MediaContainerWithDecisionPart                 `json:"Part,omitempty"`
+	Selected              *bool                                            `json:"selected,omitempty"`
+	// Unique identifier for this media instance.
+	UUID                 *string        `json:"uuid,omitempty"`
+	VideoCodec           *string        `json:"videoCodec,omitempty"`
+	VideoFrameRate       *string        `json:"videoFrameRate,omitempty"`
+	VideoProfile         *string        `json:"videoProfile,omitempty"`
+	VideoResolution      *string        `json:"videoResolution,omitempty"`
+	Width                *int           `json:"width,omitempty"`
+	Abr                  *bool          `json:"abr,omitempty"`
+	ResourceSession      *string        `json:"resourceSession,omitempty"`
+	AdditionalProperties map[string]any `additionalProperties:"true" json:"-"`
 }
 
 func (m MediaContainerWithDecisionMedia) MarshalJSON() ([]byte, error) {
@@ -922,7 +1840,7 @@ func (m *MediaContainerWithDecisionMedia) GetHas64bitOffsets() *bool {
 	return m.Has64bitOffsets
 }
 
-func (m *MediaContainerWithDecisionMedia) GetHasVoiceActivity() *bool {
+func (m *MediaContainerWithDecisionMedia) GetHasVoiceActivity() *MediaContainerWithDecisionHasVoiceActivity {
 	if m == nil {
 		return nil
 	}
@@ -943,7 +1861,7 @@ func (m *MediaContainerWithDecisionMedia) GetID() int64 {
 	return m.ID
 }
 
-func (m *MediaContainerWithDecisionMedia) GetOptimizedForStreaming() *bool {
+func (m *MediaContainerWithDecisionMedia) GetOptimizedForStreaming() *MediaContainerWithDecisionOptimizedForStreaming {
 	if m == nil {
 		return nil
 	}
@@ -955,6 +1873,20 @@ func (m *MediaContainerWithDecisionMedia) GetPart() []MediaContainerWithDecision
 		return nil
 	}
 	return m.Part
+}
+
+func (m *MediaContainerWithDecisionMedia) GetSelected() *bool {
+	if m == nil {
+		return nil
+	}
+	return m.Selected
+}
+
+func (m *MediaContainerWithDecisionMedia) GetUUID() *string {
+	if m == nil {
+		return nil
+	}
+	return m.UUID
 }
 
 func (m *MediaContainerWithDecisionMedia) GetVideoCodec() *string {
@@ -1006,18 +1938,205 @@ func (m *MediaContainerWithDecisionMedia) GetResourceSession() *string {
 	return m.ResourceSession
 }
 
-func (m *MediaContainerWithDecisionMedia) GetSelected() *bool {
-	if m == nil {
-		return nil
-	}
-	return m.Selected
-}
-
 func (m *MediaContainerWithDecisionMedia) GetAdditionalProperties() map[string]any {
 	if m == nil {
 		return nil
 	}
 	return m.AdditionalProperties
+}
+
+type MediaContainerWithDecisionSkipChildren2 string
+
+const (
+	MediaContainerWithDecisionSkipChildren2Zero MediaContainerWithDecisionSkipChildren2 = "0"
+	MediaContainerWithDecisionSkipChildren2One  MediaContainerWithDecisionSkipChildren2 = "1"
+)
+
+func (e MediaContainerWithDecisionSkipChildren2) ToPointer() *MediaContainerWithDecisionSkipChildren2 {
+	return &e
+}
+func (e *MediaContainerWithDecisionSkipChildren2) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = MediaContainerWithDecisionSkipChildren2(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for MediaContainerWithDecisionSkipChildren2: %v", v)
+	}
+}
+
+type MediaContainerWithDecisionSkipChildrenType string
+
+const (
+	MediaContainerWithDecisionSkipChildrenTypeBoolean                                 MediaContainerWithDecisionSkipChildrenType = "boolean"
+	MediaContainerWithDecisionSkipChildrenTypeMediaContainerWithDecisionSkipChildren2 MediaContainerWithDecisionSkipChildrenType = "MediaContainerWithDecision_skipChildren_2"
+)
+
+// MediaContainerWithDecisionSkipChildren - When found on a show item, indicates that the children (seasons) should be skipped in favor of the grandchildren (episodes). Useful for mini-series, etc.
+type MediaContainerWithDecisionSkipChildren struct {
+	Boolean                                 *bool                                    `queryParam:"inline" union:"member"`
+	MediaContainerWithDecisionSkipChildren2 *MediaContainerWithDecisionSkipChildren2 `queryParam:"inline" union:"member"`
+
+	Type MediaContainerWithDecisionSkipChildrenType
+}
+
+func CreateMediaContainerWithDecisionSkipChildrenBoolean(boolean bool) MediaContainerWithDecisionSkipChildren {
+	typ := MediaContainerWithDecisionSkipChildrenTypeBoolean
+
+	return MediaContainerWithDecisionSkipChildren{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateMediaContainerWithDecisionSkipChildrenMediaContainerWithDecisionSkipChildren2(mediaContainerWithDecisionSkipChildren2 MediaContainerWithDecisionSkipChildren2) MediaContainerWithDecisionSkipChildren {
+	typ := MediaContainerWithDecisionSkipChildrenTypeMediaContainerWithDecisionSkipChildren2
+
+	return MediaContainerWithDecisionSkipChildren{
+		MediaContainerWithDecisionSkipChildren2: &mediaContainerWithDecisionSkipChildren2,
+		Type:                                    typ,
+	}
+}
+
+func (u *MediaContainerWithDecisionSkipChildren) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = MediaContainerWithDecisionSkipChildren{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = MediaContainerWithDecisionSkipChildrenTypeBoolean
+		return nil
+	}
+
+	var mediaContainerWithDecisionSkipChildren2 MediaContainerWithDecisionSkipChildren2 = MediaContainerWithDecisionSkipChildren2("")
+	if err := utils.UnmarshalJSON(data, &mediaContainerWithDecisionSkipChildren2, "", true, nil); err == nil {
+		u.MediaContainerWithDecisionSkipChildren2 = &mediaContainerWithDecisionSkipChildren2
+		u.Type = MediaContainerWithDecisionSkipChildrenTypeMediaContainerWithDecisionSkipChildren2
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for MediaContainerWithDecisionSkipChildren", string(data))
+}
+
+func (u MediaContainerWithDecisionSkipChildren) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.MediaContainerWithDecisionSkipChildren2 != nil {
+		return utils.MarshalJSON(u.MediaContainerWithDecisionSkipChildren2, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type MediaContainerWithDecisionSkipChildren: all fields are null")
+}
+
+type MediaContainerWithDecisionSkipParent2 string
+
+const (
+	MediaContainerWithDecisionSkipParent2Zero MediaContainerWithDecisionSkipParent2 = "0"
+	MediaContainerWithDecisionSkipParent2One  MediaContainerWithDecisionSkipParent2 = "1"
+)
+
+func (e MediaContainerWithDecisionSkipParent2) ToPointer() *MediaContainerWithDecisionSkipParent2 {
+	return &e
+}
+func (e *MediaContainerWithDecisionSkipParent2) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = MediaContainerWithDecisionSkipParent2(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for MediaContainerWithDecisionSkipParent2: %v", v)
+	}
+}
+
+type MediaContainerWithDecisionSkipParentType string
+
+const (
+	MediaContainerWithDecisionSkipParentTypeBoolean                               MediaContainerWithDecisionSkipParentType = "boolean"
+	MediaContainerWithDecisionSkipParentTypeMediaContainerWithDecisionSkipParent2 MediaContainerWithDecisionSkipParentType = "MediaContainerWithDecision_skipParent_2"
+)
+
+// MediaContainerWithDecisionSkipParent - When present on an episode or track item, indicates parent should be skipped in favor of grandparent (show).
+type MediaContainerWithDecisionSkipParent struct {
+	Boolean                               *bool                                  `queryParam:"inline" union:"member"`
+	MediaContainerWithDecisionSkipParent2 *MediaContainerWithDecisionSkipParent2 `queryParam:"inline" union:"member"`
+
+	Type MediaContainerWithDecisionSkipParentType
+}
+
+func CreateMediaContainerWithDecisionSkipParentBoolean(boolean bool) MediaContainerWithDecisionSkipParent {
+	typ := MediaContainerWithDecisionSkipParentTypeBoolean
+
+	return MediaContainerWithDecisionSkipParent{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateMediaContainerWithDecisionSkipParentMediaContainerWithDecisionSkipParent2(mediaContainerWithDecisionSkipParent2 MediaContainerWithDecisionSkipParent2) MediaContainerWithDecisionSkipParent {
+	typ := MediaContainerWithDecisionSkipParentTypeMediaContainerWithDecisionSkipParent2
+
+	return MediaContainerWithDecisionSkipParent{
+		MediaContainerWithDecisionSkipParent2: &mediaContainerWithDecisionSkipParent2,
+		Type:                                  typ,
+	}
+}
+
+func (u *MediaContainerWithDecisionSkipParent) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = MediaContainerWithDecisionSkipParent{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = MediaContainerWithDecisionSkipParentTypeBoolean
+		return nil
+	}
+
+	var mediaContainerWithDecisionSkipParent2 MediaContainerWithDecisionSkipParent2 = MediaContainerWithDecisionSkipParent2("")
+	if err := utils.UnmarshalJSON(data, &mediaContainerWithDecisionSkipParent2, "", true, nil); err == nil {
+		u.MediaContainerWithDecisionSkipParent2 = &mediaContainerWithDecisionSkipParent2
+		u.Type = MediaContainerWithDecisionSkipParentTypeMediaContainerWithDecisionSkipParent2
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for MediaContainerWithDecisionSkipParent", string(data))
+}
+
+func (u MediaContainerWithDecisionSkipParent) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.MediaContainerWithDecisionSkipParent2 != nil {
+		return utils.MarshalJSON(u.MediaContainerWithDecisionSkipParent2, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type MediaContainerWithDecisionSkipParent: all fields are null")
 }
 
 // MediaContainerWithDecisionMetadata - Items in a library are referred to as "metadata items." These metadata items are distinct from "media items" which represent actual instances of media that can be consumed. Consider a TV library that has a single video file in it for a particular episode of a show. The library has a single media item, but it has three metadata items: one for the show, one for the season, and one for the episode. Consider a movie library that has two video files in it: the same movie, but two different resolutions. The library has a single metadata item for the movie, but that metadata item has two media items, one for each resolution. Additionally a "media item" will have one or more "media parts" where the the parts are intended to be watched together, such as a CD1 and CD2 parts of the same movie.
@@ -1029,13 +2148,15 @@ type MediaContainerWithDecisionMetadata struct {
 	// The title of the item (e.g. “300” or “The Simpsons”)
 	Title string `json:"title"`
 	// The type of the video item, such as `movie`, `episode`, or `clip`.
-	Type string `json:"type"`
+	Type *string `json:"type,omitempty"`
 	// When present, contains the disc number for a track on multi-disc albums.
 	AbsoluteIndex *int `json:"absoluteIndex,omitempty"`
 	// In units of seconds since the epoch, returns the time at which the item was added to the library.
-	AddedAt int64 `json:"addedAt"`
+	AddedAt *int64 `json:"addedAt,omitempty"`
 	// When present, the URL for the background artwork for the item.
 	Art *string `json:"art,omitempty"`
+	// Blur hash for background art.
+	ArtBlurHash *string `json:"artBlurHash,omitempty"`
 	// Some rating systems separate reviewer ratings from audience ratings
 	AudienceRating *float32 `json:"audienceRating,omitempty"`
 	// A URI representing the image to be shown with the audience rating (e.g. rottentomatoes://image.rating.spilled).
@@ -1053,8 +2174,14 @@ type MediaContainerWithDecisionMetadata struct {
 	ContentRating *string `json:"contentRating,omitempty"`
 	Country       []Tag   `json:"Country,omitempty"`
 	Director      []Tag   `json:"Director,omitempty"`
+	// Levenshtein distance for voice search results.
+	Distance *int64 `json:"distance,omitempty"`
 	// When present, the duration for the item, in units of milliseconds.
 	Duration *int `json:"duration,omitempty"`
+	// Edition string (e.g. "Director's Cut").
+	EditionTitle *string `json:"editionTitle,omitempty"`
+	// Whether credits marker generation is enabled for this item.
+	EnableCreditsMarkerGeneration *bool `json:"enableCreditsMarkerGeneration,omitempty"`
 	// Typically only seen in metadata at a library's top level
 	Filter []Filter `json:"Filter,omitempty"`
 	Genre  []Tag    `json:"Genre,omitempty"`
@@ -1083,13 +2210,23 @@ type MediaContainerWithDecisionMetadata struct {
 	// When present, this represents the episode number for episodes, season number for seasons, or track number for audio tracks.
 	Index *int `json:"index,omitempty"`
 	// The key at which the item's details can be fetched.  In many cases a metadata item may be passed without all the details (such as in a hub) and this key corresponds to the endpoint to fetch additional details.
-	Key          string `json:"key"`
+	Key string `json:"key"`
+	// Per-item language override.
+	LanguageOverride *string `json:"languageOverride,omitempty"`
+	// Timestamp of the last user rating.
+	LastRatedAt  *int64 `json:"lastRatedAt,omitempty"`
 	LastViewedAt *int64 `json:"lastViewedAt,omitempty"`
 	// For shows and seasons, contains the number of total episodes.
-	LeafCount *int                              `json:"leafCount,omitempty"`
-	Media     []MediaContainerWithDecisionMedia `json:"Media,omitempty"`
-	// When present, in the format YYYY-MM-DD [HH:MM:SS] (the hours/minutes/seconds part is not always present). The air date, or a higher resolution release date for an item, depending on type. For example, episodes usually have air date like 1979-08-10 (we don't use epoch seconds because media existed prior to 1970). In some cases, recorded over-the-air content has higher resolution air date which includes a time component. Albums and movies may have day-resolution release dates as well.
-	OriginallyAvailableAt *types.Date `json:"originallyAvailableAt,omitempty"`
+	LeafCount *int `json:"leafCount,omitempty"`
+	// The library section containing this metadata item, when reported by the server.
+	LibrarySectionID *int64                            `json:"librarySectionID,omitempty"`
+	Media            []MediaContainerWithDecisionMedia `json:"Media,omitempty"`
+	// Analysis version for music items.
+	MusicAnalysisVersion *int64 `json:"musicAnalysisVersion,omitempty"`
+	// The original release or capture date as reported by the server.
+	// Values can be a date (YYYY-MM-DD), a date with a time (YYYY-MM-DD HH:MM:SS), or an ISO 8601 timestamp.
+	// Preserve the string representation so higher-resolution timestamps are not reduced to a date-only value.
+	OriginallyAvailableAt *string `json:"originallyAvailableAt,omitempty"`
 	// When present, used to indicate an item's original title, e.g. a movie's foreign title.
 	OriginalTitle *string `json:"originalTitle,omitempty"`
 	// The GUID of the parent media item.
@@ -1106,6 +2243,8 @@ type MediaContainerWithDecisionMetadata struct {
 	ParentThumb *string `json:"parentThumb,omitempty"`
 	// The `title` of the parent
 	ParentTitle *string `json:"parentTitle,omitempty"`
+	// Item ID within a playlist.
+	PlaylistItemID *int64 `json:"playlistItemID,omitempty"`
 	// Indicates that the item has a primary extra; for a movie, this is a trailer, and for a music track it is a music video. The URL points to the metadata details endpoint for the item.
 	PrimaryExtraKey *string `json:"primaryExtraKey,omitempty"`
 	// Prompt to give the user for this directory (such as `Search Movies`)
@@ -1125,11 +2264,17 @@ type MediaContainerWithDecisionMetadata struct {
 	// Used by old clients to provide nested menus allowing for primative (but structured) navigation.
 	Secondary *bool `json:"secondary,omitempty"`
 	// When found on a show item, indicates that the children (seasons) should be skipped in favor of the grandchildren (episodes). Useful for mini-series, etc.
-	SkipChildren *bool `json:"skipChildren,omitempty"`
+	SkipChildren *MediaContainerWithDecisionSkipChildren `json:"skipChildren,omitempty"`
+	// Number of times this track has been skipped.
+	SkipCount *int64 `json:"skipCount,omitempty"`
 	// When present on an episode or track item, indicates parent should be skipped in favor of grandparent (show).
-	SkipParent *bool `json:"skipParent,omitempty"`
+	SkipParent *MediaContainerWithDecisionSkipParent `json:"skipParent,omitempty"`
+	// URL-friendly slug for the item.
+	Slug *string `json:"slug,omitempty"`
 	// Typically only seen in metadata at a library's top level
 	Sort []Sort `json:"Sort,omitempty"`
+	// Remote or shared server item URI.
+	SourceURI *string `json:"sourceURI,omitempty"`
 	// When present, the studio or label which produced an item (e.g. movie studio for movies, record label for albums).
 	Studio *string `json:"studio,omitempty"`
 	// The subtype of the video item, such as `photo` when the video item is in a photo library
@@ -1142,10 +2287,14 @@ type MediaContainerWithDecisionMetadata struct {
 	Theme *string `json:"theme,omitempty"`
 	// When present, the URL for the poster or thumbnail for the item. When available for types like movie, it will be the poster graphic, but fall-back to the extracted media thumbnail.
 	Thumb *string `json:"thumb,omitempty"`
+	// Blur hash for thumbnail.
+	ThumbBlurHash *string `json:"thumbBlurHash,omitempty"`
 	// Whene present, this is the string used for sorting the item. It's usually the title with any leading articles removed (e.g. “Simpsons”).
 	TitleSort *string `json:"titleSort,omitempty"`
 	// In units of seconds since the epoch, returns the time at which the item was last changed (e.g. had its metadata updated).
 	UpdatedAt *int64 `json:"updatedAt,omitempty"`
+	// Whether to display the original title.
+	UseOriginalTitle *bool `json:"useOriginalTitle,omitempty"`
 	// When the user has rated an item, this contains the user rating
 	UserRating *float32 `json:"userRating,omitempty"`
 	// When a users has completed watched or listened to an item, this attribute contains the number of consumptions.
@@ -1178,9 +2327,9 @@ func (m *MediaContainerWithDecisionMetadata) GetTitle() string {
 	return m.Title
 }
 
-func (m *MediaContainerWithDecisionMetadata) GetType() string {
+func (m *MediaContainerWithDecisionMetadata) GetType() *string {
 	if m == nil {
-		return ""
+		return nil
 	}
 	return m.Type
 }
@@ -1192,9 +2341,9 @@ func (m *MediaContainerWithDecisionMetadata) GetAbsoluteIndex() *int {
 	return m.AbsoluteIndex
 }
 
-func (m *MediaContainerWithDecisionMetadata) GetAddedAt() int64 {
+func (m *MediaContainerWithDecisionMetadata) GetAddedAt() *int64 {
 	if m == nil {
-		return 0
+		return nil
 	}
 	return m.AddedAt
 }
@@ -1204,6 +2353,13 @@ func (m *MediaContainerWithDecisionMetadata) GetArt() *string {
 		return nil
 	}
 	return m.Art
+}
+
+func (m *MediaContainerWithDecisionMetadata) GetArtBlurHash() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ArtBlurHash
 }
 
 func (m *MediaContainerWithDecisionMetadata) GetAudienceRating() *float32 {
@@ -1276,11 +2432,32 @@ func (m *MediaContainerWithDecisionMetadata) GetDirector() []Tag {
 	return m.Director
 }
 
+func (m *MediaContainerWithDecisionMetadata) GetDistance() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.Distance
+}
+
 func (m *MediaContainerWithDecisionMetadata) GetDuration() *int {
 	if m == nil {
 		return nil
 	}
 	return m.Duration
+}
+
+func (m *MediaContainerWithDecisionMetadata) GetEditionTitle() *string {
+	if m == nil {
+		return nil
+	}
+	return m.EditionTitle
+}
+
+func (m *MediaContainerWithDecisionMetadata) GetEnableCreditsMarkerGeneration() *bool {
+	if m == nil {
+		return nil
+	}
+	return m.EnableCreditsMarkerGeneration
 }
 
 func (m *MediaContainerWithDecisionMetadata) GetFilter() []Filter {
@@ -1395,6 +2572,20 @@ func (m *MediaContainerWithDecisionMetadata) GetKey() string {
 	return m.Key
 }
 
+func (m *MediaContainerWithDecisionMetadata) GetLanguageOverride() *string {
+	if m == nil {
+		return nil
+	}
+	return m.LanguageOverride
+}
+
+func (m *MediaContainerWithDecisionMetadata) GetLastRatedAt() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.LastRatedAt
+}
+
 func (m *MediaContainerWithDecisionMetadata) GetLastViewedAt() *int64 {
 	if m == nil {
 		return nil
@@ -1409,6 +2600,13 @@ func (m *MediaContainerWithDecisionMetadata) GetLeafCount() *int {
 	return m.LeafCount
 }
 
+func (m *MediaContainerWithDecisionMetadata) GetLibrarySectionID() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.LibrarySectionID
+}
+
 func (m *MediaContainerWithDecisionMetadata) GetMedia() []MediaContainerWithDecisionMedia {
 	if m == nil {
 		return nil
@@ -1416,7 +2614,14 @@ func (m *MediaContainerWithDecisionMetadata) GetMedia() []MediaContainerWithDeci
 	return m.Media
 }
 
-func (m *MediaContainerWithDecisionMetadata) GetOriginallyAvailableAt() *types.Date {
+func (m *MediaContainerWithDecisionMetadata) GetMusicAnalysisVersion() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.MusicAnalysisVersion
+}
+
+func (m *MediaContainerWithDecisionMetadata) GetOriginallyAvailableAt() *string {
 	if m == nil {
 		return nil
 	}
@@ -1477,6 +2682,13 @@ func (m *MediaContainerWithDecisionMetadata) GetParentTitle() *string {
 		return nil
 	}
 	return m.ParentTitle
+}
+
+func (m *MediaContainerWithDecisionMetadata) GetPlaylistItemID() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.PlaylistItemID
 }
 
 func (m *MediaContainerWithDecisionMetadata) GetPrimaryExtraKey() *string {
@@ -1549,18 +2761,32 @@ func (m *MediaContainerWithDecisionMetadata) GetSecondary() *bool {
 	return m.Secondary
 }
 
-func (m *MediaContainerWithDecisionMetadata) GetSkipChildren() *bool {
+func (m *MediaContainerWithDecisionMetadata) GetSkipChildren() *MediaContainerWithDecisionSkipChildren {
 	if m == nil {
 		return nil
 	}
 	return m.SkipChildren
 }
 
-func (m *MediaContainerWithDecisionMetadata) GetSkipParent() *bool {
+func (m *MediaContainerWithDecisionMetadata) GetSkipCount() *int64 {
+	if m == nil {
+		return nil
+	}
+	return m.SkipCount
+}
+
+func (m *MediaContainerWithDecisionMetadata) GetSkipParent() *MediaContainerWithDecisionSkipParent {
 	if m == nil {
 		return nil
 	}
 	return m.SkipParent
+}
+
+func (m *MediaContainerWithDecisionMetadata) GetSlug() *string {
+	if m == nil {
+		return nil
+	}
+	return m.Slug
 }
 
 func (m *MediaContainerWithDecisionMetadata) GetSort() []Sort {
@@ -1568,6 +2794,13 @@ func (m *MediaContainerWithDecisionMetadata) GetSort() []Sort {
 		return nil
 	}
 	return m.Sort
+}
+
+func (m *MediaContainerWithDecisionMetadata) GetSourceURI() *string {
+	if m == nil {
+		return nil
+	}
+	return m.SourceURI
 }
 
 func (m *MediaContainerWithDecisionMetadata) GetStudio() *string {
@@ -1612,6 +2845,13 @@ func (m *MediaContainerWithDecisionMetadata) GetThumb() *string {
 	return m.Thumb
 }
 
+func (m *MediaContainerWithDecisionMetadata) GetThumbBlurHash() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ThumbBlurHash
+}
+
 func (m *MediaContainerWithDecisionMetadata) GetTitleSort() *string {
 	if m == nil {
 		return nil
@@ -1624,6 +2864,13 @@ func (m *MediaContainerWithDecisionMetadata) GetUpdatedAt() *int64 {
 		return nil
 	}
 	return m.UpdatedAt
+}
+
+func (m *MediaContainerWithDecisionMetadata) GetUseOriginalTitle() *bool {
+	if m == nil {
+		return nil
+	}
+	return m.UseOriginalTitle
 }
 
 func (m *MediaContainerWithDecisionMetadata) GetUserRating() *float32 {
@@ -1681,11 +2928,9 @@ func (m *MediaContainerWithDecisionMetadata) GetAdditionalProperties() map[strin
 type MediaContainerWithDecisionMediaContainer struct {
 	Identifier *string `json:"identifier,omitempty"`
 	// The offset of where this container page starts among the total objects available. Also provided in the `X-Plex-Container-Start` header.
-	//
 	Offset *int64 `json:"offset,omitempty"`
 	Size   *int64 `json:"size,omitempty"`
 	// The total size of objects available. Also provided in the `X-Plex-Container-Total-Size` header.
-	//
 	TotalSize *int64 `json:"totalSize,omitempty"`
 	// The maximum available bitrate when the decision was rendered.
 	AvailableBandwidth     *int64  `json:"availableBandwidth,omitempty"`

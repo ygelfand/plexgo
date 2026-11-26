@@ -8,11 +8,9 @@ package components
 type DvrRequestHandlerSlashGetResponses200MediaContainerMediaContainer struct {
 	Identifier *string `json:"identifier,omitempty"`
 	// The offset of where this container page starts among the total objects available. Also provided in the `X-Plex-Container-Start` header.
-	//
 	Offset *int64 `json:"offset,omitempty"`
 	Size   *int64 `json:"size,omitempty"`
 	// The total size of objects available. Also provided in the `X-Plex-Container-Total-Size` header.
-	//
 	TotalSize *int64 `json:"totalSize,omitempty"`
 	// A status indicator. If present and non-zero, indicates an error
 	Status *int64 `json:"status,omitempty"`
@@ -53,48 +51,8 @@ func (d *DvrRequestHandlerSlashGetResponses200MediaContainerMediaContainer) GetS
 	return d.Status
 }
 
-type Dvr struct {
-	Device   []Device `json:"Device,omitempty"`
-	Key      *string  `json:"key,omitempty"`
-	Language *string  `json:"language,omitempty"`
-	Lineup   *string  `json:"lineup,omitempty"`
-	UUID     *string  `json:"uuid,omitempty"`
-}
-
-func (d *Dvr) GetDevice() []Device {
-	if d == nil {
-		return nil
-	}
-	return d.Device
-}
-
-func (d *Dvr) GetKey() *string {
-	if d == nil {
-		return nil
-	}
-	return d.Key
-}
-
-func (d *Dvr) GetLanguage() *string {
-	if d == nil {
-		return nil
-	}
-	return d.Language
-}
-
-func (d *Dvr) GetLineup() *string {
-	if d == nil {
-		return nil
-	}
-	return d.Lineup
-}
-
-func (d *Dvr) GetUUID() *string {
-	if d == nil {
-		return nil
-	}
-	return d.UUID
-}
+// #region class-body-dvrrequesthandlerslashgetresponses200mediacontainermediacontainer
+// #endregion class-body-dvrrequesthandlerslashgetresponses200mediacontainermediacontainer
 
 type DvrRequestHandlerSlashGetResponses200MediaContainer struct {
 	MediaContainer *DvrRequestHandlerSlashGetResponses200MediaContainerMediaContainer `json:"MediaContainer,omitempty"`
@@ -115,6 +73,9 @@ func (d *DvrRequestHandlerSlashGetResponses200MediaContainer) GetDvr() []Dvr {
 	return d.Dvr
 }
 
+// #region class-body-dvrrequesthandlerslashgetresponses200mediacontainer
+// #endregion class-body-dvrrequesthandlerslashgetresponses200mediacontainer
+
 // DvrRequestHandlerSlashGetResponses200 - OK
 type DvrRequestHandlerSlashGetResponses200 struct {
 	MediaContainer *DvrRequestHandlerSlashGetResponses200MediaContainer `json:"MediaContainer,omitempty"`
@@ -126,3 +87,6 @@ func (d *DvrRequestHandlerSlashGetResponses200) GetMediaContainer() *DvrRequestH
 	}
 	return d.MediaContainer
 }
+
+// #region class-body-dvrrequesthandlerslashgetresponses200
+// #endregion class-body-dvrrequesthandlerslashgetresponses200

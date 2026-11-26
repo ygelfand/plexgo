@@ -3,8 +3,8 @@
 package operations
 
 import (
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/models/components"
+	"github.com/ygelfand/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/models/components"
 	"net/http"
 )
 
@@ -144,7 +144,8 @@ type DeleteMetadataItemRequest struct {
 	DeviceName *string `header:"style=simple,explode=false,name=X-Plex-Device-Name"`
 	// The marketplace on which the client application is distributed
 	Marketplace *string `header:"style=simple,explode=false,name=X-Plex-Marketplace"`
-	Ids         string  `pathParam:"style=simple,explode=false,name=ids"`
+	// Comma-separated list of IDs
+	Ids string `pathParam:"style=simple,explode=false,name=ids"`
 	// Whether proxy items, such as media optimized versions, should also be deleted.  Defaults to false.
 	Proxy *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=proxy"`
 }

@@ -3,8 +3,8 @@
 package operations
 
 import (
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/models/components"
+	"github.com/ygelfand/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/models/components"
 	"net/http"
 )
 
@@ -143,8 +143,9 @@ type DeleteSubscriptionRequest struct {
 	// A friendly name for the client
 	DeviceName *string `header:"style=simple,explode=false,name=X-Plex-Device-Name"`
 	// The marketplace on which the client application is distributed
-	Marketplace    *string `header:"style=simple,explode=false,name=X-Plex-Marketplace"`
-	SubscriptionID int64   `pathParam:"style=simple,explode=false,name=subscriptionId"`
+	Marketplace *string `header:"style=simple,explode=false,name=X-Plex-Marketplace"`
+	// The unique identifier of the subscription
+	SubscriptionID int64 `pathParam:"style=simple,explode=false,name=subscriptionId"`
 }
 
 func (d DeleteSubscriptionRequest) MarshalJSON() ([]byte, error) {

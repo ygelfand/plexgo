@@ -3,8 +3,8 @@
 package operations
 
 import (
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/models/components"
+	"github.com/ygelfand/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/models/components"
 	"net/http"
 )
 
@@ -143,8 +143,9 @@ type ReorderSubscriptionRequest struct {
 	// A friendly name for the client
 	DeviceName *string `header:"style=simple,explode=false,name=X-Plex-Device-Name"`
 	// The marketplace on which the client application is distributed
-	Marketplace    *string `header:"style=simple,explode=false,name=X-Plex-Marketplace"`
-	SubscriptionID int64   `pathParam:"style=simple,explode=false,name=subscriptionId"`
+	Marketplace *string `header:"style=simple,explode=false,name=X-Plex-Marketplace"`
+	// The unique identifier of the subscription
+	SubscriptionID int64 `pathParam:"style=simple,explode=false,name=subscriptionId"`
 	// The subscription to move this sub after.  If missing will insert at the beginning of the list
 	After *int64 `queryParam:"style=form,explode=true,name=after"`
 }

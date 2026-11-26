@@ -4,10 +4,374 @@ package components
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
-	"github.com/LukeHagar/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/internal/utils"
 )
+
+// BitrateMode - Audio bitrate mode (cbr or vbr).
+type BitrateMode string
+
+const (
+	BitrateModeCbr BitrateMode = "cbr"
+	BitrateModeVbr BitrateMode = "vbr"
+)
+
+func (e BitrateMode) ToPointer() *BitrateMode {
+	return &e
+}
+func (e *BitrateMode) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "cbr":
+		fallthrough
+	case "vbr":
+		*e = BitrateMode(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for BitrateMode: %v", v)
+	}
+}
+
+type CanAutoSync2 string
+
+const (
+	CanAutoSync2Zero CanAutoSync2 = "0"
+	CanAutoSync2One  CanAutoSync2 = "1"
+)
+
+func (e CanAutoSync2) ToPointer() *CanAutoSync2 {
+	return &e
+}
+func (e *CanAutoSync2) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = CanAutoSync2(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for CanAutoSync2: %v", v)
+	}
+}
+
+type CanAutoSyncType string
+
+const (
+	CanAutoSyncTypeBoolean      CanAutoSyncType = "boolean"
+	CanAutoSyncTypeCanAutoSync2 CanAutoSyncType = "canAutoSync_2"
+)
+
+// CanAutoSync - Indicates if the stream can auto-sync.
+type CanAutoSync struct {
+	Boolean      *bool         `queryParam:"inline" union:"member"`
+	CanAutoSync2 *CanAutoSync2 `queryParam:"inline" union:"member"`
+
+	Type CanAutoSyncType
+}
+
+func CreateCanAutoSyncBoolean(boolean bool) CanAutoSync {
+	typ := CanAutoSyncTypeBoolean
+
+	return CanAutoSync{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateCanAutoSyncCanAutoSync2(canAutoSync2 CanAutoSync2) CanAutoSync {
+	typ := CanAutoSyncTypeCanAutoSync2
+
+	return CanAutoSync{
+		CanAutoSync2: &canAutoSync2,
+		Type:         typ,
+	}
+}
+
+func (u *CanAutoSync) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = CanAutoSync{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = CanAutoSyncTypeBoolean
+		return nil
+	}
+
+	var canAutoSync2 CanAutoSync2 = CanAutoSync2("")
+	if err := utils.UnmarshalJSON(data, &canAutoSync2, "", true, nil); err == nil {
+		u.CanAutoSync2 = &canAutoSync2
+		u.Type = CanAutoSyncTypeCanAutoSync2
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for CanAutoSync", string(data))
+}
+
+func (u CanAutoSync) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.CanAutoSync2 != nil {
+		return utils.MarshalJSON(u.CanAutoSync2, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type CanAutoSync: all fields are null")
+}
+
+type LoudnessType string
+
+const (
+	LoudnessTypeNumber LoudnessType = "number"
+	LoudnessTypeStr    LoudnessType = "str"
+)
+
+// Loudness - Integrated loudness in LUFS. Plex may return a numeric value as a number or numeric string, or the sentinel string "-inf".
+type Loudness struct {
+	Number *float64 `queryParam:"inline" union:"member"`
+	Str    *string  `queryParam:"inline" union:"member"`
+
+	Type LoudnessType
+}
+
+func CreateLoudnessNumber(number float64) Loudness {
+	typ := LoudnessTypeNumber
+
+	return Loudness{
+		Number: &number,
+		Type:   typ,
+	}
+}
+
+func CreateLoudnessStr(str string) Loudness {
+	typ := LoudnessTypeStr
+
+	return Loudness{
+		Str:  &str,
+		Type: typ,
+	}
+}
+
+func (u *Loudness) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = Loudness{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var number float64 = float64(0)
+	if err := utils.UnmarshalJSON(data, &number, "", true, nil); err == nil {
+		u.Number = &number
+		u.Type = LoudnessTypeNumber
+		return nil
+	}
+
+	var str string = ""
+	if err := utils.UnmarshalJSON(data, &str, "", true, nil); err == nil {
+		u.Str = &str
+		u.Type = LoudnessTypeStr
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for Loudness", string(data))
+}
+
+func (u Loudness) MarshalJSON() ([]byte, error) {
+	if u.Number != nil {
+		return utils.MarshalJSON(u.Number, "", true)
+	}
+
+	if u.Str != nil {
+		return utils.MarshalJSON(u.Str, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type Loudness: all fields are null")
+}
+
+type PeakType string
+
+const (
+	PeakTypeNumber PeakType = "number"
+	PeakTypeStr    PeakType = "str"
+)
+
+// Peak - Track peak amplitude. Plex may return a numeric value as a number or numeric string, or the sentinel string "-inf".
+type Peak struct {
+	Number *float64 `queryParam:"inline" union:"member"`
+	Str    *string  `queryParam:"inline" union:"member"`
+
+	Type PeakType
+}
+
+func CreatePeakNumber(number float64) Peak {
+	typ := PeakTypeNumber
+
+	return Peak{
+		Number: &number,
+		Type:   typ,
+	}
+}
+
+func CreatePeakStr(str string) Peak {
+	typ := PeakTypeStr
+
+	return Peak{
+		Str:  &str,
+		Type: typ,
+	}
+}
+
+func (u *Peak) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = Peak{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var number float64 = float64(0)
+	if err := utils.UnmarshalJSON(data, &number, "", true, nil); err == nil {
+		u.Number = &number
+		u.Type = PeakTypeNumber
+		return nil
+	}
+
+	var str string = ""
+	if err := utils.UnmarshalJSON(data, &str, "", true, nil); err == nil {
+		u.Str = &str
+		u.Type = PeakTypeStr
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for Peak", string(data))
+}
+
+func (u Peak) MarshalJSON() ([]byte, error) {
+	if u.Number != nil {
+		return utils.MarshalJSON(u.Number, "", true)
+	}
+
+	if u.Str != nil {
+		return utils.MarshalJSON(u.Str, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type Peak: all fields are null")
+}
+
+type PerfectMatch2 string
+
+const (
+	PerfectMatch2Zero PerfectMatch2 = "0"
+	PerfectMatch2One  PerfectMatch2 = "1"
+)
+
+func (e PerfectMatch2) ToPointer() *PerfectMatch2 {
+	return &e
+}
+func (e *PerfectMatch2) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = PerfectMatch2(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for PerfectMatch2: %v", v)
+	}
+}
+
+type PerfectMatchType string
+
+const (
+	PerfectMatchTypeBoolean       PerfectMatchType = "boolean"
+	PerfectMatchTypePerfectMatch2 PerfectMatchType = "perfectMatch_2"
+)
+
+// PerfectMatch - Whether the subtitle is an exact match.
+type PerfectMatch struct {
+	Boolean       *bool          `queryParam:"inline" union:"member"`
+	PerfectMatch2 *PerfectMatch2 `queryParam:"inline" union:"member"`
+
+	Type PerfectMatchType
+}
+
+func CreatePerfectMatchBoolean(boolean bool) PerfectMatch {
+	typ := PerfectMatchTypeBoolean
+
+	return PerfectMatch{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreatePerfectMatchPerfectMatch2(perfectMatch2 PerfectMatch2) PerfectMatch {
+	typ := PerfectMatchTypePerfectMatch2
+
+	return PerfectMatch{
+		PerfectMatch2: &perfectMatch2,
+		Type:          typ,
+	}
+}
+
+func (u *PerfectMatch) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = PerfectMatch{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = PerfectMatchTypeBoolean
+		return nil
+	}
+
+	var perfectMatch2 PerfectMatch2 = PerfectMatch2("")
+	if err := utils.UnmarshalJSON(data, &perfectMatch2, "", true, nil); err == nil {
+		u.PerfectMatch2 = &perfectMatch2
+		u.Type = PerfectMatchTypePerfectMatch2
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for PerfectMatch", string(data))
+}
+
+func (u PerfectMatch) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.PerfectMatch2 != nil {
+		return utils.MarshalJSON(u.PerfectMatch2, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type PerfectMatch: all fields are null")
+}
 
 // StreamType - Stream type:
 //   - VIDEO = 1 (Video stream)
@@ -43,16 +407,247 @@ func (e *StreamType) UnmarshalJSON(data []byte) error {
 	}
 }
 
+type Timed2 string
+
+const (
+	Timed2Zero Timed2 = "0"
+	Timed2One  Timed2 = "1"
+)
+
+func (e Timed2) ToPointer() *Timed2 {
+	return &e
+}
+func (e *Timed2) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = Timed2(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for Timed2: %v", v)
+	}
+}
+
+type TimedType string
+
+const (
+	TimedTypeBoolean TimedType = "boolean"
+	TimedTypeTimed2  TimedType = "timed_2"
+)
+
+// Timed - Whether lyrics are timestamped.
+type Timed struct {
+	Boolean *bool   `queryParam:"inline" union:"member"`
+	Timed2  *Timed2 `queryParam:"inline" union:"member"`
+
+	Type TimedType
+}
+
+func CreateTimedBoolean(boolean bool) Timed {
+	typ := TimedTypeBoolean
+
+	return Timed{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateTimedTimed2(timed2 Timed2) Timed {
+	typ := TimedTypeTimed2
+
+	return Timed{
+		Timed2: &timed2,
+		Type:   typ,
+	}
+}
+
+func (u *Timed) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = Timed{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = TimedTypeBoolean
+		return nil
+	}
+
+	var timed2 Timed2 = Timed2("")
+	if err := utils.UnmarshalJSON(data, &timed2, "", true, nil); err == nil {
+		u.Timed2 = &timed2
+		u.Type = TimedTypeTimed2
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for Timed", string(data))
+}
+
+func (u Timed) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.Timed2 != nil {
+		return utils.MarshalJSON(u.Timed2, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type Timed: all fields are null")
+}
+
+type Transient2 string
+
+const (
+	Transient2Zero Transient2 = "0"
+	Transient2One  Transient2 = "1"
+)
+
+func (e Transient2) ToPointer() *Transient2 {
+	return &e
+}
+func (e *Transient2) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = Transient2(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for Transient2: %v", v)
+	}
+}
+
+type TransientType string
+
+const (
+	TransientTypeBoolean    TransientType = "boolean"
+	TransientTypeTransient2 TransientType = "transient_2"
+)
+
+// Transient - Whether the subtitle is temporary or downloaded.
+type Transient struct {
+	Boolean    *bool       `queryParam:"inline" union:"member"`
+	Transient2 *Transient2 `queryParam:"inline" union:"member"`
+
+	Type TransientType
+}
+
+func CreateTransientBoolean(boolean bool) Transient {
+	typ := TransientTypeBoolean
+
+	return Transient{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateTransientTransient2(transient2 Transient2) Transient {
+	typ := TransientTypeTransient2
+
+	return Transient{
+		Transient2: &transient2,
+		Type:       typ,
+	}
+}
+
+func (u *Transient) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = Transient{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = TransientTypeBoolean
+		return nil
+	}
+
+	var transient2 Transient2 = Transient2("")
+	if err := utils.UnmarshalJSON(data, &transient2, "", true, nil); err == nil {
+		u.Transient2 = &transient2
+		u.Type = TransientTypeTransient2
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for Transient", string(data))
+}
+
+func (u Transient) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.Transient2 != nil {
+		return utils.MarshalJSON(u.Transient2, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type Transient: all fields are null")
+}
+
 // Stream - `Stream` represents a particular stream from a media item, such as the video stream, audio stream, or subtitle stream. The stream may either be part of the file represented by the parent `Part` or, especially for subtitles, an external file. The stream contains more detailed information about the specific stream. For example, a video may include the `aspectRatio` at the `Media` level, but detailed information about the video stream like the color space will be included on the `Stream` for the video stream.  Note that photos do not have streams (mostly as an optimization).
 type Stream struct {
+	// Optional title for the stream (e.g., language variant).
+	Title *string `json:"title,omitempty"`
+	// Format of the stream (e.g., srt).
+	Format *string `json:"format,omitempty"`
 	// Indicates if this stream is default.
 	Default *bool `json:"default,omitempty"`
+	// ReplayGain album gain in dB.
+	AlbumGain *float64 `json:"albumGain,omitempty"`
+	// ReplayGain album peak amplitude.
+	AlbumPeak *float64 `json:"albumPeak,omitempty"`
+	// ReplayGain album dynamic range in dB.
+	AlbumRange *float64 `json:"albumRange,omitempty"`
 	// Audio channel layout.
 	AudioChannelLayout *string `json:"audioChannelLayout,omitempty"`
-	// Number of audio channels (for audio streams).
-	Channels *int `json:"channels,omitempty"`
 	// Bit depth of the video stream.
 	BitDepth *int `json:"bitDepth,omitempty"`
+	// Bitrate of the stream.
+	Bitrate *int `json:"bitrate,omitempty"`
+	// Audio bitrate mode (cbr or vbr).
+	BitrateMode *BitrateMode `json:"bitrateMode,omitempty"`
+	// Indicates if the stream can auto-sync.
+	CanAutoSync *CanAutoSync `json:"canAutoSync,omitempty"`
+	// Number of audio channels (for audio streams).
+	Channels *int `json:"channels,omitempty"`
+	// Chroma sample location.
+	ChromaLocation *string `json:"chromaLocation,omitempty"`
+	// Chroma subsampling format.
+	ChromaSubsampling *string `json:"chromaSubsampling,omitempty"`
+	ClosedCaptions    *bool   `json:"closedCaptions,omitempty"`
+	// Codec used by the stream.
+	Codec string `json:"codec"`
+	// Coded video height.
+	CodedHeight *int `json:"codedHeight,omitempty"`
+	// Coded video width.
+	CodedWidth *int `json:"codedWidth,omitempty"`
+	// Color primaries used.
+	ColorPrimaries *string `json:"colorPrimaries,omitempty"`
+	// Color range (e.g., tv).
+	ColorRange *string `json:"colorRange,omitempty"`
+	// Color space.
+	ColorSpace *string `json:"colorSpace,omitempty"`
+	// Color transfer characteristics.
+	ColorTrc *string `json:"colorTrc,omitempty"`
+	// Display title for the stream.
+	DisplayTitle string `json:"displayTitle"`
 	// Dolby Vision BL compatibility ID.
 	DOVIBLCompatID *int `json:"DOVIBLCompatID,omitempty"`
 	// Indicates if Dolby Vision BL is present.
@@ -69,36 +664,23 @@ type Stream struct {
 	DOVIRPUPresent *bool `json:"DOVIRPUPresent,omitempty"`
 	// Dolby Vision version.
 	DOVIVersion *string `json:"DOVIVersion,omitempty"`
-	// Bitrate of the stream.
-	Bitrate *int `json:"bitrate,omitempty"`
-	// Indicates if the stream can auto-sync.
-	CanAutoSync *Bool `json:"canAutoSync,omitempty"`
-	// Chroma sample location.
-	ChromaLocation *string `json:"chromaLocation,omitempty"`
-	// Chroma subsampling format.
-	ChromaSubsampling *string `json:"chromaSubsampling,omitempty"`
-	// Coded video height.
-	CodedHeight *int `json:"codedHeight,omitempty"`
-	// Coded video width.
-	CodedWidth     *int  `json:"codedWidth,omitempty"`
-	ClosedCaptions *bool `json:"closedCaptions,omitempty"`
-	// Codec used by the stream.
-	Codec string `json:"codec"`
-	// Color primaries used.
-	ColorPrimaries *string `json:"colorPrimaries,omitempty"`
-	// Color range (e.g., tv).
-	ColorRange *string `json:"colorRange,omitempty"`
-	// Color space.
-	ColorSpace *string `json:"colorSpace,omitempty"`
-	// Color transfer characteristics.
-	ColorTrc *string `json:"colorTrc,omitempty"`
-	// Display title for the stream.
-	DisplayTitle string `json:"displayTitle"`
+	// Indicates if the stream is a dub.
+	Dub             *bool   `json:"dub,omitempty"`
+	EmbeddedInVideo *string `json:"embeddedInVideo,omitempty"`
+	// Loudness ramp end type.
+	EndRamp *string `json:"endRamp,omitempty"`
 	// Extended display title for the stream.
 	ExtendedDisplayTitle *string `json:"extendedDisplayTitle,omitempty"`
+	Forced               *bool   `json:"forced,omitempty"`
 	// Frame rate of the stream.
-	FrameRate        *float32 `json:"frameRate,omitempty"`
+	FrameRate *float32 `json:"frameRate,omitempty"`
+	// Track replay gain in dB.
+	Gain             *float64 `json:"gain,omitempty"`
 	HasScalingMatrix *bool    `json:"hasScalingMatrix,omitempty"`
+	// Indicates whether header compression is enabled.
+	HeaderCompression *bool `json:"headerCompression,omitempty"`
+	// Indicates if the stream is for the hearing impaired.
+	HearingImpaired *bool `json:"hearingImpaired,omitempty"`
 	// Height of the video stream.
 	Height *int `json:"height,omitempty"`
 	// Unique stream identifier.
@@ -113,33 +695,49 @@ type Stream struct {
 	LanguageCode *string `json:"languageCode,omitempty"`
 	// Language tag (e.g., en).
 	LanguageTag *string `json:"languageTag,omitempty"`
-	// Format of the stream (e.g., srt).
-	Format *string `json:"format,omitempty"`
-	// Indicates whether header compression is enabled.
-	HeaderCompression *bool `json:"headerCompression,omitempty"`
 	// Video level.
 	Level *int `json:"level,omitempty"`
+	// Integrated loudness in LUFS. Plex may return a numeric value as a number or numeric string, or the sentinel string "-inf".
+	Loudness *Loudness `json:"loudness,omitempty"`
+	// Loudness range in LU.
+	Lra *float64 `json:"lra,omitempty"`
+	// Minimum lines in the lyric file.
+	MinLines *int64 `json:"minLines,omitempty"`
 	// Indicates if this is the original stream.
 	Original *bool `json:"original,omitempty"`
+	// Track peak amplitude. Plex may return a numeric value as a number or numeric string, or the sentinel string "-inf".
+	Peak *Peak `json:"peak,omitempty"`
+	// Whether the subtitle is an exact match.
+	PerfectMatch *PerfectMatch `json:"perfectMatch,omitempty"`
 	// Video profile.
 	Profile *string `json:"profile,omitempty"`
+	// Lyric or subtitle provider name.
+	Provider *string `json:"provider,omitempty"`
+	// Subtitle provider display name.
+	ProviderTitle *string `json:"providerTitle,omitempty"`
 	// Number of reference frames.
 	RefFrames *int `json:"refFrames,omitempty"`
 	// Sampling rate for the audio stream.
-	SamplingRate    *int    `json:"samplingRate,omitempty"`
-	ScanType        *string `json:"scanType,omitempty"`
-	EmbeddedInVideo *string `json:"embeddedInVideo,omitempty"`
+	SamplingRate *int    `json:"samplingRate,omitempty"`
+	ScanType     *string `json:"scanType,omitempty"`
+	// Subtitle match confidence score (0-100).
+	Score *float64 `json:"score,omitempty"`
 	// Indicates if this stream is selected (applicable for audio streams).
 	Selected *bool `json:"selected,omitempty"`
-	Forced   *bool `json:"forced,omitempty"`
-	// Indicates if the stream is for the hearing impaired.
-	HearingImpaired *bool `json:"hearingImpaired,omitempty"`
-	// Indicates if the stream is a dub.
-	Dub *bool `json:"dub,omitempty"`
-	// Optional title for the stream (e.g., language variant).
-	Title            *string    `json:"title,omitempty"`
+	// Source identifier for the subtitle.
+	SourceKey *string `json:"sourceKey,omitempty"`
+	// Loudness ramp start type.
+	StartRamp        *string    `json:"startRamp,omitempty"`
 	StreamIdentifier *StringInt `json:"streamIdentifier,omitempty"`
 	StreamType       StreamType `json:"streamType"`
+	// Whether lyrics are timestamped.
+	Timed *Timed `json:"timed,omitempty"`
+	// Whether the subtitle is temporary or downloaded.
+	Transient *Transient `json:"transient,omitempty"`
+	// ID of the user who added the subtitle.
+	UserID *int64 `json:"userID,omitempty"`
+	// Whether this audio track is an audio description track.
+	VisualImpaired *bool `json:"visualImpaired,omitempty"`
 	// Width of the video stream.
 	Width                *int           `json:"width,omitempty"`
 	AdditionalProperties map[string]any `additionalProperties:"true" json:"-"`
@@ -156,11 +754,46 @@ func (s *Stream) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+func (s *Stream) GetTitle() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Title
+}
+
+func (s *Stream) GetFormat() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Format
+}
+
 func (s *Stream) GetDefault() *bool {
 	if s == nil {
 		return nil
 	}
 	return s.Default
+}
+
+func (s *Stream) GetAlbumGain() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.AlbumGain
+}
+
+func (s *Stream) GetAlbumPeak() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.AlbumPeak
+}
+
+func (s *Stream) GetAlbumRange() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.AlbumRange
 }
 
 func (s *Stream) GetAudioChannelLayout() *string {
@@ -170,6 +803,34 @@ func (s *Stream) GetAudioChannelLayout() *string {
 	return s.AudioChannelLayout
 }
 
+func (s *Stream) GetBitDepth() *int {
+	if s == nil {
+		return nil
+	}
+	return s.BitDepth
+}
+
+func (s *Stream) GetBitrate() *int {
+	if s == nil {
+		return nil
+	}
+	return s.Bitrate
+}
+
+func (s *Stream) GetBitrateMode() *BitrateMode {
+	if s == nil {
+		return nil
+	}
+	return s.BitrateMode
+}
+
+func (s *Stream) GetCanAutoSync() *CanAutoSync {
+	if s == nil {
+		return nil
+	}
+	return s.CanAutoSync
+}
+
 func (s *Stream) GetChannels() *int {
 	if s == nil {
 		return nil
@@ -177,11 +838,81 @@ func (s *Stream) GetChannels() *int {
 	return s.Channels
 }
 
-func (s *Stream) GetBitDepth() *int {
+func (s *Stream) GetChromaLocation() *string {
 	if s == nil {
 		return nil
 	}
-	return s.BitDepth
+	return s.ChromaLocation
+}
+
+func (s *Stream) GetChromaSubsampling() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ChromaSubsampling
+}
+
+func (s *Stream) GetClosedCaptions() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.ClosedCaptions
+}
+
+func (s *Stream) GetCodec() string {
+	if s == nil {
+		return ""
+	}
+	return s.Codec
+}
+
+func (s *Stream) GetCodedHeight() *int {
+	if s == nil {
+		return nil
+	}
+	return s.CodedHeight
+}
+
+func (s *Stream) GetCodedWidth() *int {
+	if s == nil {
+		return nil
+	}
+	return s.CodedWidth
+}
+
+func (s *Stream) GetColorPrimaries() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ColorPrimaries
+}
+
+func (s *Stream) GetColorRange() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ColorRange
+}
+
+func (s *Stream) GetColorSpace() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ColorSpace
+}
+
+func (s *Stream) GetColorTrc() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ColorTrc
+}
+
+func (s *Stream) GetDisplayTitle() string {
+	if s == nil {
+		return ""
+	}
+	return s.DisplayTitle
 }
 
 func (s *Stream) GetDOVIBLCompatID() *int {
@@ -240,95 +971,25 @@ func (s *Stream) GetDOVIVersion() *string {
 	return s.DOVIVersion
 }
 
-func (s *Stream) GetBitrate() *int {
+func (s *Stream) GetDub() *bool {
 	if s == nil {
 		return nil
 	}
-	return s.Bitrate
+	return s.Dub
 }
 
-func (s *Stream) GetCanAutoSync() *Bool {
+func (s *Stream) GetEmbeddedInVideo() *string {
 	if s == nil {
 		return nil
 	}
-	return s.CanAutoSync
+	return s.EmbeddedInVideo
 }
 
-func (s *Stream) GetChromaLocation() *string {
+func (s *Stream) GetEndRamp() *string {
 	if s == nil {
 		return nil
 	}
-	return s.ChromaLocation
-}
-
-func (s *Stream) GetChromaSubsampling() *string {
-	if s == nil {
-		return nil
-	}
-	return s.ChromaSubsampling
-}
-
-func (s *Stream) GetCodedHeight() *int {
-	if s == nil {
-		return nil
-	}
-	return s.CodedHeight
-}
-
-func (s *Stream) GetCodedWidth() *int {
-	if s == nil {
-		return nil
-	}
-	return s.CodedWidth
-}
-
-func (s *Stream) GetClosedCaptions() *bool {
-	if s == nil {
-		return nil
-	}
-	return s.ClosedCaptions
-}
-
-func (s *Stream) GetCodec() string {
-	if s == nil {
-		return ""
-	}
-	return s.Codec
-}
-
-func (s *Stream) GetColorPrimaries() *string {
-	if s == nil {
-		return nil
-	}
-	return s.ColorPrimaries
-}
-
-func (s *Stream) GetColorRange() *string {
-	if s == nil {
-		return nil
-	}
-	return s.ColorRange
-}
-
-func (s *Stream) GetColorSpace() *string {
-	if s == nil {
-		return nil
-	}
-	return s.ColorSpace
-}
-
-func (s *Stream) GetColorTrc() *string {
-	if s == nil {
-		return nil
-	}
-	return s.ColorTrc
-}
-
-func (s *Stream) GetDisplayTitle() string {
-	if s == nil {
-		return ""
-	}
-	return s.DisplayTitle
+	return s.EndRamp
 }
 
 func (s *Stream) GetExtendedDisplayTitle() *string {
@@ -338,6 +999,13 @@ func (s *Stream) GetExtendedDisplayTitle() *string {
 	return s.ExtendedDisplayTitle
 }
 
+func (s *Stream) GetForced() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Forced
+}
+
 func (s *Stream) GetFrameRate() *float32 {
 	if s == nil {
 		return nil
@@ -345,11 +1013,32 @@ func (s *Stream) GetFrameRate() *float32 {
 	return s.FrameRate
 }
 
+func (s *Stream) GetGain() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Gain
+}
+
 func (s *Stream) GetHasScalingMatrix() *bool {
 	if s == nil {
 		return nil
 	}
 	return s.HasScalingMatrix
+}
+
+func (s *Stream) GetHeaderCompression() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.HeaderCompression
+}
+
+func (s *Stream) GetHearingImpaired() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.HearingImpaired
 }
 
 func (s *Stream) GetHeight() *int {
@@ -401,25 +1090,32 @@ func (s *Stream) GetLanguageTag() *string {
 	return s.LanguageTag
 }
 
-func (s *Stream) GetFormat() *string {
-	if s == nil {
-		return nil
-	}
-	return s.Format
-}
-
-func (s *Stream) GetHeaderCompression() *bool {
-	if s == nil {
-		return nil
-	}
-	return s.HeaderCompression
-}
-
 func (s *Stream) GetLevel() *int {
 	if s == nil {
 		return nil
 	}
 	return s.Level
+}
+
+func (s *Stream) GetLoudness() *Loudness {
+	if s == nil {
+		return nil
+	}
+	return s.Loudness
+}
+
+func (s *Stream) GetLra() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Lra
+}
+
+func (s *Stream) GetMinLines() *int64 {
+	if s == nil {
+		return nil
+	}
+	return s.MinLines
 }
 
 func (s *Stream) GetOriginal() *bool {
@@ -429,11 +1125,39 @@ func (s *Stream) GetOriginal() *bool {
 	return s.Original
 }
 
+func (s *Stream) GetPeak() *Peak {
+	if s == nil {
+		return nil
+	}
+	return s.Peak
+}
+
+func (s *Stream) GetPerfectMatch() *PerfectMatch {
+	if s == nil {
+		return nil
+	}
+	return s.PerfectMatch
+}
+
 func (s *Stream) GetProfile() *string {
 	if s == nil {
 		return nil
 	}
 	return s.Profile
+}
+
+func (s *Stream) GetProvider() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Provider
+}
+
+func (s *Stream) GetProviderTitle() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ProviderTitle
 }
 
 func (s *Stream) GetRefFrames() *int {
@@ -457,11 +1181,11 @@ func (s *Stream) GetScanType() *string {
 	return s.ScanType
 }
 
-func (s *Stream) GetEmbeddedInVideo() *string {
+func (s *Stream) GetScore() *float64 {
 	if s == nil {
 		return nil
 	}
-	return s.EmbeddedInVideo
+	return s.Score
 }
 
 func (s *Stream) GetSelected() *bool {
@@ -471,32 +1195,18 @@ func (s *Stream) GetSelected() *bool {
 	return s.Selected
 }
 
-func (s *Stream) GetForced() *bool {
+func (s *Stream) GetSourceKey() *string {
 	if s == nil {
 		return nil
 	}
-	return s.Forced
+	return s.SourceKey
 }
 
-func (s *Stream) GetHearingImpaired() *bool {
+func (s *Stream) GetStartRamp() *string {
 	if s == nil {
 		return nil
 	}
-	return s.HearingImpaired
-}
-
-func (s *Stream) GetDub() *bool {
-	if s == nil {
-		return nil
-	}
-	return s.Dub
-}
-
-func (s *Stream) GetTitle() *string {
-	if s == nil {
-		return nil
-	}
-	return s.Title
+	return s.StartRamp
 }
 
 func (s *Stream) GetStreamIdentifier() *StringInt {
@@ -511,6 +1221,34 @@ func (s *Stream) GetStreamType() StreamType {
 		return StreamType(0)
 	}
 	return s.StreamType
+}
+
+func (s *Stream) GetTimed() *Timed {
+	if s == nil {
+		return nil
+	}
+	return s.Timed
+}
+
+func (s *Stream) GetTransient() *Transient {
+	if s == nil {
+		return nil
+	}
+	return s.Transient
+}
+
+func (s *Stream) GetUserID() *int64 {
+	if s == nil {
+		return nil
+	}
+	return s.UserID
+}
+
+func (s *Stream) GetVisualImpaired() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.VisualImpaired
 }
 
 func (s *Stream) GetWidth() *int {

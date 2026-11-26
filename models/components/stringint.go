@@ -42,4 +42,3 @@ func (s StringInt) MarshalJSON() ([]byte, error) {
 func (s StringInt) ToPointer() *StringInt {
 	return &s
 }
-

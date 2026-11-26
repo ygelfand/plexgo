@@ -6,13 +6,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/LukeHagar/plexgo/internal/config"
-	"github.com/LukeHagar/plexgo/internal/hooks"
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/models/components"
-	"github.com/LukeHagar/plexgo/models/operations"
-	"github.com/LukeHagar/plexgo/models/sdkerrors"
-	"github.com/LukeHagar/plexgo/retry"
+	"github.com/ygelfand/plexgo/internal/config"
+	"github.com/ygelfand/plexgo/internal/hooks"
+	"github.com/ygelfand/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/models/components"
+	"github.com/ygelfand/plexgo/models/operations"
+	"github.com/ygelfand/plexgo/models/sdkerrors"
+	"github.com/ygelfand/plexgo/retry"
 	"net/http"
 )
 
@@ -33,6 +33,8 @@ func newLibraryCollections(rootSDK *PlexAPI, sdkConfig config.SDKConfiguration, 
 
 // AddCollectionItems - Add items to a collection
 // Add items to a collection by uri
+//
+// If set, this operation will use [Security.Token] from the global security.
 func (s *LibraryCollections) AddCollectionItems(ctx context.Context, request operations.AddCollectionItemsRequest, opts ...operations.Option) (*operations.AddCollectionItemsResponse, error) {
 	globals := operations.AddCollectionItemsGlobals{
 		Accepts:          s.sdkConfiguration.Globals.Accepts,
@@ -105,7 +107,7 @@ func (s *LibraryCollections) AddCollectionItems(ctx context.Context, request ope
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security, "Token"); err != nil {
 		return nil, err
 	}
 
@@ -118,6 +120,16 @@ func (s *LibraryCollections) AddCollectionItems(ctx context.Context, request ope
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -127,10 +139,6 @@ func (s *LibraryCollections) AddCollectionItems(ctx context.Context, request ope
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -189,7 +197,7 @@ func (s *LibraryCollections) AddCollectionItems(ctx context.Context, request ope
 
 			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 			return nil, err
-		} else if utils.MatchStatusCodes([]string{"404", "4XX", "5XX"}, httpRes.StatusCode) {
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
 			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 			if err != nil {
 				return nil, err
@@ -258,10 +266,12 @@ func (s *LibraryCollections) AddCollectionItems(ctx context.Context, request ope
 
 }
 
-// DeleteCollectionItem - Delete an item from a collection
+// UpdateCollectionItem - Update an item in a collection
 // Delete an item from a collection
-func (s *LibraryCollections) DeleteCollectionItem(ctx context.Context, request operations.DeleteCollectionItemRequest, opts ...operations.Option) (*operations.DeleteCollectionItemResponse, error) {
-	globals := operations.DeleteCollectionItemGlobals{
+//
+// If set, this operation will use [Security.Token] from the global security.
+func (s *LibraryCollections) UpdateCollectionItem(ctx context.Context, request operations.UpdateCollectionItemRequest, opts ...operations.Option) (*operations.UpdateCollectionItemResponse, error) {
+	globals := operations.UpdateCollectionItemGlobals{
 		Accepts:          s.sdkConfiguration.Globals.Accepts,
 		ClientIdentifier: s.sdkConfiguration.Globals.ClientIdentifier,
 		Product:          s.sdkConfiguration.Globals.Product,
@@ -303,7 +313,7 @@ func (s *LibraryCollections) DeleteCollectionItem(ctx context.Context, request o
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "deleteCollectionItem",
+		OperationID:      "updateCollectionItem",
 		OAuth2Scopes:     nil,
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
@@ -328,7 +338,7 @@ func (s *LibraryCollections) DeleteCollectionItem(ctx context.Context, request o
 
 	utils.PopulateHeaders(ctx, req, request, globals)
 
-	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security, "Token"); err != nil {
 		return nil, err
 	}
 
@@ -341,6 +351,16 @@ func (s *LibraryCollections) DeleteCollectionItem(ctx context.Context, request o
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -350,10 +370,6 @@ func (s *LibraryCollections) DeleteCollectionItem(ctx context.Context, request o
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -412,7 +428,7 @@ func (s *LibraryCollections) DeleteCollectionItem(ctx context.Context, request o
 
 			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 			return nil, err
-		} else if utils.MatchStatusCodes([]string{"400", "404", "4XX", "5XX"}, httpRes.StatusCode) {
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
 			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 			if err != nil {
 				return nil, err
@@ -427,7 +443,7 @@ func (s *LibraryCollections) DeleteCollectionItem(ctx context.Context, request o
 		}
 	}
 
-	res := &operations.DeleteCollectionItemResponse{
+	res := &operations.UpdateCollectionItemResponse{
 		StatusCode:  httpRes.StatusCode,
 		ContentType: httpRes.Header.Get("Content-Type"),
 		RawResponse: httpRes,
@@ -485,6 +501,8 @@ func (s *LibraryCollections) DeleteCollectionItem(ctx context.Context, request o
 
 // MoveCollectionItem - Reorder an item in the collection
 // Reorder items in a collection with one item after another
+//
+// If set, this operation will use [Security.Token] from the global security.
 func (s *LibraryCollections) MoveCollectionItem(ctx context.Context, request operations.MoveCollectionItemRequest, opts ...operations.Option) (*operations.MoveCollectionItemResponse, error) {
 	globals := operations.MoveCollectionItemGlobals{
 		Accepts:          s.sdkConfiguration.Globals.Accepts,
@@ -557,7 +575,7 @@ func (s *LibraryCollections) MoveCollectionItem(ctx context.Context, request ope
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security, "Token"); err != nil {
 		return nil, err
 	}
 
@@ -570,6 +588,16 @@ func (s *LibraryCollections) MoveCollectionItem(ctx context.Context, request ope
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 1000,
+					MaxInterval:     30000,
+					Exponent:        2,
+					MaxElapsedTime:  300000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -579,10 +607,6 @@ func (s *LibraryCollections) MoveCollectionItem(ctx context.Context, request ope
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -641,7 +665,7 @@ func (s *LibraryCollections) MoveCollectionItem(ctx context.Context, request ope
 
 			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 			return nil, err
-		} else if utils.MatchStatusCodes([]string{"400", "404", "4XX", "5XX"}, httpRes.StatusCode) {
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
 			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 			if err != nil {
 				return nil, err

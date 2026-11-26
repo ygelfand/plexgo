@@ -5,8 +5,8 @@ package operations
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/models/components"
+	"github.com/ygelfand/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/models/components"
 	"net/http"
 )
 
@@ -193,7 +193,6 @@ type WriteMessageRequest struct {
 	//   - 2: Info
 	//   - 3: Debug
 	//   - 4: Verbose
-	//
 	Level *Level `queryParam:"style=form,explode=true,name=level"`
 	// The text of the message to write to the log.
 	Message *string `queryParam:"style=form,explode=true,name=message"`

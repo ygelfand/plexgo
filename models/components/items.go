@@ -3,13 +3,14 @@
 package components
 
 import (
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/types"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/ygelfand/plexgo/internal/utils"
 )
 
 type ItemsGuids struct {
 	// The unique identifier for the Guid. Can be prefixed with imdb://, tmdb://, tvdb://
-	//
 	ID string `json:"id"`
 }
 
@@ -18,6 +19,200 @@ func (i *ItemsGuids) GetID() string {
 		return ""
 	}
 	return i.ID
+}
+
+type ItemsSkipChildren2 string
+
+const (
+	ItemsSkipChildren2Zero ItemsSkipChildren2 = "0"
+	ItemsSkipChildren2One  ItemsSkipChildren2 = "1"
+)
+
+func (e ItemsSkipChildren2) ToPointer() *ItemsSkipChildren2 {
+	return &e
+}
+func (e *ItemsSkipChildren2) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = ItemsSkipChildren2(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for ItemsSkipChildren2: %v", v)
+	}
+}
+
+type ItemsSkipChildrenType string
+
+const (
+	ItemsSkipChildrenTypeBoolean            ItemsSkipChildrenType = "boolean"
+	ItemsSkipChildrenTypeItemsSkipChildren2 ItemsSkipChildrenType = "Items_skipChildren_2"
+)
+
+// ItemsSkipChildren - When found on a show item, indicates that the children (seasons) should be skipped in favor of the grandchildren (episodes). Useful for mini-series, etc.
+type ItemsSkipChildren struct {
+	Boolean            *bool               `queryParam:"inline" union:"member"`
+	ItemsSkipChildren2 *ItemsSkipChildren2 `queryParam:"inline" union:"member"`
+
+	Type ItemsSkipChildrenType
+}
+
+func CreateItemsSkipChildrenBoolean(boolean bool) ItemsSkipChildren {
+	typ := ItemsSkipChildrenTypeBoolean
+
+	return ItemsSkipChildren{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateItemsSkipChildrenItemsSkipChildren2(itemsSkipChildren2 ItemsSkipChildren2) ItemsSkipChildren {
+	typ := ItemsSkipChildrenTypeItemsSkipChildren2
+
+	return ItemsSkipChildren{
+		ItemsSkipChildren2: &itemsSkipChildren2,
+		Type:               typ,
+	}
+}
+
+func (u *ItemsSkipChildren) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = ItemsSkipChildren{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = ItemsSkipChildrenTypeBoolean
+		return nil
+	}
+
+	var itemsSkipChildren2 ItemsSkipChildren2 = ItemsSkipChildren2("")
+	if err := utils.UnmarshalJSON(data, &itemsSkipChildren2, "", true, nil); err == nil {
+		u.ItemsSkipChildren2 = &itemsSkipChildren2
+		u.Type = ItemsSkipChildrenTypeItemsSkipChildren2
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for ItemsSkipChildren", string(data))
+}
+
+func (u ItemsSkipChildren) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.ItemsSkipChildren2 != nil {
+		return utils.MarshalJSON(u.ItemsSkipChildren2, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type ItemsSkipChildren: all fields are null")
+}
+
+type ItemsSkipParent2 string
+
+const (
+	ItemsSkipParent2Zero ItemsSkipParent2 = "0"
+	ItemsSkipParent2One  ItemsSkipParent2 = "1"
+)
+
+func (e ItemsSkipParent2) ToPointer() *ItemsSkipParent2 {
+	return &e
+}
+func (e *ItemsSkipParent2) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "0":
+		fallthrough
+	case "1":
+		*e = ItemsSkipParent2(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for ItemsSkipParent2: %v", v)
+	}
+}
+
+type ItemsSkipParentType string
+
+const (
+	ItemsSkipParentTypeBoolean          ItemsSkipParentType = "boolean"
+	ItemsSkipParentTypeItemsSkipParent2 ItemsSkipParentType = "Items_skipParent_2"
+)
+
+// ItemsSkipParent - When present on an episode or track item, indicates parent should be skipped in favor of grandparent (show).
+type ItemsSkipParent struct {
+	Boolean          *bool             `queryParam:"inline" union:"member"`
+	ItemsSkipParent2 *ItemsSkipParent2 `queryParam:"inline" union:"member"`
+
+	Type ItemsSkipParentType
+}
+
+func CreateItemsSkipParentBoolean(boolean bool) ItemsSkipParent {
+	typ := ItemsSkipParentTypeBoolean
+
+	return ItemsSkipParent{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateItemsSkipParentItemsSkipParent2(itemsSkipParent2 ItemsSkipParent2) ItemsSkipParent {
+	typ := ItemsSkipParentTypeItemsSkipParent2
+
+	return ItemsSkipParent{
+		ItemsSkipParent2: &itemsSkipParent2,
+		Type:             typ,
+	}
+}
+
+func (u *ItemsSkipParent) UnmarshalJSON(data []byte) (err error) {
+	previous := *u
+	*u = ItemsSkipParent{}
+	defer func() {
+		if err != nil {
+			*u = previous
+		}
+	}()
+
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		u.Boolean = &boolean
+		u.Type = ItemsSkipParentTypeBoolean
+		return nil
+	}
+
+	var itemsSkipParent2 ItemsSkipParent2 = ItemsSkipParent2("")
+	if err := utils.UnmarshalJSON(data, &itemsSkipParent2, "", true, nil); err == nil {
+		u.ItemsSkipParent2 = &itemsSkipParent2
+		u.Type = ItemsSkipParentTypeItemsSkipParent2
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for ItemsSkipParent", string(data))
+}
+
+func (u ItemsSkipParent) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.ItemsSkipParent2 != nil {
+		return utils.MarshalJSON(u.ItemsSkipParent2, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type ItemsSkipParent: all fields are null")
 }
 
 // Items in a library are referred to as "metadata items." These metadata items are distinct from "media items" which represent actual instances of media that can be consumed. Consider a TV library that has a single video file in it for a particular episode of a show. The library has a single media item, but it has three metadata items: one for the show, one for the season, and one for the episode. Consider a movie library that has two video files in it: the same movie, but two different resolutions. The library has a single metadata item for the movie, but that metadata item has two media items, one for each resolution. Additionally a "media item" will have one or more "media parts" where the the parts are intended to be watched together, such as a CD1 and CD2 parts of the same movie.
@@ -29,13 +224,15 @@ type Items struct {
 	// The title of the item (e.g. “300” or “The Simpsons”)
 	Title string `json:"title"`
 	// The type of the video item, such as `movie`, `episode`, or `clip`.
-	Type string `json:"type"`
+	Type *string `json:"type,omitempty"`
 	// When present, contains the disc number for a track on multi-disc albums.
 	AbsoluteIndex *int `json:"absoluteIndex,omitempty"`
 	// In units of seconds since the epoch, returns the time at which the item was added to the library.
-	AddedAt int64 `json:"addedAt"`
+	AddedAt *int64 `json:"addedAt,omitempty"`
 	// When present, the URL for the background artwork for the item.
 	Art *string `json:"art,omitempty"`
+	// Blur hash for background art.
+	ArtBlurHash *string `json:"artBlurHash,omitempty"`
 	// Some rating systems separate reviewer ratings from audience ratings
 	AudienceRating *float32 `json:"audienceRating,omitempty"`
 	// A URI representing the image to be shown with the audience rating (e.g. rottentomatoes://image.rating.spilled).
@@ -53,8 +250,14 @@ type Items struct {
 	ContentRating *string `json:"contentRating,omitempty"`
 	Country       []Tag   `json:"Country,omitempty"`
 	Director      []Tag   `json:"Director,omitempty"`
+	// Levenshtein distance for voice search results.
+	Distance *int64 `json:"distance,omitempty"`
 	// When present, the duration for the item, in units of milliseconds.
 	Duration *int `json:"duration,omitempty"`
+	// Edition string (e.g. "Director's Cut").
+	EditionTitle *string `json:"editionTitle,omitempty"`
+	// Whether credits marker generation is enabled for this item.
+	EnableCreditsMarkerGeneration *bool `json:"enableCreditsMarkerGeneration,omitempty"`
 	// Typically only seen in metadata at a library's top level
 	Filter []Filter `json:"Filter,omitempty"`
 	Genre  []Tag    `json:"Genre,omitempty"`
@@ -83,13 +286,23 @@ type Items struct {
 	// When present, this represents the episode number for episodes, season number for seasons, or track number for audio tracks.
 	Index *int `json:"index,omitempty"`
 	// The key at which the item's details can be fetched.  In many cases a metadata item may be passed without all the details (such as in a hub) and this key corresponds to the endpoint to fetch additional details.
-	Key          string `json:"key"`
+	Key string `json:"key"`
+	// Per-item language override.
+	LanguageOverride *string `json:"languageOverride,omitempty"`
+	// Timestamp of the last user rating.
+	LastRatedAt  *int64 `json:"lastRatedAt,omitempty"`
 	LastViewedAt *int64 `json:"lastViewedAt,omitempty"`
 	// For shows and seasons, contains the number of total episodes.
-	LeafCount *int    `json:"leafCount,omitempty"`
-	Media     []Media `json:"Media,omitempty"`
-	// When present, in the format YYYY-MM-DD [HH:MM:SS] (the hours/minutes/seconds part is not always present). The air date, or a higher resolution release date for an item, depending on type. For example, episodes usually have air date like 1979-08-10 (we don't use epoch seconds because media existed prior to 1970). In some cases, recorded over-the-air content has higher resolution air date which includes a time component. Albums and movies may have day-resolution release dates as well.
-	OriginallyAvailableAt *types.Date `json:"originallyAvailableAt,omitempty"`
+	LeafCount *int `json:"leafCount,omitempty"`
+	// The library section containing this metadata item, when reported by the server.
+	LibrarySectionID *int64  `json:"librarySectionID,omitempty"`
+	Media            []Media `json:"Media,omitempty"`
+	// Analysis version for music items.
+	MusicAnalysisVersion *int64 `json:"musicAnalysisVersion,omitempty"`
+	// The original release or capture date as reported by the server.
+	// Values can be a date (YYYY-MM-DD), a date with a time (YYYY-MM-DD HH:MM:SS), or an ISO 8601 timestamp.
+	// Preserve the string representation so higher-resolution timestamps are not reduced to a date-only value.
+	OriginallyAvailableAt *string `json:"originallyAvailableAt,omitempty"`
 	// When present, used to indicate an item's original title, e.g. a movie's foreign title.
 	OriginalTitle *string `json:"originalTitle,omitempty"`
 	// The GUID of the parent media item.
@@ -106,6 +319,8 @@ type Items struct {
 	ParentThumb *string `json:"parentThumb,omitempty"`
 	// The `title` of the parent
 	ParentTitle *string `json:"parentTitle,omitempty"`
+	// Item ID within a playlist.
+	PlaylistItemID *int64 `json:"playlistItemID,omitempty"`
 	// Indicates that the item has a primary extra; for a movie, this is a trailer, and for a music track it is a music video. The URL points to the metadata details endpoint for the item.
 	PrimaryExtraKey *string `json:"primaryExtraKey,omitempty"`
 	// Prompt to give the user for this directory (such as `Search Movies`)
@@ -125,11 +340,17 @@ type Items struct {
 	// Used by old clients to provide nested menus allowing for primative (but structured) navigation.
 	Secondary *bool `json:"secondary,omitempty"`
 	// When found on a show item, indicates that the children (seasons) should be skipped in favor of the grandchildren (episodes). Useful for mini-series, etc.
-	SkipChildren *bool `json:"skipChildren,omitempty"`
+	SkipChildren *ItemsSkipChildren `json:"skipChildren,omitempty"`
+	// Number of times this track has been skipped.
+	SkipCount *int64 `json:"skipCount,omitempty"`
 	// When present on an episode or track item, indicates parent should be skipped in favor of grandparent (show).
-	SkipParent *bool `json:"skipParent,omitempty"`
+	SkipParent *ItemsSkipParent `json:"skipParent,omitempty"`
+	// URL-friendly slug for the item.
+	Slug *string `json:"slug,omitempty"`
 	// Typically only seen in metadata at a library's top level
 	Sort []Sort `json:"Sort,omitempty"`
+	// Remote or shared server item URI.
+	SourceURI *string `json:"sourceURI,omitempty"`
 	// When present, the studio or label which produced an item (e.g. movie studio for movies, record label for albums).
 	Studio *string `json:"studio,omitempty"`
 	// The subtype of the video item, such as `photo` when the video item is in a photo library
@@ -142,10 +363,14 @@ type Items struct {
 	Theme *string `json:"theme,omitempty"`
 	// When present, the URL for the poster or thumbnail for the item. When available for types like movie, it will be the poster graphic, but fall-back to the extracted media thumbnail.
 	Thumb *string `json:"thumb,omitempty"`
+	// Blur hash for thumbnail.
+	ThumbBlurHash *string `json:"thumbBlurHash,omitempty"`
 	// Whene present, this is the string used for sorting the item. It's usually the title with any leading articles removed (e.g. “Simpsons”).
 	TitleSort *string `json:"titleSort,omitempty"`
 	// In units of seconds since the epoch, returns the time at which the item was last changed (e.g. had its metadata updated).
 	UpdatedAt *int64 `json:"updatedAt,omitempty"`
+	// Whether to display the original title.
+	UseOriginalTitle *bool `json:"useOriginalTitle,omitempty"`
 	// When the user has rated an item, this contains the user rating
 	UserRating *float32 `json:"userRating,omitempty"`
 	// When a users has completed watched or listened to an item, this attribute contains the number of consumptions.
@@ -179,9 +404,9 @@ func (i *Items) GetTitle() string {
 	return i.Title
 }
 
-func (i *Items) GetType() string {
+func (i *Items) GetType() *string {
 	if i == nil {
-		return ""
+		return nil
 	}
 	return i.Type
 }
@@ -193,9 +418,9 @@ func (i *Items) GetAbsoluteIndex() *int {
 	return i.AbsoluteIndex
 }
 
-func (i *Items) GetAddedAt() int64 {
+func (i *Items) GetAddedAt() *int64 {
 	if i == nil {
-		return 0
+		return nil
 	}
 	return i.AddedAt
 }
@@ -205,6 +430,13 @@ func (i *Items) GetArt() *string {
 		return nil
 	}
 	return i.Art
+}
+
+func (i *Items) GetArtBlurHash() *string {
+	if i == nil {
+		return nil
+	}
+	return i.ArtBlurHash
 }
 
 func (i *Items) GetAudienceRating() *float32 {
@@ -277,11 +509,32 @@ func (i *Items) GetDirector() []Tag {
 	return i.Director
 }
 
+func (i *Items) GetDistance() *int64 {
+	if i == nil {
+		return nil
+	}
+	return i.Distance
+}
+
 func (i *Items) GetDuration() *int {
 	if i == nil {
 		return nil
 	}
 	return i.Duration
+}
+
+func (i *Items) GetEditionTitle() *string {
+	if i == nil {
+		return nil
+	}
+	return i.EditionTitle
+}
+
+func (i *Items) GetEnableCreditsMarkerGeneration() *bool {
+	if i == nil {
+		return nil
+	}
+	return i.EnableCreditsMarkerGeneration
 }
 
 func (i *Items) GetFilter() []Filter {
@@ -396,6 +649,20 @@ func (i *Items) GetKey() string {
 	return i.Key
 }
 
+func (i *Items) GetLanguageOverride() *string {
+	if i == nil {
+		return nil
+	}
+	return i.LanguageOverride
+}
+
+func (i *Items) GetLastRatedAt() *int64 {
+	if i == nil {
+		return nil
+	}
+	return i.LastRatedAt
+}
+
 func (i *Items) GetLastViewedAt() *int64 {
 	if i == nil {
 		return nil
@@ -410,6 +677,13 @@ func (i *Items) GetLeafCount() *int {
 	return i.LeafCount
 }
 
+func (i *Items) GetLibrarySectionID() *int64 {
+	if i == nil {
+		return nil
+	}
+	return i.LibrarySectionID
+}
+
 func (i *Items) GetMedia() []Media {
 	if i == nil {
 		return nil
@@ -417,7 +691,14 @@ func (i *Items) GetMedia() []Media {
 	return i.Media
 }
 
-func (i *Items) GetOriginallyAvailableAt() *types.Date {
+func (i *Items) GetMusicAnalysisVersion() *int64 {
+	if i == nil {
+		return nil
+	}
+	return i.MusicAnalysisVersion
+}
+
+func (i *Items) GetOriginallyAvailableAt() *string {
 	if i == nil {
 		return nil
 	}
@@ -478,6 +759,13 @@ func (i *Items) GetParentTitle() *string {
 		return nil
 	}
 	return i.ParentTitle
+}
+
+func (i *Items) GetPlaylistItemID() *int64 {
+	if i == nil {
+		return nil
+	}
+	return i.PlaylistItemID
 }
 
 func (i *Items) GetPrimaryExtraKey() *string {
@@ -550,18 +838,32 @@ func (i *Items) GetSecondary() *bool {
 	return i.Secondary
 }
 
-func (i *Items) GetSkipChildren() *bool {
+func (i *Items) GetSkipChildren() *ItemsSkipChildren {
 	if i == nil {
 		return nil
 	}
 	return i.SkipChildren
 }
 
-func (i *Items) GetSkipParent() *bool {
+func (i *Items) GetSkipCount() *int64 {
+	if i == nil {
+		return nil
+	}
+	return i.SkipCount
+}
+
+func (i *Items) GetSkipParent() *ItemsSkipParent {
 	if i == nil {
 		return nil
 	}
 	return i.SkipParent
+}
+
+func (i *Items) GetSlug() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Slug
 }
 
 func (i *Items) GetSort() []Sort {
@@ -569,6 +871,13 @@ func (i *Items) GetSort() []Sort {
 		return nil
 	}
 	return i.Sort
+}
+
+func (i *Items) GetSourceURI() *string {
+	if i == nil {
+		return nil
+	}
+	return i.SourceURI
 }
 
 func (i *Items) GetStudio() *string {
@@ -613,6 +922,13 @@ func (i *Items) GetThumb() *string {
 	return i.Thumb
 }
 
+func (i *Items) GetThumbBlurHash() *string {
+	if i == nil {
+		return nil
+	}
+	return i.ThumbBlurHash
+}
+
 func (i *Items) GetTitleSort() *string {
 	if i == nil {
 		return nil
@@ -625,6 +941,13 @@ func (i *Items) GetUpdatedAt() *int64 {
 		return nil
 	}
 	return i.UpdatedAt
+}
+
+func (i *Items) GetUseOriginalTitle() *bool {
+	if i == nil {
+		return nil
+	}
+	return i.UseOriginalTitle
 }
 
 func (i *Items) GetUserRating() *float32 {

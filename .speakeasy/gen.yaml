@@ -13,6 +13,8 @@ generation:
     requestResponseComponentNamesFeb2024: true
     securityFeb2025: false
     sharedErrorComponentsApr2025: false
+    sharedNestedComponentsJan2026: false
+    nameOverrideFeb2026: false
   auth:
     oAuth2ClientCredentialsEnabled: true
     oAuth2PasswordEnabled: false
@@ -20,20 +22,27 @@ generation:
   schemas:
     allOfMergeStrategy: shallowMerge
   requestBodyFieldName: ""
+  versioningStrategy: automatic
   persistentEdits: {}
   tests:
     generateTests: true
     generateNewTests: false
     skipResponseBodyAssertions: false
 go:
-  version: 0.28.2
+  version: 0.30.2
   additionalDependencies: {}
   allowUnknownFieldsInWeakUnions: false
   baseErrorName: PlexAPIError
   clientServerStatusCodesAsErrors: true
   defaultErrorName: SDKError
+  enableCustomCodeRegions: false
+  enableSkipDeserialization: false
+  fixFlags:
+    encodePathParams: false
   flattenGlobalSecurity: true
   forwardCompatibleEnumsByDefault: false
+  forwardCompatibleUnionsByDefault: "false"
+  idiomaticMethodCollisionNames: false
   imports:
     option: openapi
     paths:
@@ -50,9 +59,12 @@ go:
   modulePath: ""
   multipartArrayFormat: legacy
   nullableOptionalWrapper: false
+  optionalMethodArguments: pointers
   outputModelSuffix: output
-  packageName: github.com/LukeHagar/plexgo
+  packageName: github.com/ygelfand/plexgo
   respectRequiredFields: false
+  respectTitlesForPrimitiveUnionMembers: false
   responseFormat: envelope
   sdkPackageName: ""
+  unionGenerics: false
   unionStrategy: left-to-right

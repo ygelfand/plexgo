@@ -3,7 +3,7 @@
 package operations
 
 import (
-	"github.com/LukeHagar/plexgo/models/components"
+	"github.com/ygelfand/plexgo/models/components"
 	"net/http"
 )
 

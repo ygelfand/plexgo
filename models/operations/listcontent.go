@@ -3,8 +3,8 @@
 package operations
 
 import (
-	"github.com/LukeHagar/plexgo/internal/utils"
-	"github.com/LukeHagar/plexgo/models/components"
+	"github.com/ygelfand/plexgo/internal/utils"
+	"github.com/ygelfand/plexgo/models/components"
 	"net/http"
 )
 
@@ -144,15 +144,16 @@ type ListContentRequest struct {
 	DeviceName *string `header:"style=simple,explode=false,name=X-Plex-Device-Name"`
 	// The marketplace on which the client application is distributed
 	Marketplace *string `header:"style=simple,explode=false,name=X-Plex-Marketplace"`
+	// The PMS API version requested by the client. If omitted, the server assumes `0.0`.
+	// Use `1.0` for the published PMS API response customization behavior.
+	PmsAPIVersion *string `header:"style=simple,explode=false,name=X-Plex-Pms-Api-Version"`
 	// The index of the first item to return. If not specified, the first item will be returned.
 	// If the number of items exceeds the limit, the response will be paginated.
 	// By default this is 0
-	//
 	XPlexContainerStart *int `default:"0" queryParam:"style=form,explode=true,name=X-Plex-Container-Start"`
 	// The number of items to return. If not specified, all items will be returned.
 	// If the number of items exceeds the limit, the response will be paginated.
 	// By default this is 50
-	//
 	XPlexContainerSize *int `default:"50" queryParam:"style=form,explode=true,name=X-Plex-Container-Size"`
 	// A querystring-based filtering language used to select subsets of media. Can be provided as an object with typed properties for type safety, or as a string for complex queries with operators and boolean logic.
 	//
@@ -170,16 +171,117 @@ type ListContentRequest struct {
 	// - Complex: `push=1&index=1&or=1&rating=2&pop=1&duration=10` - (index = 1 OR rating = 2) AND duration = 10
 	//
 	// See [API Info section](#section/API-Info/Media-Queries) for detailed information on building media queries.
-	//
 	MediaQuery *components.MediaQuery `queryParam:"style=form,explode=true,name=mediaQuery"`
+	// The id of the section
+	SectionID int64 `pathParam:"style=simple,explode=false,name=sectionId"`
+	// Return current items whose updatedAt is strictly greater than this Unix timestamp in seconds.
+	// The query key is updatedAt>> (URL-encoded as updatedAt%3E%3E), for example updatedAt%3E%3E=1792000000.
+	// Items updated exactly at the supplied timestamp are excluded; overlap polling windows and deduplicate ratingKey values to avoid missing same-second updates.
+	// Verified for movies, episodes, and tracks on PMS 1.43.4.10903. Support on other server versions and library types may vary.
+	// This filters current items, not a durable change log: deleted items are not returned, and it does not guarantee that every file, part, or stream change updates the parent timestamp.
+	UpdatedAtAfter *int64 `queryParam:"style=form,explode=true,name=updatedAt>>"`
+	// Return current items whose updatedAt is strictly less than this Unix timestamp in seconds.
+	// The query key is updatedAt<< (URL-encoded as updatedAt%3C%3C), for example updatedAt%3C%3C=1792054845.
+	// Items updated exactly at the supplied timestamp are excluded. Combine with updatedAt>> to request a bounded interval; both conditions must match.
+	// Verified for movies on PMS 1.43.4.10903. Support on other server versions and library types may vary.
+	// This filters current items and does not provide an atomic snapshot, a replay cursor, or deleted items.
+	UpdatedAtBefore *int64 `queryParam:"style=form,explode=true,name=updatedAt<<"`
+	// Return current items whose addedAt is strictly greater than this Unix timestamp in seconds.
+	// The query key is addedAt>> (URL-encoded as addedAt%3E%3E), for example addedAt%3E%3E=1791200000.
+	// Items added exactly at the supplied timestamp are excluded; overlap polling windows and deduplicate ratingKey values to avoid missing same-second additions.
+	// Verified for movies on PMS 1.43.4.10903. Support on other server versions and library types may vary.
+	// This filters surviving additions only; it does not identify later metadata updates or deleted items.
+	AddedAtAfter *int64 `queryParam:"style=form,explode=true,name=addedAt>>"`
+	// Return current items whose addedAt is strictly less than this Unix timestamp in seconds.
+	// The query key is addedAt<< (URL-encoded as addedAt%3C%3C), for example addedAt%3C%3C=1791252847.
+	// Items added exactly at the supplied timestamp are excluded. Combine with addedAt>> to request a bounded interval; both conditions must match.
+	// Support on server versions and library types may vary.
+	// This filters surviving additions only; it does not identify later metadata updates or deleted items, or provide an atomic snapshot.
+	AddedAtBefore *int64 `queryParam:"style=form,explode=true,name=addedAt<<"`
 	// Adds the Meta object to the response
-	//
 	IncludeMeta *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeMeta"`
 	// Adds the Guid object to the response
-	//
 	IncludeGuids *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeGuids"`
-	// The id of the section
-	SectionID string `pathParam:"style=simple,explode=false,name=sectionId"`
+	// Include collection items in results
+	IncludeCollections *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeCollections"`
+	// Include external or online media
+	IncludeExternalMedia *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeExternalMedia"`
+	// Include advanced settings
+	IncludeAdvanced *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeAdvanced"`
+	// Verify file existence
+	CheckFiles *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=checkFiles"`
+	// Include related items
+	IncludeRelated *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeRelated"`
+	// Include trailers, behind-the-scenes, etc.
+	IncludeExtras *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeExtras"`
+	// Include popular episodes
+	IncludePopularLeaves *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includePopularLeaves"`
+	// Include concert items
+	IncludeConcerts *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeConcerts"`
+	// Include On Deck status
+	IncludeOnDeck *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeOnDeck"`
+	// Include chapter markers
+	IncludeChapters *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeChapters"`
+	// Include user preferences
+	IncludePreferences *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includePreferences"`
+	// Include bandwidth info
+	IncludeBandwidths *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeBandwidths"`
+	// Include loudness ramp data
+	IncludeLoudnessRamps *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeLoudnessRamps"`
+	// Include radio station data
+	IncludeStations *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeStations"`
+	// Include external GUIDs
+	IncludeExternalIds *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeExternalIds"`
+	// Include user reviews
+	IncludeReviews *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeReviews"`
+	// Include full credits
+	IncludeCredits *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeCredits"`
+	// Force inclusion of artwork fields
+	IncludeArt *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeArt"`
+	// Force inclusion of thumbnail fields
+	IncludeThumb *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeThumb"`
+	// Force inclusion of banner fields
+	IncludeBanner *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeBanner"`
+	// Force inclusion of theme fields
+	IncludeTheme *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=includeTheme"`
+	// Comma-separated whitelist of fields to return.
+	// With PMS API version 1.0.0 or later, this projection also applies to container attributes.
+	// Include size,totalSize,offset alongside item fields when paging, for example ratingKey,updatedAt,size,totalSize,offset.
+	// Otherwise the response may omit the pagination attributes needed to determine whether the complete result has been retrieved.
+	// This does not necessarily remove nested elements; use excludeElements to request their exclusion.
+	IncludeFields *string `queryParam:"style=form,explode=true,name=includeFields"`
+	// Blacklist of fields to omit
+	ExcludeFields *string `queryParam:"style=form,explode=true,name=excludeFields"`
+	// Async metadata augmentation
+	AsyncAugmentMetadata *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=asyncAugmentMetadata"`
+	// Async local media agent refresh
+	AsyncRefreshLocalMediaAgent *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=asyncRefreshLocalMediaAgent"`
+	// Bypass cache
+	Nocache *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=nocache"`
+	// Skip synchronous refresh
+	SkipRefresh *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=skipRefresh"`
+	// Comma-separated list of optional elements to add to the response.
+	// Use `Stream` to request stream metadata within returned media parts.
+	// Unlike `includeElements`, this adds optional elements without excluding the normal response elements.
+	IncludeOptionalElements *string `queryParam:"style=form,explode=true,name=includeOptionalElements"`
+	// Comma-separated list of elements to exclude from the response
+	ExcludeElements *string `queryParam:"style=form,explode=true,name=excludeElements"`
+	// General filtering expression.
+	Filters *string `queryParam:"style=form,explode=true,name=filters"`
+	// Filter to unwatched only (1 = true).
+	Unwatched *components.BoolInt `default:"0" queryParam:"style=form,explode=true,name=unwatched"`
+	// Filter by genre.
+	Genre *string `queryParam:"style=form,explode=true,name=genre"`
+	// Filter by studio.
+	Studio *string `queryParam:"style=form,explode=true,name=studio"`
+	// Filter by content rating.
+	ContentRating *string `queryParam:"style=form,explode=true,name=contentRating"`
+	// Filter by resolution.
+	Resolution *string `queryParam:"style=form,explode=true,name=resolution"`
+	// Filter by year.
+	Year *int64 `queryParam:"style=form,explode=true,name=year"`
+	// Filter by first character of title.
+	FirstCharacter *string `queryParam:"style=form,explode=true,name=firstCharacter"`
 }
 
 func (l ListContentRequest) MarshalJSON() ([]byte, error) {
@@ -270,6 +372,13 @@ func (l *ListContentRequest) GetMarketplace() *string {
 	return l.Marketplace
 }
 
+func (l *ListContentRequest) GetPmsAPIVersion() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PmsAPIVersion
+}
+
 func (l *ListContentRequest) GetXPlexContainerStart() *int {
 	if l == nil {
 		return nil
@@ -291,6 +400,41 @@ func (l *ListContentRequest) GetMediaQuery() *components.MediaQuery {
 	return l.MediaQuery
 }
 
+func (l *ListContentRequest) GetSectionID() int64 {
+	if l == nil {
+		return 0
+	}
+	return l.SectionID
+}
+
+func (l *ListContentRequest) GetUpdatedAtAfter() *int64 {
+	if l == nil {
+		return nil
+	}
+	return l.UpdatedAtAfter
+}
+
+func (l *ListContentRequest) GetUpdatedAtBefore() *int64 {
+	if l == nil {
+		return nil
+	}
+	return l.UpdatedAtBefore
+}
+
+func (l *ListContentRequest) GetAddedAtAfter() *int64 {
+	if l == nil {
+		return nil
+	}
+	return l.AddedAtAfter
+}
+
+func (l *ListContentRequest) GetAddedAtBefore() *int64 {
+	if l == nil {
+		return nil
+	}
+	return l.AddedAtBefore
+}
+
 func (l *ListContentRequest) GetIncludeMeta() *components.BoolInt {
 	if l == nil {
 		return nil
@@ -305,11 +449,263 @@ func (l *ListContentRequest) GetIncludeGuids() *components.BoolInt {
 	return l.IncludeGuids
 }
 
-func (l *ListContentRequest) GetSectionID() string {
+func (l *ListContentRequest) GetIncludeCollections() *components.BoolInt {
 	if l == nil {
-		return ""
+		return nil
 	}
-	return l.SectionID
+	return l.IncludeCollections
+}
+
+func (l *ListContentRequest) GetIncludeExternalMedia() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeExternalMedia
+}
+
+func (l *ListContentRequest) GetIncludeAdvanced() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeAdvanced
+}
+
+func (l *ListContentRequest) GetCheckFiles() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.CheckFiles
+}
+
+func (l *ListContentRequest) GetIncludeRelated() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeRelated
+}
+
+func (l *ListContentRequest) GetIncludeExtras() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeExtras
+}
+
+func (l *ListContentRequest) GetIncludePopularLeaves() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.IncludePopularLeaves
+}
+
+func (l *ListContentRequest) GetIncludeConcerts() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeConcerts
+}
+
+func (l *ListContentRequest) GetIncludeOnDeck() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeOnDeck
+}
+
+func (l *ListContentRequest) GetIncludeChapters() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeChapters
+}
+
+func (l *ListContentRequest) GetIncludePreferences() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.IncludePreferences
+}
+
+func (l *ListContentRequest) GetIncludeBandwidths() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeBandwidths
+}
+
+func (l *ListContentRequest) GetIncludeLoudnessRamps() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeLoudnessRamps
+}
+
+func (l *ListContentRequest) GetIncludeStations() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeStations
+}
+
+func (l *ListContentRequest) GetIncludeExternalIds() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeExternalIds
+}
+
+func (l *ListContentRequest) GetIncludeReviews() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeReviews
+}
+
+func (l *ListContentRequest) GetIncludeCredits() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeCredits
+}
+
+func (l *ListContentRequest) GetIncludeArt() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeArt
+}
+
+func (l *ListContentRequest) GetIncludeThumb() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeThumb
+}
+
+func (l *ListContentRequest) GetIncludeBanner() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeBanner
+}
+
+func (l *ListContentRequest) GetIncludeTheme() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeTheme
+}
+
+func (l *ListContentRequest) GetIncludeFields() *string {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeFields
+}
+
+func (l *ListContentRequest) GetExcludeFields() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ExcludeFields
+}
+
+func (l *ListContentRequest) GetAsyncAugmentMetadata() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.AsyncAugmentMetadata
+}
+
+func (l *ListContentRequest) GetAsyncRefreshLocalMediaAgent() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.AsyncRefreshLocalMediaAgent
+}
+
+func (l *ListContentRequest) GetNocache() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.Nocache
+}
+
+func (l *ListContentRequest) GetSkipRefresh() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.SkipRefresh
+}
+
+func (l *ListContentRequest) GetIncludeOptionalElements() *string {
+	if l == nil {
+		return nil
+	}
+	return l.IncludeOptionalElements
+}
+
+func (l *ListContentRequest) GetExcludeElements() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ExcludeElements
+}
+
+func (l *ListContentRequest) GetFilters() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Filters
+}
+
+func (l *ListContentRequest) GetUnwatched() *components.BoolInt {
+	if l == nil {
+		return nil
+	}
+	return l.Unwatched
+}
+
+func (l *ListContentRequest) GetGenre() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Genre
+}
+
+func (l *ListContentRequest) GetStudio() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Studio
+}
+
+func (l *ListContentRequest) GetContentRating() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ContentRating
+}
+
+func (l *ListContentRequest) GetResolution() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Resolution
+}
+
+func (l *ListContentRequest) GetYear() *int64 {
+	if l == nil {
+		return nil
+	}
+	return l.Year
+}
+
+func (l *ListContentRequest) GetFirstCharacter() *string {
+	if l == nil {
+		return nil
+	}
+	return l.FirstCharacter
 }
 
 type ListContentResponse struct {
