@@ -102,7 +102,8 @@ type PlexAPI struct {
 	// Activities are optional cancellable. If cancellable, they may be cancelled via the `DELETE` endpoint.
 	Activities *Activities
 	// Plex Users operations
-	Users *Users
+	Users     *Users
+	HomeUsers *HomeUsers
 	// Plex Authentication operations
 	Authentication *Authentication
 	// The butler is responsible for running periodic tasks.  Some tasks run daily, others every few days, and some weekly.  These includes database maintenance, metadata updating, thumbnail generation, media analysis, and other tasks.
@@ -475,6 +476,7 @@ func New(opts ...SDKOption) *PlexAPI {
 	sdk.Provider = newProvider(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Activities = newActivities(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Users = newUsers(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.HomeUsers = newHomeUsers(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Authentication = newAuthentication(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Butler = newButler(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.DownloadQueue = newDownloadQueue(sdk, sdk.sdkConfiguration, sdk.hooks)
