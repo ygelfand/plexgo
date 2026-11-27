@@ -11,7 +11,8 @@ import (
 type MediaContainerWithArtworkType string
 
 const (
-	MediaContainerWithArtworkTypeImage MediaContainerWithArtworkType = "image"
+	MediaContainerWithArtworkTypeImage     MediaContainerWithArtworkType = "image"
+	MediaContainerWithArtworkTypeDirectory MediaContainerWithArtworkType = "directory"
 )
 
 func (e MediaContainerWithArtworkType) ToPointer() *MediaContainerWithArtworkType {
@@ -23,7 +24,7 @@ func (e *MediaContainerWithArtworkType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	switch v {
-	case "image":
+	case "image", "directory":
 		*e = MediaContainerWithArtworkType(v)
 		return nil
 	default:
@@ -37,6 +38,7 @@ type MediaContainerWithArtworkMetadata struct {
 	Type  *MediaContainerWithArtworkType `json:"type,omitempty"`
 	// The path to the artwork
 	Key                  *string        `json:"key,omitempty"`
+	Thumb                *string        `json:"thumb,omitempty"`
 	AdditionalProperties map[string]any `additionalProperties:"true" json:"-"`
 }
 
@@ -72,6 +74,13 @@ func (m *MediaContainerWithArtworkMetadata) GetKey() *string {
 	return m.Key
 }
 
+func (m *MediaContainerWithArtworkMetadata) GetThumb() *string {
+	if m == nil {
+		return nil
+	}
+	return m.Thumb
+}
+
 func (m *MediaContainerWithArtworkMetadata) GetAdditionalProperties() map[string]any {
 	if m == nil {
 		return nil
@@ -90,6 +99,7 @@ type MediaContainerWithArtworkMediaContainer struct {
 	// The total size of objects available. Also provided in the `X-Plex-Container-Total-Size` header.
 	TotalSize *int64                              `json:"totalSize,omitempty"`
 	Metadata  []MediaContainerWithArtworkMetadata `json:"Metadata,omitempty"`
+	Directory []MediaContainerWithArtworkMetadata `json:"Directory,omitempty"`
 }
 
 func (m *MediaContainerWithArtworkMediaContainer) GetIdentifier() *string {
@@ -125,6 +135,13 @@ func (m *MediaContainerWithArtworkMediaContainer) GetMetadata() []MediaContainer
 		return nil
 	}
 	return m.Metadata
+}
+
+func (m *MediaContainerWithArtworkMediaContainer) GetDirectory() []MediaContainerWithArtworkMetadata {
+	if m == nil {
+		return nil
+	}
+	return m.Directory
 }
 
 type MediaContainerWithArtwork struct {
