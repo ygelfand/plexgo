@@ -108,8 +108,6 @@ func populateQueryParams(queryParams interface{}, globals interface{}, values ur
 			continue
 		}
 
-		defaultValue := parseDefaultTag(fieldType)
-
 		if globals != nil {
 			var globalFound bool
 			fieldType, valType, globalFound = populateFromGlobals(fieldType, valType, queryParamTagKey, globals)
@@ -136,14 +134,14 @@ func populateQueryParams(queryParams interface{}, globals interface{}, values ur
 					}
 				}
 			case "form":
-				vals := populateFormParams(qpTag, fieldType.Type, valType, ",", defaultValue, allowEmptyValue)
+				vals := populateFormParams(qpTag, fieldType.Type, valType, ",", nil, allowEmptyValue)
 				for k, v := range vals {
 					for _, vv := range v {
 						addQueryValue(values, allowReserved, k, vv, qpTag.AllowReserved)
 					}
 				}
 			case "pipeDelimited":
-				vals := populateFormParams(qpTag, fieldType.Type, valType, "|", defaultValue, allowEmptyValue)
+				vals := populateFormParams(qpTag, fieldType.Type, valType, "|", nil, allowEmptyValue)
 				for k, v := range vals {
 					for _, vv := range v {
 						addQueryValue(values, allowReserved, k, vv, qpTag.AllowReserved)

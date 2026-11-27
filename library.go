@@ -19750,7 +19750,7 @@ func (s *Library) GetFirstCharacters(ctx context.Context, request operations.Get
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/library/sections/{sectionId}/firstCharacters", request, globals)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/library/sections/{sectionId}/firstCharacter", request, globals)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}

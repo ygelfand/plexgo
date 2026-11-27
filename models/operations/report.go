@@ -517,7 +517,7 @@ type MediaContainer struct {
 	Version                    *string  `json:"version,omitempty"`
 	VoiceSearch                *bool    `json:"voiceSearch,omitempty"`
 	// A list of media times and bandwidths when trascoding is using with auto adjustment of bandwidth
-	Bandwidths *Bandwidths `json:"Bandwidths,omitempty"`
+	Bandwidths []Bandwidths `json:"Bandwidths,omitempty"`
 	// The play queue ID when playback originates from a queue.
 	PlayQueueID *int64 `json:"playQueueID,omitempty"`
 	// A code describing why the session was terminated by the server.
@@ -890,7 +890,7 @@ func (m *MediaContainer) GetVoiceSearch() *bool {
 	return m.VoiceSearch
 }
 
-func (m *MediaContainer) GetBandwidths() *Bandwidths {
+func (m *MediaContainer) GetBandwidths() []Bandwidths {
 	if m == nil {
 		return nil
 	}
